@@ -14,9 +14,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
         this.view = webviewView;
 
         webviewView.webview.options = {
-            // Allow scripts in the webview
             enableScripts: true,
-
             localResourceRoots: [this._extensionUri],
         };
 
@@ -24,14 +22,8 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
     }
 
     private _getHtmlForWebview(webview: vscode.Webview) {
-        // The CSS file from the React build output
-        const stylesUri = getUri(webview, this._extensionUri, ['webview-ui', 'build', 'assets', 'jsx-runtime.css']);
-        // The JS file from the React build output
-        const scriptUri = getUri(webview, this._extensionUri, ['webview-ui', 'build', 'assets', 'mainSideBar.js']);
-
         const nonce = getNonce();
 
-        // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
         return /*html*/ `
           <!DOCTYPE html>
           <html lang="en">
@@ -39,12 +31,12 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
               <meta charset="UTF-8" />
               <meta name="viewport" content="width=device-width, initial-scale=1.0" />
               <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
-              <link rel="stylesheet" type="text/css" href="${stylesUri}">
+              <link rel="stylesheet" type="text/css" href="${getUri(webview, this._extensionUri, ['webview-ui', 'build', 'assets', 'jsx-runtime.css'])}">
               <title>Hello World</title>
             </head>
             <body>
               <div id="root"></div>
-              <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
+              <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, ['webview-ui', 'build', 'assets', 'mainSideBar.js'])}"></script>
             </body>
           </html>
         `;
