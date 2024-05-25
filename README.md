@@ -1,4 +1,4 @@
-# Hello World (React + Vite)
+# feedboard vscode plaguin with (React + Vite)
 
 ## setup vscode setting in .vecode folder
 
