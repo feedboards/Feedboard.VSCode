@@ -32,7 +32,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
               <meta name="viewport" content="width=device-width, initial-scale=1.0" />
               <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
               <link rel="stylesheet" type="text/css" href="${getUri(webview, this._extensionUri, ['webview-ui', 'build', 'assets', 'jsx-runtime.css'])}">
-              <title>Hello World</title>
+              <title>feedboard</title>
             </head>
             <body>
               <div id="root"></div>
