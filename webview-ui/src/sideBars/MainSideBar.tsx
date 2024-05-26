@@ -1,4 +1,3 @@
-import '../css/App.css';
 import { render } from '../utilities/render';
 import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
 
