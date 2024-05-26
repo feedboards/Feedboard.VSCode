@@ -109,13 +109,25 @@ export class MainPanel {
             <head>
                 <meta charset="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
-                <link rel="stylesheet" type="text/css" href="${getUri(webview, extensionUri, ['webview-ui', 'build', 'assets', 'index.css'])}">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${
+                    webview.cspSource
+                }; script-src 'nonce-${nonce}';">
+                <link rel="stylesheet" type="text/css" href="${getUri(webview, extensionUri, [
+                    'webview-ui',
+                    'build',
+                    'assets',
+                    'jsx-runtime.css',
+                ])}">
                 <title>feedboard</title>
             </head>
             <body>
                 <div id="root"></div>
-                <script type="module" nonce="${nonce}" src="${getUri(webview, extensionUri, ['webview-ui', 'build', 'assets', 'index.js'])}"></script>
+                <script type="module" nonce="${nonce}" src="${getUri(webview, extensionUri, [
+            'webview-ui',
+            'build',
+            'assets',
+            'mainPanel.js',
+        ])}"></script>
             </body>
         </html>
         `;

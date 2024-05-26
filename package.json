@@ -1,6 +1,6 @@
 {
-    "name": "hello-world-react-vite",
-    "displayName": "hello-world-react-vite",
+    "name": "feedboard",
+    "displayName": "feedboard",
     "description": "A hello world sample extension to demonstrate using React + Vite with the Webview UI Toolkit for VS Code.",
     "version": "0.0.1",
     "engines": {
@@ -30,7 +30,7 @@
         },
         "commands": [
             {
-                "command": "hello-world.showHelloWorld",
+                "command": "feedboard.main-view",
                 "title": "Hello World (React + Vite): Show"
             }
         ]
@@ -42,6 +42,7 @@
         "vscode:prepublish": "yarn compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
+        "watch:ui": "cd webview-ui && yarn watch",
         "pretest": "yarn compile && yarn lint",
         "lint": "eslint src --ext ts"
     },
