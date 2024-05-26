@@ -1,0 +1,55 @@
+@import './variables';
+
+.main-panel {
+    display: block;
+    padding: 14px 0;
+    box-sizing: border-box;
+    height: inherit;
+
+    &__html {
+        box-sizing: border-box;
+        height: 100%;
+    }
+
+    &__body,
+    &__root {
+        padding: 0;
+        box-sizing: border-box;
+        height: inherit;
+    }
+
+    &__header {
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+
+        &_dropdown {
+            margin-right: 14px;
+
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+
+        &_button {
+            margin-left: auto;
+        }
+    }
+
+    &__wrapper {
+        display: flex;
+        height: calc(100% - 27px);
+        box-sizing: border-box;
+
+        &-colunm {
+            flex: 1;
+            border-top: 1px solid $border-color;
+
+            &:nth-child(2) {
+                flex: 2;
+                border-left: 1px solid $border-color;
+                border-right: 1px solid $border-color;
+            }
+        }
+    }
+}

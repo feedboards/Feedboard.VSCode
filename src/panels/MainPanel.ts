@@ -78,10 +78,8 @@ export class MainPanel {
     public dispose() {
         MainPanel.currentPanel = undefined;
 
-        // Dispose of the current webview panel
         this._panel.dispose();
 
-        // Dispose of all disposables (i.e. commands) for the current webview panel
         while (this._disposables.length) {
             const disposable = this._disposables.pop();
             if (disposable) {
@@ -103,9 +101,9 @@ export class MainPanel {
      */
     private _getWebviewContent(webview: Webview, extensionUri: Uri) {
         const nonce = getNonce();
-        return /*html*/ `
+        return `
         <!DOCTYPE html>
-        <html lang="en">
+        <html lang="en" class="main-panel__html">
             <head>
                 <meta charset="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -116,12 +114,12 @@ export class MainPanel {
                     'webview-ui',
                     'build',
                     'assets',
-                    'jsx-runtime.css',
+                    'mainPanel.css',
                 ])}">
                 <title>feedboard</title>
             </head>
-            <body>
-                <div id="root"></div>
+            <body class="main-panel__body">
+                <div id="root" class="main-panel__root"></div>
                 <script type="module" nonce="${nonce}" src="${getUri(webview, extensionUri, [
             'webview-ui',
             'build',
@@ -144,15 +142,12 @@ export class MainPanel {
         webview.onDidReceiveMessage(
             (message: any) => {
                 const command = message.command;
-                const text = message.text;
+                const text = message.payload;
 
                 switch (command) {
                     case 'hello':
-                        // Code that should run in response to the hello message command
                         window.showInformationMessage(text);
-                        return;
-                    // Add more switch case statements here as more webview message commands
-                    // are created within the webview context (i.e. inside media/main.js)
+                        break;
                 }
             },
             undefined,

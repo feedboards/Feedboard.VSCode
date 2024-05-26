@@ -1,20 +1,30 @@
-import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
-import '../css/App.css';
-import { vscode } from '../utilities/vscode';
+import { VSCodeButton, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
+import '../scss/mainPanel.scss';
 import { render } from '../utilities/render';
 
 const MainPanel = () => {
-    function handleHowdyClick() {
-        vscode.postMessage({
-            command: 'hello',
-            text: 'Hey there partner! 🤠',
-        });
-    }
-
     return (
-        <main>
-            <h1>Hello World!</h1>
-            <VSCodeButton onClick={handleHowdyClick}>asdfasd Howdy!</VSCodeButton>
+        <main className="main-panel">
+            <div className="main-panel__header">
+                <VSCodeDropdown className="main-panel__header_dropdown">
+                    <VSCodeOption>test1</VSCodeOption>
+                    <VSCodeOption>test2</VSCodeOption>
+                </VSCodeDropdown>
+                <VSCodeDropdown className="main-panel__header_dropdown">
+                    <VSCodeOption>test1</VSCodeOption>
+                    <VSCodeOption>test2</VSCodeOption>
+                </VSCodeDropdown>
+                <VSCodeDropdown className="main-panel__header_dropdown">
+                    <VSCodeOption>test1</VSCodeOption>
+                    <VSCodeOption>test2</VSCodeOption>
+                </VSCodeDropdown>
+                <VSCodeButton className="main-panel__header_button">Send</VSCodeButton>
+            </div>
+            <div className="main-panel__wrapper">
+                <div className="main-panel__wrapper-colunm"></div>
+                <div className="main-panel__wrapper-colunm"></div>
+                <div className="main-panel__wrapper-colunm"></div>
+            </div>
         </main>
     );
 };
