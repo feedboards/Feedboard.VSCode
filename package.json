@@ -13,7 +13,7 @@
                 {
                     "id": "feedboard-sidebar-view",
                     "title": "feedboard",
-                    "icon": "media/checklist.svg"
+                    "icon": "icons/graph-line.svg"
                 }
             ]
         },
@@ -21,9 +21,9 @@
             "feedboard-sidebar-view": [
                 {
                     "type": "webview",
-                    "id": "feedboard-main-view",
+                    "id": "feedboard-sidebar-view",
                     "name": "feedboard",
-                    "icon": "media/checklist.svg",
+                    "icon": "icons/graph-line.svg",
                     "contextualTitle": "feedboard"
                 }
             ]
