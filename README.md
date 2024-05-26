@@ -55,6 +55,17 @@ carete a folder `.vscode` in this folder create these files
 }
 ```
 
+## setup feedboard-core lib
+
+u need to create `.npmrc` file in root directory then u need to add this code in file `.npmrc`
+
+also if u want u can copy example from `example.npmrc`
+
+```bash
+@katyara1:registry=https://npm.pkg.github.com/
+//npm.pkg.github.com/:_authToken=UR_GITHUB_TOKEN
+```
+
 ## Run the app
 
 ```bash
