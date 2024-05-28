@@ -16,3 +16,7 @@ export type TEventHub = {
 export type TMesssage = {
     message: string;
 };
+
+export type TTopics = {
+    name: string;
+};
