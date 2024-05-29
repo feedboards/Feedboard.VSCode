@@ -9,9 +9,12 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@babel/plugin-transform-runtime": "^7.24.6",
+        "@babel/runtime": "^7.24.6",
+        "@uiw/react-json-view": "^2.0.0-alpha.24",
         "@vscode/webview-ui-toolkit": "^1.2.2",
-        "react": "^17.0.2",
-        "react-dom": "^17.0.2"
+        "react": "^18",
+        "react-dom": "^18"
     },
     "devDependencies": {
         "@types/react": "^17.0.33",

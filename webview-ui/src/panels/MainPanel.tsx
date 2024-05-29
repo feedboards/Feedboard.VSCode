@@ -10,6 +10,8 @@ import '../scss/mainPanel.scss';
 import { render } from '../utilities/render';
 import { useEffect, useState } from 'react';
 import { TEventHub, TMesssage, TResourceGroup, TSubscription, TTopics } from './types';
+import JsonView from '@uiw/react-json-view';
+import { vscodeTheme } from '@uiw/react-json-view/vscode';
 
 const MainPanel = () => {
     // Dropdown States
@@ -113,7 +115,9 @@ const MainPanel = () => {
                 <div className="main-panel__wrapper-colunm">
                     <VSCodeDataGrid>
                         <VSCodeDataGridRow rowType="header">
-                            <VSCodeDataGridCell gridColumn="1">Topics</VSCodeDataGridCell>
+                            <VSCodeDataGridCell gridColumn="1">
+                                <b>Topics</b>
+                            </VSCodeDataGridCell>
                         </VSCodeDataGridRow>
 
                         {topics?.map((x: TTopics) => (
@@ -124,10 +128,14 @@ const MainPanel = () => {
                     </VSCodeDataGrid>
                 </div>
                 <div className="main-panel__wrapper-colunm">
-                    <VSCodeDataGrid gridTemplateColumns="1fr 11fr">
+                    <VSCodeDataGrid gridTemplateColumns="10% 90%">
                         <VSCodeDataGridRow rowType="header">
-                            <VSCodeDataGridCell gridColumn="1">Index</VSCodeDataGridCell>
-                            <VSCodeDataGridCell gridColumn="2">Message</VSCodeDataGridCell>
+                            <VSCodeDataGridCell gridColumn="1">
+                                <b>Index</b>
+                            </VSCodeDataGridCell>
+                            <VSCodeDataGridCell gridColumn="2">
+                                <b>Message</b>
+                            </VSCodeDataGridCell>
                         </VSCodeDataGridRow>
 
                         {messages?.map((x: TMesssage, index: number) => (
@@ -138,7 +146,14 @@ const MainPanel = () => {
                         ))}
                     </VSCodeDataGrid>
                 </div>
-                <div className="main-panel__wrapper-colunm"></div>
+                <div className="main-panel__wrapper-colunm">
+                    <JsonView
+                        value={{
+                            string: 'str',
+                        }}
+                        style={vscodeTheme}
+                    />
+                </div>
             </div>
         </main>
     );

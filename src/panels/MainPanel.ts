@@ -101,15 +101,13 @@ export class MainPanel {
      */
     private _getWebviewContent(webview: Webview, extensionUri: Uri) {
         const nonce = getNonce();
+
         return `
         <!DOCTYPE html>
         <html lang="en" class="main-panel__html">
             <head>
                 <meta charset="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${
-                    webview.cspSource
-                }; script-src 'nonce-${nonce}';">
                 <link rel="stylesheet" type="text/css" href="${getUri(webview, extensionUri, [
                     'webview-ui',
                     'build',
@@ -125,6 +123,12 @@ export class MainPanel {
             'build',
             'assets',
             'mainPanel.js',
+        ])}"></script>
+                <script type="module" nonce="${nonce}" src="${getUri(webview, extensionUri, [
+            'webview-ui',
+            'build',
+            'assets',
+            'jsx-runtime.js',
         ])}"></script>
             </body>
         </html>

@@ -24,19 +24,25 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
     private _getHtmlForWebview(webview: vscode.Webview) {
         const nonce = getNonce();
 
+        // <link rel="stylesheet" type="text/css" href="${getUri(webview, this._extensionUri, ['webview-ui', 'build', 'assets', 'jsx-runtime.css'])}">
+
         return /*html*/ `
           <!DOCTYPE html>
           <html lang="en">
             <head>
               <meta charset="UTF-8" />
               <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
-              <link rel="stylesheet" type="text/css" href="${getUri(webview, this._extensionUri, ['webview-ui', 'build', 'assets', 'jsx-runtime.css'])}">
+              <meta http-equiv="Content-Security-Policy" style-src 'self' 'unsafe-inline';">
               <title>feedboard</title>
             </head>
             <body>
               <div id="root"></div>
-              <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, ['webview-ui', 'build', 'assets', 'mainSideBar.js'])}"></script>
+              <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
+            'webview-ui',
+            'build',
+            'assets',
+            'mainSideBar.js',
+        ])}"></script>
             </body>
           </html>
         `;
