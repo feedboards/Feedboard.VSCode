@@ -1,8 +1,8 @@
 # feedboard vscode plaguin with (React + Vite)
 
-## setup vscode setting in .vecode folder
+## setup vscode setting in the .vecode folder
 
-carete a folder `.vscode` in this folder create these files
+create a folder `.vscode` in this folder, and create these files
 
 `tasks.json`
 
@@ -57,9 +57,9 @@ carete a folder `.vscode` in this folder create these files
 
 ## setup feedboard-core lib
 
-u need to create `.npmrc` file in root directory then u need to add this code in file `.npmrc`
+u need to create a `.npmrc` file in the root directory then u need to add this code in the file `.npmrc`
 
-also if u want u can copy example from `example.npmrc`
+also, if u want u can copy the example from `example.npmrc`
 
 ```bash
 @katyara1:registry=https://npm.pkg.github.com/
