@@ -63,6 +63,6 @@
         "vscode-test": "^1.5.0"
     },
     "dependencies": {
-        "@katyara1/feedboard-core": "npm:@Katyara1/feedboard-core@^1.1.6"
+        "@feedboards/feedboard-core": "npm:@feedboards/feedboard-core@1.1.6"
     }
 }
