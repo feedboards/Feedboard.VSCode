@@ -28,11 +28,13 @@ export const authenticateGitHub = async () => {
                     res.end(successHTML);
 
                     vscode.window.showInformationMessage(`Access Token: ${response.data.access_token}`);
+                    vscode.window.showInformationMessage('Authentication successful!');
                 } catch (error: any) {
                     res.writeHead(500, { 'Content-Type': 'text/html' });
                     res.end(errorHTML);
 
                     vscode.window.showErrorMessage(`Error during GitHub authentication: ${error.message}`);
+                    vscode.window.showErrorMessage('Authentication failed!');
                 }
                 
                 server.close();
@@ -40,7 +42,7 @@ export const authenticateGitHub = async () => {
         }
     });
 
-    server.listen(3000, () => {
+    server.listen(179809, () => {
         console.log('Listening on port 3000...');
     });
 };  
