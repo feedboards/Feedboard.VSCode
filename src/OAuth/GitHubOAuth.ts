@@ -23,12 +23,15 @@ export const authenticateGitHub = async () => {
 
                 try {
                     const response = await axios.get(`http://localhost:5094/GitHubOauth/callback?code=${code}`);
-                    const accessToken = response.data.access_token;
-                    vscode.window.showInformationMessage(`Access Token: ${accessToken}`);
+
+                    res.writeHead(500, { 'Content-Type': 'text/html' });
                     res.end(successHTML);
+
+                    vscode.window.showInformationMessage(`Access Token: ${response.data.access_token}`);
                 } catch (error: any) {
                     res.writeHead(500, { 'Content-Type': 'text/html' });
                     res.end(errorHTML);
+
                     vscode.window.showErrorMessage(`Error during GitHub authentication: ${error.message}`);
                 }
                 
