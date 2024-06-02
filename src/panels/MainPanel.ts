@@ -1,6 +1,7 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from 'vscode';
 import { getUri } from '../utilities/getUri';
 import { getNonce } from '../utilities/getNonce';
+import { EventHubClient } from '../core';
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -16,6 +17,9 @@ export class MainPanel {
     public static currentPanel: MainPanel | undefined;
     private readonly _panel: WebviewPanel;
     private _disposables: Disposable[] = [];
+
+    private _eventHubClient: EventHubClient | undefined;
+    private _isMonitoring: boolean = false;
 
     /**
      * The MainPanel class private constructor (called only from the render method).
@@ -102,7 +106,7 @@ export class MainPanel {
     private _getWebviewContent(webview: Webview, extensionUri: Uri) {
         const nonce = getNonce();
 
-        return `
+        return /*html*/ `
         <!DOCTYPE html>
         <html lang="en" class="main-panel__html">
             <head>
@@ -124,7 +128,7 @@ export class MainPanel {
             'assets',
             'mainPanel.js',
         ])}"></script>
-                <script type="module" nonce="${nonce}" src="${getUri(webview, extensionUri, [
+                        <script type="module" nonce="${nonce}" src="${getUri(webview, extensionUri, [
             'webview-ui',
             'build',
             'assets',
@@ -143,19 +147,53 @@ export class MainPanel {
      * @param context A reference to the extension context
      */
     private _setWebviewMessageListener(webview: Webview) {
-        webview.onDidReceiveMessage(
-            (message: any) => {
-                const command = message.command;
-                const text = message.payload;
+        webview.onDidReceiveMessage((x) => this._commandsHandler(x, webview), undefined, this._disposables);
+    }
 
-                switch (command) {
-                    case 'hello':
-                        window.showInformationMessage(text);
-                        break;
+    private _commandsHandler(
+        message: {
+            command: string;
+            payload: any;
+        },
+        webview: Webview
+    ) {
+        switch (message.command) {
+            case 'startMonitoring':
+                window.showInformationMessage('startMonitoring');
+
+                this._eventHubClient = new EventHubClient(
+                    `Endpoint=sb://test-feedboard.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=k5CfVQ7ZaCwO7AHxQjZxF4IMUNYl1DYjL+AEhGZNmDU=`,
+                    'test-events'
+                ); // TODO get connectionString or credential
+
+                if (!this._isMonitoring) {
+                    this._eventHubClient.startMonitoring(async (events, _) => {
+                        webview.postMessage({
+                            command: 'setMessages',
+                            payload: events[0].body,
+                        });
+                    });
                 }
-            },
-            undefined,
-            this._disposables
-        );
+
+                break;
+
+            case 'stopMonitoring':
+                if (this._isMonitoring && this._eventHubClient !== undefined) {
+                    this._eventHubClient.stopMonitoring();
+                }
+                break;
+
+            case 'getSubscriptions':
+                break;
+
+            case 'getResourceGroups':
+                break;
+
+            case 'getNamespaces':
+                break;
+
+            case 'getEventHubs':
+                break;
+        }
     }
 }
