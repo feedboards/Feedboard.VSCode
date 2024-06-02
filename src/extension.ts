@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { SideBarProvider } from './providers';
 import { MainPanel } from './panels';
+import { authenticateGitHub } from './OAuth/GitHubOAuth';
 
 export function activate(context: vscode.ExtensionContext) {
     vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right).show();
@@ -12,6 +13,12 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand('feedboard.main-view', () => {
             MainPanel.render(context.extensionUri);
+        })
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand('feedboard.singInWithGitHub', async () => {
+            await authenticateGitHub();
         })
     );
 }
