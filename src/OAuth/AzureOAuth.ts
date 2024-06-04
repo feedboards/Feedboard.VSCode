@@ -5,8 +5,8 @@ import * as html from '../html';
 import * as constants from '../constants/APIRouts';
 import axios from 'axios';
 
-export const authenticateGitHub = async () => {
-    const response = await axios.get(`${constants.baseAPIURI}GitHubOauth/login`);
+export const authenticateAzure = async () => {
+    const response = await axios.get(`${constants.baseAPIURI}AzureOAuth/login-url`);
 
     vscode.commands.executeCommand(
         'vscode.open',
@@ -16,14 +16,17 @@ export const authenticateGitHub = async () => {
     const server = http.createServer(async (req, res) => {
         if (req.url) {
             const queryObject = url.parse(req.url, true).query;
-            if (queryObject.code) {                      
+            if (queryObject.code && queryObject.state) {
                 res.writeHead(200, { 'Content-Type': 'text/html' });
 
                 const code = queryObject.code as string;
                 vscode.window.showInformationMessage(`Received code: ${code}`);
 
+                const state = queryObject.state as string;
+                vscode.window.showInformationMessage(`Received state: ${state}`);
+
                 try {
-                    const response = await axios.get(`${constants.baseAPIURI}GitHubOauth/callback?code=${code}`);
+                    const response = await axios.get(`${constants.baseAPIURI}AzureOAuth/process-code?code=${code}&state=${state}`);
 
                     res.writeHead(500, { 'Content-Type': 'text/html' });
                     res.end(html.successHTML);
@@ -37,7 +40,7 @@ export const authenticateGitHub = async () => {
                     vscode.window.showErrorMessage(`Error during GitHub authentication: ${error.message}`);
                     vscode.window.showErrorMessage('Authentication failed!');
                 }
-                
+
                 server.close(() => {
                     console.log('server stoping');
                 });
@@ -45,7 +48,7 @@ export const authenticateGitHub = async () => {
         }
     });
 
-    server.listen(17989, () => {
+    server.listen(17988, () => {
         console.log('Listening on port 3000...');
     });
-};  
+};

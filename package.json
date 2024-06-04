@@ -33,7 +33,7 @@
         },
         "commands": [
             {
-                "command": "feedboard.sign-in",
+                "command": "feedboard.singInWithAzure",
                 "title": "feedboard: Sign In With Azure"
             },
             {
