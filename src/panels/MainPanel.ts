@@ -1,7 +1,7 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from 'vscode';
 import { getUri } from '../utilities/getUri';
 import { getNonce } from '../utilities/getNonce';
-import { EventHubClient } from '../core';
+import { AzureAuth, AzureClient, EventHubClient } from '../core';
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -19,6 +19,7 @@ export class MainPanel {
     private _disposables: Disposable[] = [];
 
     private _eventHubClient: EventHubClient | undefined;
+    private _azureClient: AzureClient | undefined;
     private _isMonitoring: boolean = false;
 
     /**
@@ -147,23 +148,25 @@ export class MainPanel {
      * @param context A reference to the extension context
      */
     private _setWebviewMessageListener(webview: Webview) {
-        webview.onDidReceiveMessage((x) => this._commandsHandler(x, webview), undefined, this._disposables);
+        webview.onDidReceiveMessage(async (x) => await this._commandsHandler(x, webview), undefined, this._disposables);
     }
 
-    private _commandsHandler(
+    private async _commandsHandler(
         message: {
             command: string;
             payload: any;
         },
         webview: Webview
     ) {
+        const payload = message.payload;
+
         switch (message.command) {
             case 'startMonitoring':
                 window.showInformationMessage('startMonitoring');
 
                 this._eventHubClient = new EventHubClient(
-                    `Endpoint=sb://test-feedboard.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=k5CfVQ7ZaCwO7AHxQjZxF4IMUNYl1DYjL+AEhGZNmDU=`,
-                    'test-events'
+                    `Endpoint=sb://event-hubs-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SFlC9l5c9Ei0AzjQrEvWmYOkW83FNQJmo+AEhALncUE=`,
+                    'event-hub'
                 ); // TODO get connectionString or credential
 
                 if (!this._isMonitoring) {
@@ -179,20 +182,51 @@ export class MainPanel {
 
             case 'stopMonitoring':
                 if (this._isMonitoring && this._eventHubClient !== undefined) {
-                    this._eventHubClient.stopMonitoring();
+                    await this._eventHubClient.stopMonitoring();
                 }
                 break;
 
-            case 'getSubscriptions':
+            case 'getData':
+                if (this._azureClient !== undefined) {
+                    webview.postMessage({
+                        command: 'setSubscriptions',
+                        payload: await this._azureClient.getSubscriptions(),
+                    });
+                }
                 break;
 
             case 'getResourceGroups':
+                if (this._azureClient !== undefined) {
+                    webview.postMessage({
+                        command: 'setResourceGroups',
+                        payload: await this._azureClient.getResourceGroups(payload.subscriptionId),
+                    });
+                }
                 break;
 
             case 'getNamespaces':
+                if (this._azureClient !== undefined) {
+                    webview.postMessage({
+                        command: 'setNamespaces',
+                        payload: await this._azureClient.getNamespacesByResourceGroup(
+                            payload.subscriptionId,
+                            payload.resourceGroupName
+                        ),
+                    });
+                }
                 break;
 
             case 'getEventHubs':
+                if (this._azureClient !== undefined) {
+                    webview.postMessage({
+                        command: 'setEventHubs',
+                        payload: await this._azureClient.getEventHubsByNamespace(
+                            payload.subscriptionId,
+                            payload.resourceGroupName,
+                            payload.namespaceName
+                        ),
+                    });
+                }
                 break;
         }
     }
