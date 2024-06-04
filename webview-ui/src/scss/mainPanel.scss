@@ -59,6 +59,7 @@
         &-colunm {
             flex: 1;
             border-top: 1px solid $border-color;
+            overflow-y: auto;
 
             &:nth-child(2) {
                 flex: 2;
