@@ -42,7 +42,7 @@ export const authenticateGitHub = async () => {
         }
     });
 
-    server.listen(179809, () => {
+    server.listen(17989, () => {
         console.log('Listening on port 3000...');
     });
 };  
