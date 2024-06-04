@@ -25,6 +25,7 @@ const MainPanel = () => {
     const [selectedNamespaces, setSelectedNamespaces] = useState<TTmp | undefined>(undefined);
 
     const [eventHubs, setEventHubs] = useState<TTmp[]>();
+    const [selectedEventHub, setSelectedEventHub] = useState<TTmp | undefined>(undefined);
 
     const [messages, setMessages] = useState<any[] | undefined>(undefined);
     const [selectedMessages, setSelectedMessages] = useState<any | undefined>(undefined);
@@ -36,14 +37,6 @@ const MainPanel = () => {
         setNamespaces([{ name: 'test-1' }, { name: 'test-2' }]);
         setEventHubs([{ name: 'test-123' }, { name: 'test-423' }, { name: 'test-23423' }, { name: 'test-1255553' }]);
     }, []);
-
-    useEffect(() => {
-        if (subscriptions !== undefined && resourceGroups !== undefined && eventHubs !== undefined) {
-            setSelectedSubscription(subscriptions.at(0));
-            setSelectedResourceGroup(resourceGroups.at(0));
-            setSelectedNamespaces(eventHubs.at(0));
-        }
-    }, [subscriptions, resourceGroups, eventHubs]);
 
     useEffect(() => {
         const handleMessage = (
@@ -62,10 +55,12 @@ const MainPanel = () => {
                         const tmp = [];
 
                         if (prev !== undefined) {
-                            tmp.push([...prev]);
+                            tmp.push(...prev);
                         }
 
-                        return [...tmp, payload];
+                        tmp.push(payload);
+
+                        return tmp;
                     });
                     break;
 
@@ -89,17 +84,25 @@ const MainPanel = () => {
 
         window.addEventListener('message', handleMessage);
 
+        vscode.postMessage({
+            command: 'getSubscriptions',
+        });
+
         return () => window.removeEventListener('message', handleMessage);
     }, []);
 
     function handleDropdownChange<TState>(event: any, setState: Function, state: TState[]) {
-        const element: TState | undefined = state[event.target.selectedIndex];
+        const index: number = event.target.selectedIndex - 1;
+        const element: undefined | null | TState = index >= 0 ? state[index] : null;
 
         if (element === undefined) {
             return;
         }
 
-        console.log(typeof state, element);
+        if (element === null) {
+            setState(undefined);
+            return;
+        }
 
         setState(element);
     }
@@ -122,60 +125,116 @@ const MainPanel = () => {
                     <label htmlFor="subscriptions">Subscriptions</label>
                     <VSCodeDropdown
                         id="subscriptions"
-                        value={selectedSubscription?.name}
                         onChange={(x) =>
-                            subscriptions && handleDropdownChange<TTmp>(x, setSelectedSubscription, subscriptions)
+                            subscriptions &&
+                            handleDropdownChange<TTmp>(
+                                x,
+                                (x: undefined | TTmp) => {
+                                    if (x === undefined) {
+                                        setSelectedSubscription(undefined);
+                                        setSelectedResourceGroup(undefined);
+                                        setSelectedNamespaces(undefined);
+                                        setSelectedEventHub(undefined);
+                                        setSelectedMessages(undefined);
+
+                                        return;
+                                    }
+
+                                    setSelectedSubscription(x);
+                                },
+                                subscriptions
+                            )
                         }>
+                        <VSCodeOption value="empty">Select a subscription</VSCodeOption>
                         {subscriptions?.map((x: TTmp, index: number) => (
                             <VSCodeOption key={index}>{x.name}</VSCodeOption>
                         ))}
                     </VSCodeDropdown>
                 </div>
-                <div className="main-panel__header_container">
-                    <label htmlFor="resourceGroups">Resource Groups</label>
-                    <VSCodeDropdown
-                        value={selectedResourceGroup?.name}
-                        id="resourceGroups"
-                        onChange={(x) =>
-                            resourceGroups && handleDropdownChange<TTmp>(x, setSelectedResourceGroup, resourceGroups)
-                        }>
-                        {resourceGroups?.map((x: TTmp, index: number) => (
-                            <VSCodeOption key={index}>{x.name}</VSCodeOption>
-                        ))}
-                    </VSCodeDropdown>
-                </div>
-                <div className="main-panel__header_container">
-                    <label htmlFor="namespaces">Namespaces</label>
-                    <VSCodeDropdown
-                        id="namespaces"
-                        value={selectedNamespaces?.name}
-                        onChange={(x) =>
-                            namespaces && handleDropdownChange<TTmp>(x, setSelectedNamespaces, namespaces)
-                        }>
-                        {eventHubs?.map((x: TTmp, index: number) => (
-                            <VSCodeOption key={index}>{x.name}</VSCodeOption>
-                        ))}
-                    </VSCodeDropdown>
-                </div>
+                {selectedSubscription !== undefined && (
+                    <div className="main-panel__header_container">
+                        <label htmlFor="resourceGroups">Resource Groups</label>
+                        <VSCodeDropdown
+                            id="resourceGroups"
+                            onChange={(x) =>
+                                resourceGroups &&
+                                handleDropdownChange<TTmp>(
+                                    x,
+                                    (x: undefined | TTmp) => {
+                                        if (x === undefined) {
+                                            setSelectedResourceGroup(undefined);
+                                            setSelectedNamespaces(undefined);
+                                            setSelectedEventHub(undefined);
+                                            setSelectedMessages(undefined);
+
+                                            return;
+                                        }
+
+                                        setSelectedResourceGroup(x);
+                                    },
+                                    resourceGroups
+                                )
+                            }>
+                            <VSCodeOption value="empty">Select a resource group</VSCodeOption>
+                            {resourceGroups?.map((x: TTmp, index: number) => (
+                                <VSCodeOption key={index}>{x.name}</VSCodeOption>
+                            ))}
+                        </VSCodeDropdown>
+                    </div>
+                )}
+                {selectedSubscription !== undefined && selectedResourceGroup !== undefined && (
+                    <div className="main-panel__header_container">
+                        <label htmlFor="namespaces">Namespaces</label>
+                        <VSCodeDropdown
+                            id="namespaces"
+                            onChange={(x) =>
+                                namespaces &&
+                                handleDropdownChange<TTmp>(
+                                    x,
+                                    (x: undefined | TTmp) => {
+                                        if (x === undefined) {
+                                            setSelectedNamespaces(undefined);
+                                            setSelectedEventHub(undefined);
+                                            setSelectedMessages(undefined);
+
+                                            return;
+                                        }
+
+                                        setSelectedNamespaces(x);
+                                    },
+                                    namespaces
+                                )
+                            }>
+                            <VSCodeOption value="empty">Select a namespace</VSCodeOption>
+                            {eventHubs?.map((x: TTmp, index: number) => (
+                                <VSCodeOption key={index}>{x.name}</VSCodeOption>
+                            ))}
+                        </VSCodeDropdown>
+                    </div>
+                )}
                 <VSCodeButton className="main-panel__header_button" onClick={onClickSendMessage}>
                     Send Message
                 </VSCodeButton>
             </div>
             <div className="main-panel__wrapper">
                 <div className="main-panel__wrapper-colunm">
-                    <VSCodeDataGrid>
-                        <VSCodeDataGridRow rowType="header">
-                            <VSCodeDataGridCell gridColumn="1">
-                                <b>Event Hubs</b>
-                            </VSCodeDataGridCell>
-                        </VSCodeDataGridRow>
+                    {selectedSubscription !== undefined &&
+                        selectedResourceGroup !== undefined &&
+                        selectedNamespaces !== undefined && (
+                            <VSCodeDataGrid>
+                                <VSCodeDataGridRow rowType="header">
+                                    <VSCodeDataGridCell gridColumn="1">
+                                        <b>Event Hubs</b>
+                                    </VSCodeDataGridCell>
+                                </VSCodeDataGridRow>
 
-                        {eventHubs?.map((x: TTmp, index: number) => (
-                            <VSCodeDataGridRow key={index}>
-                                <VSCodeDataGridCell gridColumn="1">{x.name}</VSCodeDataGridCell>
-                            </VSCodeDataGridRow>
-                        ))}
-                    </VSCodeDataGrid>
+                                {eventHubs?.map((x: TTmp, index: number) => (
+                                    <VSCodeDataGridRow key={index}>
+                                        <VSCodeDataGridCell gridColumn="1">{x.name}</VSCodeDataGridCell>
+                                    </VSCodeDataGridRow>
+                                ))}
+                            </VSCodeDataGrid>
+                        )}
                 </div>
                 <div className="main-panel__wrapper-colunm">
                     <VSCodeDataGrid gridTemplateColumns="10% 90%">
