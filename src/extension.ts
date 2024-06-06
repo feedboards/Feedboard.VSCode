@@ -13,7 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand('feedboard.main-view', () => {
-            MainPanel.render(context.extensionUri);
+            MainPanel.render(context.extensionUri, null);
         })
     );
 

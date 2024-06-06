@@ -1,4 +1,4 @@
-import { EHNamespace, EventHubManagementClient, Eventhub } from '@azure/arm-eventhub';
+import { ConsumerGroup, EHNamespace, EventHubManagementClient, Eventhub } from '@azure/arm-eventhub';
 import { ResourceGroup, ResourceManagementClient } from '@azure/arm-resources';
 import { Subscription, SubscriptionClient } from '@azure/arm-subscriptions';
 import { TokenCredential } from '@azure/identity';
@@ -56,6 +56,26 @@ export class AzureClient {
 
         for await (const eventHub of client.eventHubs.listByNamespace(resourceGroupName, namespaceName)) {
             result.push(eventHub);
+        }
+
+        return result;
+    }
+
+    public async getConsumerGroups(
+        subscriptionId: string,
+        resourceGroupName: string,
+        namespaceName: string,
+        eventHubName: string
+    ): Promise<ConsumerGroup[]> {
+        const client = new EventHubManagementClient(this._credential, subscriptionId);
+        const result: ConsumerGroup[] = [];
+
+        for await (const consumerGroup of client.consumerGroups.listByEventHub(
+            resourceGroupName,
+            namespaceName,
+            eventHubName
+        )) {
+            result.push(consumerGroup);
         }
 
         return result;
