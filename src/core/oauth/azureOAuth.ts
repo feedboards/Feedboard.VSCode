@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import * as http from 'http';
 import * as url from 'url';
-import * as html from '../html';
-import * as constants from '../constants/APIRouts';
+import * as html from '../../html';
+import * as constants from '../../constants/APIRouts';
 import axios from 'axios';
-import { StoreHelper } from '../core/storeHelper';
-import { AzureTokenResponse } from '../core/types';
+import { StoreHelper } from '../storeHelper';
+import { AzureTokenResponse } from '../types';
 
 export const authenticateAzure = async (context: StoreHelper): Promise<AzureTokenResponse> => {
     //TODO need to add client
