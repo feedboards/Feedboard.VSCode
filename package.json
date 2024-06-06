@@ -47,7 +47,7 @@
         ]
     },
     "scripts": {
-        "install:all": "npm install && yarn && cd webview-ui && npm install && yarn",
+        "install:all": "yarn && cd webview-ui && yarn",
         "start:ui": "cd webview-ui && yarn start",
         "build:ui": "cd webview-ui && yarn build",
         "vscode:prepublish": "yarn compile",
