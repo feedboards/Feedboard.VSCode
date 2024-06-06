@@ -4,17 +4,14 @@ import * as url from 'url';
 import * as html from '../html';
 import * as constants from '../constants/APIRouts';
 import axios from 'axios';
-import { StoreHelper } from '../core/secrets/storeHelper';
+import { StoreHelper } from '../core/storeHelper';
 import { AzureTokenResponse } from '../core/types';
 
 export const authenticateAzure = async (context: StoreHelper): Promise<AzureTokenResponse> => {
     //TODO need to add client
     const response = await axios.get(`${constants.baseAPIURI}AzureOAuth/login-url`);
 
-    vscode.commands.executeCommand(
-        'vscode.open',
-        vscode.Uri.parse(response.data.url)
-    );
+    vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(response.data.url));
 
     const server = http.createServer(async (req, res) => {
         if (req.url) {
@@ -28,7 +25,9 @@ export const authenticateAzure = async (context: StoreHelper): Promise<AzureToke
 
                 try {
                     //TODO also need to add client
-                    const response = await axios.get(`${constants.baseAPIURI}AzureOAuth/process-code?code=${code}&state=${state}`);
+                    const response = await axios.get(
+                        `${constants.baseAPIURI}AzureOAuth/process-code?code=${code}&state=${state}`
+                    );
 
                     await context.storeValueAsync('azureAccessToken', response.data.accessToken);
                     await context.storeValueAsync('azureIdToken', response.data.idToken);
@@ -41,7 +40,9 @@ export const authenticateAzure = async (context: StoreHelper): Promise<AzureToke
                 } catch (error: any) {
                     res.end(html.errorHTML);
 
-                    vscode.window.showErrorMessage(`Authentication failed!. Error during Azure authentication: ${error.message}`);
+                    vscode.window.showErrorMessage(
+                        `Authentication failed!. Error during Azure authentication: ${error.message}`
+                    );
                 }
 
                 server.close();

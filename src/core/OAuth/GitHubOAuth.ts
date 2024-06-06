@@ -4,22 +4,19 @@ import * as url from 'url';
 import * as html from '../html';
 import * as constants from '../constants/APIRouts';
 import axios from 'axios';
-import { StoreHelper } from '../core/secrets/storeHelper';
+import { StoreHelper } from '../core/storeHelper';
 import { GithubTokenResponse } from '../core/types';
 
 export const authenticateGitHub = async (context: StoreHelper): Promise<GithubTokenResponse> => {
     //TODO need to add client
     const response = await axios.get(`${constants.baseAPIURI}GitHubOauth/login`);
 
-    vscode.commands.executeCommand(
-        'vscode.open',
-        vscode.Uri.parse(response.data.url)
-    );
+    vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(response.data.url));
 
     const server = http.createServer(async (req, res) => {
         if (req.url) {
             const queryObject = url.parse(req.url, true).query;
-            if (queryObject.code) {                      
+            if (queryObject.code) {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 res.writeHead(200, { 'Content-Type': 'text/html' });
 
@@ -38,9 +35,11 @@ export const authenticateGitHub = async (context: StoreHelper): Promise<GithubTo
                 } catch (error: any) {
                     res.end(html.errorHTML);
 
-                    vscode.window.showErrorMessage(`Authentication failed!. Error during GitHub authentication: ${error.message}`);
+                    vscode.window.showErrorMessage(
+                        `Authentication failed!. Error during GitHub authentication: ${error.message}`
+                    );
                 }
-                
+
                 server.close(() => {
                     console.log('server stoping');
                 });
@@ -56,4 +55,4 @@ export const authenticateGitHub = async (context: StoreHelper): Promise<GithubTo
         accessToken: await context.getValueAsunc('githubAccessToken'),
         userId: await context.getValueAsunc('githubUserId'),
     } as GithubTokenResponse;
-};  
+};

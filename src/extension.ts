@@ -1,10 +1,15 @@
 import * as vscode from 'vscode';
 import { SideBarProvider } from './providers';
 import { MainPanel } from './panels';
-import { authenticateGitHub } from './OAuth/GitHubOAuth';
-import { authenticateAzure } from './OAuth/AzureOAuth';
-import { StoreHelper } from './core/secrets/storeHelper';
-import { AzureTokenResponse, GithubTokenResponse } from './core/types';
+import { TokenCredential } from '@azure/identity';
+import {
+    AzureToken,
+    StoreHelper,
+    AzureTokenResponse,
+    GithubTokenResponse,
+    authenticateGitHub,
+    authenticateAzure,
+} from './core';
 
 // Azure
 export let azureAccessToken: string = '';
@@ -19,6 +24,7 @@ export let githubUserId: string = '';
 export async function activate(context: vscode.ExtensionContext) {
     // use this helper if you want to get any secrets
     const storeHelper = new StoreHelper(context);
+    const azureTokenCredential: TokenCredential = new AzureToken(azureAccessToken, azureAccessTokenExpiredAt);
 
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('feedboard-sidebar-view', new SideBarProvider(context.extensionUri))
@@ -26,10 +32,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand('feedboard.main-view', () => {
-            MainPanel.render(context.extensionUri, null);
+            MainPanel.render(context.extensionUri, azureTokenCredential);
         })
     );
-    
+
     // commands
     context.subscriptions.push(
         vscode.commands.registerCommand('feedboard.singInWithGitHub', async () => {
