@@ -22,13 +22,16 @@ const MainPanel = () => {
     const [selectedResourceGroup, setSelectedResourceGroup] = useState<TTmp | undefined>(undefined);
 
     const [namespaces, setNamespaces] = useState<TTmp[]>();
-    const [selectedNamespaces, setSelectedNamespaces] = useState<TTmp | undefined>(undefined);
+    const [selectedNamespace, setSelectedNamespace] = useState<TTmp | undefined>(undefined);
 
     const [eventHubs, setEventHubs] = useState<TTmp[]>();
     const [selectedEventHub, setSelectedEventHub] = useState<TTmp | undefined>(undefined);
 
+    const [consumerGroups, setConsumerGroups] = useState<TTmp[]>();
+    const [selectedConsumerGroup, setSelectedConsumerGroup] = useState<TTmp | undefined>(undefined);
+
     const [messages, setMessages] = useState<any[] | undefined>(undefined);
-    const [selectedMessages, setSelectedMessages] = useState<any | undefined>(undefined);
+    const [selectedMessage, setSelectedMessages] = useState<any | undefined>(undefined);
 
     // TODO Clean up this useEffect
     useEffect(() => {
@@ -79,6 +82,10 @@ const MainPanel = () => {
                 case 'setEventHubs':
                     setEventHubs(payload);
                     break;
+
+                case 'setConsumerGroups':
+                    setConsumerGroups(payload);
+                    break;
             }
         };
 
@@ -114,7 +121,11 @@ const MainPanel = () => {
     const onClickSendMessage = () => {
         vscode.postMessage({
             command: 'startMonitoring',
-            payload: '',
+            payload: {
+                namespace: '',
+                eventHubName: '',
+                consumerGroup: '',
+            },
         });
     };
 
@@ -133,7 +144,7 @@ const MainPanel = () => {
                                     if (x === undefined) {
                                         setSelectedSubscription(undefined);
                                         setSelectedResourceGroup(undefined);
-                                        setSelectedNamespaces(undefined);
+                                        setSelectedNamespace(undefined);
                                         setSelectedEventHub(undefined);
                                         setSelectedMessages(undefined);
 
@@ -163,7 +174,7 @@ const MainPanel = () => {
                                     (x: undefined | TTmp) => {
                                         if (x === undefined) {
                                             setSelectedResourceGroup(undefined);
-                                            setSelectedNamespaces(undefined);
+                                            setSelectedNamespace(undefined);
                                             setSelectedEventHub(undefined);
                                             setSelectedMessages(undefined);
 
@@ -193,14 +204,14 @@ const MainPanel = () => {
                                     x,
                                     (x: undefined | TTmp) => {
                                         if (x === undefined) {
-                                            setSelectedNamespaces(undefined);
+                                            setSelectedNamespace(undefined);
                                             setSelectedEventHub(undefined);
                                             setSelectedMessages(undefined);
 
                                             return;
                                         }
 
-                                        setSelectedNamespaces(x);
+                                        setSelectedNamespace(x);
                                     },
                                     namespaces
                                 )
@@ -212,6 +223,41 @@ const MainPanel = () => {
                         </VSCodeDropdown>
                     </div>
                 )}
+
+                {selectedSubscription !== undefined &&
+                    selectedResourceGroup !== undefined &&
+                    selectedNamespace !== undefined &&
+                    selectedEventHub !== undefined && (
+                        <div className="main-panel__header_container">
+                            <label htmlFor="consumerGroup">Consumer Groups</label>
+                            <VSCodeDropdown
+                                id="consumerGroup"
+                                onChange={(x) =>
+                                    namespaces &&
+                                    handleDropdownChange<TTmp>(
+                                        x,
+                                        (x: undefined | TTmp) => {
+                                            if (x === undefined) {
+                                                setSelectedConsumerGroup(undefined);
+                                                setSelectedNamespace(undefined);
+                                                setSelectedEventHub(undefined);
+                                                setSelectedMessages(undefined);
+
+                                                return;
+                                            }
+
+                                            setSelectedConsumerGroup(x);
+                                        },
+                                        namespaces
+                                    )
+                                }>
+                                <VSCodeOption value="empty">Select a consumer group</VSCodeOption>
+                                {eventHubs?.map((x: TTmp, index: number) => (
+                                    <VSCodeOption key={index}>{x.name}</VSCodeOption>
+                                ))}
+                            </VSCodeDropdown>
+                        </div>
+                    )}
                 <VSCodeButton className="main-panel__header_button" onClick={onClickSendMessage}>
                     Send Message
                 </VSCodeButton>
@@ -220,7 +266,7 @@ const MainPanel = () => {
                 <div className="main-panel__wrapper-colunm">
                     {selectedSubscription !== undefined &&
                         selectedResourceGroup !== undefined &&
-                        selectedNamespaces !== undefined && (
+                        selectedNamespace !== undefined && (
                             <VSCodeDataGrid>
                                 <VSCodeDataGridRow rowType="header">
                                     <VSCodeDataGridCell gridColumn="1">
@@ -258,8 +304,8 @@ const MainPanel = () => {
                 <div className="main-panel__wrapper-colunm">
                     <JsonView
                         value={
-                            selectedMessages !== undefined
-                                ? selectedMessages
+                            selectedMessage !== undefined
+                                ? selectedMessage
                                 : {
                                       str: 'str',
                                   }

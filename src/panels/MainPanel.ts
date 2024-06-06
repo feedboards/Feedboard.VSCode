@@ -1,7 +1,8 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn } from 'vscode';
 import { getUri } from '../utilities/getUri';
 import { getNonce } from '../utilities/getNonce';
-import { AzureAuth, AzureClient, EventHubClient } from '../core';
+import { AzureClient, EventHubClient } from '../core';
+import { TokenCredential } from '@azure/identity';
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -21,6 +22,7 @@ export class MainPanel {
     private _eventHubClient: EventHubClient | undefined;
     private _azureClient: AzureClient | undefined;
     private _isMonitoring: boolean = false;
+    private _azureToken: TokenCredential | null;
 
     /**
      * The MainPanel class private constructor (called only from the render method).
@@ -28,8 +30,13 @@ export class MainPanel {
      * @param panel A reference to the webview panel
      * @param extensionUri The URI of the directory containing the extension
      */
-    private constructor(panel: WebviewPanel, extensionUri: Uri) {
+    private constructor(panel: WebviewPanel, extensionUri: Uri, azureToken: TokenCredential | null) {
         this._panel = panel;
+        this._azureToken = azureToken;
+
+        if (azureToken !== null) {
+            this._azureClient = new AzureClient(azureToken);
+        }
 
         // Set an event listener to listen for when the panel is disposed (i.e. when the user closes
         // the panel or when the panel is closed programmatically)
@@ -48,7 +55,7 @@ export class MainPanel {
      *
      * @param extensionUri The URI of the directory containing the extension.
      */
-    public static render(extensionUri: Uri) {
+    public static render(extensionUri: Uri, azureToken: TokenCredential | null) {
         if (MainPanel.currentPanel) {
             // If the webview panel already exists reveal it
             MainPanel.currentPanel._panel.reveal(ViewColumn.One);
@@ -73,7 +80,7 @@ export class MainPanel {
                 }
             );
 
-            MainPanel.currentPanel = new MainPanel(panel, extensionUri);
+            MainPanel.currentPanel = new MainPanel(panel, extensionUri, azureToken);
         }
     }
 
@@ -164,6 +171,24 @@ export class MainPanel {
             case 'startMonitoring':
                 window.showInformationMessage('startMonitoring');
 
+                // if (this._azureToken !== null) {
+                //     this._eventHubClient = new EventHubClient(
+                //         payload.namespace,
+                //         this._azureToken,
+                //         payload.eventHubName,
+                //         payload.consumerGroup !== undefined ? payload.consumerGroup : '$Default'
+                //     );
+
+                //     if (!this._isMonitoring) {
+                //         this._eventHubClient.startMonitoring(async (events, _) => {
+                //             webview.postMessage({
+                //                 command: 'setMessages',
+                //                 payload: events[0].body,
+                //             });
+                //         });
+                //     }
+                // }
+
                 this._eventHubClient = new EventHubClient(
                     `Endpoint=sb://event-hubs-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SFlC9l5c9Ei0AzjQrEvWmYOkW83FNQJmo+AEhALncUE=`,
                     'event-hub'
@@ -224,6 +249,20 @@ export class MainPanel {
                             payload.subscriptionId,
                             payload.resourceGroupName,
                             payload.namespaceName
+                        ),
+                    });
+                }
+                break;
+
+            case 'getConsumerGroups':
+                if (this._azureClient !== undefined) {
+                    webview.postMessage({
+                        command: 'setEventHubs',
+                        payload: await this._azureClient.getConsumerGroups(
+                            payload.subscriptionId,
+                            payload.resourceGroupName,
+                            payload.namespaceName,
+                            payload.eventHubName
                         ),
                     });
                 }
