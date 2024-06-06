@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import * as http from 'http';
 import * as url from 'url';
-import * as html from '../html';
-import * as constants from '../constants/APIRouts';
+import * as html from '../../html';
+import * as constants from '../../constants/APIRouts';
 import axios from 'axios';
-import { StoreHelper } from '../core/storeHelper';
-import { GithubTokenResponse } from '../core/types';
+import { StoreHelper } from '../../core/storeHelper';
+import { GithubTokenResponse } from '../../core/types';
 
 export const authenticateGitHub = async (context: StoreHelper): Promise<GithubTokenResponse> => {
     //TODO need to add client
