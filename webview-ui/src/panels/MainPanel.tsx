@@ -114,10 +114,6 @@ const MainPanel = () => {
         setState(element);
     }
 
-    const handleMessageActive = (message: any) => {
-        setSelectedMessages(message);
-    };
-
     const onClickSendMessage = () => {
         vscode.postMessage({
             command: 'startMonitoring',
@@ -141,24 +137,20 @@ const MainPanel = () => {
                             handleDropdownChange<TTmp>(
                                 x,
                                 (x: undefined | TTmp) => {
-                                    if (x === undefined) {
-                                        setSelectedSubscription(undefined);
-                                        setSelectedResourceGroup(undefined);
-                                        setSelectedNamespace(undefined);
-                                        setSelectedEventHub(undefined);
-                                        setSelectedMessages(undefined);
-
-                                        return;
-                                    }
-
                                     setSelectedSubscription(x);
+                                    setSelectedResourceGroup(undefined);
+                                    setSelectedNamespace(undefined);
+                                    setSelectedEventHub(undefined);
+                                    setSelectedMessages(undefined);
                                 },
                                 subscriptions
                             )
                         }>
-                        <VSCodeOption value="empty">Select a subscription</VSCodeOption>
+                        <VSCodeOption value="">Select a subscription</VSCodeOption>
                         {subscriptions?.map((x: TTmp, index: number) => (
-                            <VSCodeOption key={index}>{x.name}</VSCodeOption>
+                            <VSCodeOption key={index} value={x.name}>
+                                {x.name}
+                            </VSCodeOption>
                         ))}
                     </VSCodeDropdown>
                 </div>
@@ -167,28 +159,25 @@ const MainPanel = () => {
                         <label htmlFor="resourceGroups">Resource Groups</label>
                         <VSCodeDropdown
                             id="resourceGroups"
+                            value={selectedResourceGroup?.name}
                             onChange={(x) =>
                                 resourceGroups &&
                                 handleDropdownChange<TTmp>(
                                     x,
                                     (x: undefined | TTmp) => {
-                                        if (x === undefined) {
-                                            setSelectedResourceGroup(undefined);
-                                            setSelectedNamespace(undefined);
-                                            setSelectedEventHub(undefined);
-                                            setSelectedMessages(undefined);
-
-                                            return;
-                                        }
-
                                         setSelectedResourceGroup(x);
+                                        setSelectedNamespace(undefined);
+                                        setSelectedEventHub(undefined);
+                                        setSelectedMessages(undefined);
                                     },
                                     resourceGroups
                                 )
                             }>
-                            <VSCodeOption value="empty">Select a resource group</VSCodeOption>
+                            <VSCodeOption value="">Select a resource group</VSCodeOption>
                             {resourceGroups?.map((x: TTmp, index: number) => (
-                                <VSCodeOption key={index}>{x.name}</VSCodeOption>
+                                <VSCodeOption key={index} value={x.name}>
+                                    {x.name}
+                                </VSCodeOption>
                             ))}
                         </VSCodeDropdown>
                     </div>
@@ -203,22 +192,18 @@ const MainPanel = () => {
                                 handleDropdownChange<TTmp>(
                                     x,
                                     (x: undefined | TTmp) => {
-                                        if (x === undefined) {
-                                            setSelectedNamespace(undefined);
-                                            setSelectedEventHub(undefined);
-                                            setSelectedMessages(undefined);
-
-                                            return;
-                                        }
-
                                         setSelectedNamespace(x);
+                                        setSelectedEventHub(undefined);
+                                        setSelectedMessages(undefined);
                                     },
                                     namespaces
                                 )
                             }>
-                            <VSCodeOption value="empty">Select a namespace</VSCodeOption>
+                            <VSCodeOption value="">Select a namespace</VSCodeOption>
                             {eventHubs?.map((x: TTmp, index: number) => (
-                                <VSCodeOption key={index}>{x.name}</VSCodeOption>
+                                <VSCodeOption key={index} value={x.name}>
+                                    {x.name}
+                                </VSCodeOption>
                             ))}
                         </VSCodeDropdown>
                     </div>
@@ -236,24 +221,15 @@ const MainPanel = () => {
                                     namespaces &&
                                     handleDropdownChange<TTmp>(
                                         x,
-                                        (x: undefined | TTmp) => {
-                                            if (x === undefined) {
-                                                setSelectedConsumerGroup(undefined);
-                                                setSelectedNamespace(undefined);
-                                                setSelectedEventHub(undefined);
-                                                setSelectedMessages(undefined);
-
-                                                return;
-                                            }
-
-                                            setSelectedConsumerGroup(x);
-                                        },
+                                        (x: undefined | TTmp) => setSelectedConsumerGroup(x),
                                         namespaces
                                     )
                                 }>
-                                <VSCodeOption value="empty">Select a consumer group</VSCodeOption>
+                                <VSCodeOption value="">Select a consumer group</VSCodeOption>
                                 {eventHubs?.map((x: TTmp, index: number) => (
-                                    <VSCodeOption key={index}>{x.name}</VSCodeOption>
+                                    <VSCodeOption key={index} value={x.name}>
+                                        {x.name}
+                                    </VSCodeOption>
                                 ))}
                             </VSCodeDropdown>
                         </div>
@@ -275,7 +251,7 @@ const MainPanel = () => {
                                 </VSCodeDataGridRow>
 
                                 {eventHubs?.map((x: TTmp, index: number) => (
-                                    <VSCodeDataGridRow key={index}>
+                                    <VSCodeDataGridRow key={index} onClick={() => setSelectedEventHub(x)}>
                                         <VSCodeDataGridCell gridColumn="1">{x.name}</VSCodeDataGridCell>
                                     </VSCodeDataGridRow>
                                 ))}
@@ -294,7 +270,7 @@ const MainPanel = () => {
                         </VSCodeDataGridRow>
 
                         {messages?.map((x: any, index: number) => (
-                            <VSCodeDataGridRow key={index} onClick={() => handleMessageActive(x)}>
+                            <VSCodeDataGridRow key={index} onClick={() => setSelectedMessages(x)}>
                                 <VSCodeDataGridCell gridColumn="1">{index}</VSCodeDataGridCell>
                                 <VSCodeDataGridCell gridColumn="2">{JSON.stringify(x)}</VSCodeDataGridCell>
                             </VSCodeDataGridRow>
