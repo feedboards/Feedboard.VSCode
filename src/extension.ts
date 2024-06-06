@@ -3,9 +3,22 @@ import { SideBarProvider } from './providers';
 import { MainPanel } from './panels';
 import { authenticateGitHub } from './OAuth/GitHubOAuth';
 import { authenticateAzure } from './OAuth/AzureOAuth';
+import { StoreHelper } from './core/secrets/storeHelper';
+import { AzureTokenResponse, GithubTokenResponse } from './core/types';
 
-export function activate(context: vscode.ExtensionContext) {
-    vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right).show();
+// Azure
+export let azureAccessToken: string = '';
+export let azureIdToken: string = '';
+export let azureRefreshToken: string = '';
+export let azureAccessTokenExpiredAt: string = '';
+
+// GitHub
+export let githubAccessToken: string = '';
+export let githubUserId: string = '';
+
+export async function activate(context: vscode.ExtensionContext) {
+    // use this helper if you want to get any secrets
+    const storeHelper = new StoreHelper(context);
 
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('feedboard-sidebar-view', new SideBarProvider(context.extensionUri))
@@ -16,16 +29,31 @@ export function activate(context: vscode.ExtensionContext) {
             MainPanel.render(context.extensionUri, null);
         })
     );
-
+    
+    // commands
     context.subscriptions.push(
         vscode.commands.registerCommand('feedboard.singInWithGitHub', async () => {
-            await authenticateGitHub();
+            const result: GithubTokenResponse = await authenticateGitHub(storeHelper);
+
+            // test
+            console.log('github result', result);
+
+            githubAccessToken = result.accessToken;
+            githubUserId = result.userId;
         })
     );
 
     context.subscriptions.push(
         vscode.commands.registerCommand('feedboard.singInWithAzure', async () => {
-            await authenticateAzure();
+            const result: AzureTokenResponse = await authenticateAzure(storeHelper);
+
+            // test
+            console.log('azure result', result);
+
+            azureAccessToken = result.accessToken;
+            azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
+            azureIdToken = result.idToken;
+            azureRefreshToken = result.refreshToken;
         })
     );
 }

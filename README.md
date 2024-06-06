@@ -81,6 +81,12 @@ Once the app is open inside VS Code you can run the extension by doing the follo
 1. Press `F5` to open a new Extension Development Host window
 
 b626f4e2-744f-418d-a56f-2ae3f3f32314
-| Description | Expires | Value | Secret ID|
-| ------------- | ----- | ------ | ------- |
-| DefaultSecret | 5/26/2026 |2f58Q~l7_A3fONLe1e1nehRuYqr4YoXFHlDIxc6f | b626f4e2-744f-418d-a56f-2ae3f3f32314
+
+| Description   | Expires   | Value                                    | Secret ID                            |
+| ------------- | --------- | ---------------------------------------- | ------------------------------------ |
+| DefaultSecret | 5/26/2026 | 2f58Q~l7_A3fONLe1e1nehRuYqr4YoXFHlDIxc6f | b626f4e2-744f-418d-a56f-2ae3f3f32314 |
+
+## Info
+
+port 17988 it's Azure server port
+port 17989 it's GitHub server port
