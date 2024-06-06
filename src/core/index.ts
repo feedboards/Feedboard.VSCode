@@ -1,4 +1,4 @@
-export * from './AzureToken';
+export * from './OAuth';
 export * from './eventHubClient';
 export * from './azureClient';
 export * from './storeHelper';
