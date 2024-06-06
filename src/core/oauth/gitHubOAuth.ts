@@ -4,8 +4,8 @@ import * as url from 'url';
 import * as html from '../../html';
 import * as constants from '../../constants/APIRouts';
 import axios from 'axios';
-import { StoreHelper } from '../../core/storeHelper';
-import { GithubTokenResponse } from '../../core/types';
+import { StoreHelper } from '../storeHelper';
+import { GithubTokenResponse } from '../types';
 
 export const authenticateGitHub = async (context: StoreHelper): Promise<GithubTokenResponse> => {
     //TODO need to add client
