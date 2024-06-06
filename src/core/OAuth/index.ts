@@ -1,3 +1,3 @@
-export * from './AzureOAuth';
-export * from './GitHubOAuth';
-export * from './AzureToken';
+export * from './azureOAuth';
+export * from './gitHubOAuth';
+export * from './azureToken';
