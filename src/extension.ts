@@ -55,16 +55,16 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('feedboard.singInWithAzure', async () => {
             const result: AzureTokenResponse = await authenticateAzure(storeHelper);
 
-            if (result.accessToken !== undefined &&
-                result.accessTokenExpiredAt !== undefined &&
-                result.idToken !== undefined &&
-                result.refreshToken !== undefined
-            ) {
+            // if (result.accessToken !== undefined &&
+            //     result.accessTokenExpiredAt !== undefined &&
+            //     result.idToken !== undefined &&
+            //     result.refreshToken !== undefined
+            // ) {
                 azureAccessToken = result.accessToken;
                 azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
                 azureIdToken = result.idToken;
                 azureRefreshToken = result.refreshToken;
-            }
+            // }
         })
     );
 }

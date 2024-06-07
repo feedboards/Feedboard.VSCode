@@ -18,14 +18,13 @@ export const authenticateAzure = async (context: StoreHelper): Promise<AzureToke
             if (req.url) {
                 const queryObject = url.parse(req.url, true).query;
                 if (queryObject.code && queryObject.state) {
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
                     res.writeHead(200, { 'Content-Type': 'text/html' });
                     const code = queryObject.code as string;
                     const state = queryObject.state as string;
 
                     try {
-                        console.log("test");
                         const response = await getAzureTokens(code, state);
-                        console.log('response', response);
 
                         await context.storeValueAsync('azureAccessToken', response.data.accessToken);
                         await context.storeValueAsync('azureIdToken', response.data.idToken);
@@ -45,10 +44,10 @@ export const authenticateAzure = async (context: StoreHelper): Promise<AzureToke
                     server.close(async () => {
                         console.log('server stopped');
                         resolve({
-                            accessToken: await context.getValueAsync('azureAccessToken'),
-                            accessTokenExpiredAt: await context.getValueAsync('azureaccessTokenExpiredAt'),
-                            refreshToken: await context.getValueAsync('azureRefreshToken'),
-                            idToken: await context.getValueAsync('azureIdToken'),
+                            accessToken: await context.getValueAsync('azureAccessToken') as string,
+                            accessTokenExpiredAt: await context.getValueAsync('azureaccessTokenExpiredAt') as string,
+                            refreshToken: await context.getValueAsync('azureRefreshToken') as string,
+                            idToken: await context.getValueAsync('azureIdToken') as string,
                         });
                     });
                 }

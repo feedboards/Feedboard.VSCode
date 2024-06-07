@@ -1,1 +1,2 @@
-export * from './azureOAuth/azureOAuthClient';
+export * from './oauth/azureOAuthClient';
+export * from './oauth/githubOAuthClient';
