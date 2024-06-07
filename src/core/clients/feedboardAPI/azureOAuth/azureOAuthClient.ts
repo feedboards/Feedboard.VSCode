@@ -2,14 +2,14 @@ import { APICore } from "../../apiCore";
 
 const client = new APICore();
 
-export const getLoginURI = () => {
+export const getAzureLoginURI = () => {
     return client.get('AzureOAuth/login-url', null);
 };
 
-export const getTokens = (code: string, state: string) => {
-    return client.get(`AzureOAuth/process-code?code=${code}$state=${state}`, null);
+export const getAzureTokens = (code: string, state: string) => {
+    return client.get('AzureOAuth/process-code',  { code, state });
 };
 
-export const updateAccessToken = (refreshToken: string) => {
-    return client.get(`AzureOAuth/update-access-token?refreshToken=${refreshToken}`, null);
+export const updateAzureAccessToken = (refreshToken: string) => {
+    return client.get('AzureOAuth/update-access-token', { refreshToken });
 };

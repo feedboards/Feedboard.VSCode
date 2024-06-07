@@ -26,6 +26,8 @@ export async function activate(context: vscode.ExtensionContext) {
     const storeHelper = new StoreHelper(context);
     const azureTokenCredential: TokenCredential = new AzureToken(azureAccessToken, azureAccessTokenExpiredAt);
 
+    await configData(storeHelper);
+
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('feedboard-sidebar-view', new SideBarProvider(context.extensionUri))
     );
@@ -49,17 +51,36 @@ export async function activate(context: vscode.ExtensionContext) {
         })
     );
 
-    context.subscriptions.push(
+    context.subscriptions.push (
         vscode.commands.registerCommand('feedboard.singInWithAzure', async () => {
             const result: AzureTokenResponse = await authenticateAzure(storeHelper);
 
-            // test
-            console.log('azure result', result);
-
-            azureAccessToken = result.accessToken;
-            azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
-            azureIdToken = result.idToken;
-            azureRefreshToken = result.refreshToken;
+            if (result.accessToken !== undefined &&
+                result.accessTokenExpiredAt !== undefined &&
+                result.idToken !== undefined &&
+                result.refreshToken !== undefined
+            ) {
+                azureAccessToken = result.accessToken;
+                azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
+                azureIdToken = result.idToken;
+                azureRefreshToken = result.refreshToken;
+            }
         })
     );
 }
+
+const configData = async (storeHelper: StoreHelper) => {
+    const keysToVariables = {
+        azureAccessToken: 'azureAccessToken',
+        azureIdToken: 'azureIdToken',
+        azureRefreshToken: 'azureRefreshToken',
+        azureAccessTokenExpiredAt: 'azureAccessTokenExpiredAt'
+    };
+
+    for (const [key, variableName] of Object.entries(keysToVariables)) {
+        const value = await storeHelper.getValueAsync(key);
+        if (value !== undefined) {
+            exports[variableName] = value;
+        }
+    }
+};

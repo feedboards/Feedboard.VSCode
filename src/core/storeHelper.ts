@@ -7,7 +7,7 @@ export class StoreHelper {
         this.context = context;
     }
 
-    public async getValueAsunc(value: string): Promise<string | undefined> {
+    public async getValueAsync(value: string): Promise<string | undefined> {
         return await this.context.secrets.get(value);
     }
 

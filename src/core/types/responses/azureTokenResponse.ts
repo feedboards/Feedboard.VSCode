@@ -1,6 +1,6 @@
 export type AzureTokenResponse = {
-    accessToken: string;
-    idToken: string;
-    refreshToken: string;
-    accessTokenExpiredAt: string;
+    accessToken: string | undefined;
+    idToken: string | undefined;
+    refreshToken: string | undefined;
+    accessTokenExpiredAt: string | undefined;
 };
