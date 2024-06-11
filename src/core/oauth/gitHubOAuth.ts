@@ -2,15 +2,11 @@ import * as vscode from 'vscode';
 import * as http from 'http';
 import * as url from 'url';
 import * as html from '../../html';
-import * as constants from '../../constants/APIRouts';
-import axios from 'axios';
 import { StoreHelper } from '../storeHelper';
 import { GithubTokenResponse } from '../types';
 import { getGitHubAccessToken, getGitHubLoginURI } from '../clients';
 
 export const authenticateGitHub = async (context: StoreHelper): Promise<GithubTokenResponse> => {
-    //TODO need to add client
-    // const response = await axios.get(`${constants.baseAPIURI}GitHubOauth/login`);
     const response = await getGitHubLoginURI();
 
     vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(response.data.url));
@@ -25,8 +21,6 @@ export const authenticateGitHub = async (context: StoreHelper): Promise<GithubTo
                     const code = queryObject.code as string;
     
                     try {
-                        //TODO also need to add client
-                        // const response = await axios.get(`${constants.baseAPIURI}GitHubOauth/callback?code=${code}`);
                         const response = await getGitHubAccessToken(code);
     
                         await context.storeValueAsync('githubAccessToken', response.data.accessToken);
@@ -37,10 +31,9 @@ export const authenticateGitHub = async (context: StoreHelper): Promise<GithubTo
                         vscode.window.showInformationMessage('Authentication successful!');
                     } catch (error: any) {
                         res.end(html.errorHTML);
-    
-                        vscode.window.showErrorMessage(
-                            `Authentication failed!. Error during GitHub authentication: ${error.message}`
-                        );
+                        vscode.window.showErrorMessage(`Authentication failed!. Error during GitHub authentication: ${error.message}`);
+                        reject(error);
+                        return;
                     }
     
                     server.close(async () => {
