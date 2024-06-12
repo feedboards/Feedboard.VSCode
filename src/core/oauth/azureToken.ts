@@ -1,4 +1,5 @@
-import { AccessToken, GetTokenOptions, TokenCredential } from '@azure/identity';
+import { AccessToken, GetTokenOptions } from '@azure/identity';
+import { TokenCredential } from '@azure/core-auth';
 
 export class AzureToken implements TokenCredential {
     private readonly _accessToken: string;
@@ -13,9 +14,14 @@ export class AzureToken implements TokenCredential {
         scopes: string | string[],
         options?: GetTokenOptions | undefined
     ): Promise<AccessToken | null> {
-        return {
-            token: this._accessToken,
-            expiresOnTimestamp: this._expiresOnTimestamp,
-        };
+        if (this._expiresOnTimestamp > new Date().getTime()) {
+            return {
+                token: this._accessToken,
+                expiresOnTimestamp: this._expiresOnTimestamp,
+            };
+        }
+
+        console.error('Token expired.');
+        return null;
     }
 }

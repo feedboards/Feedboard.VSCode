@@ -4,7 +4,7 @@ import { Subscription, SubscriptionClient } from '@azure/arm-subscriptions';
 import { TokenCredential } from '@azure/identity';
 
 export class AzureClient {
-    private _credential: TokenCredential;
+    public _credential: TokenCredential;
 
     constructor(credential: TokenCredential) {
         this._credential = credential;

@@ -33,6 +33,8 @@ const MainPanel = () => {
     const [messages, setMessages] = useState<any[] | undefined>(undefined);
     const [selectedMessage, setSelectedMessages] = useState<any | undefined>(undefined);
 
+    const [IsLoggedInAzure, setIsLoggedInAzure] = useState<boolean>(false);
+
     // TODO Clean up this useEffect
     useEffect(() => {
         setSubscriptions([{ name: 'test-1' }, { name: 'test-2' }]);
@@ -48,6 +50,8 @@ const MainPanel = () => {
                 payload: any;
             }>
         ) => {
+            console.log(event);
+
             const payload = event.data.payload;
 
             switch (event.data.command) {
@@ -86,14 +90,23 @@ const MainPanel = () => {
                 case 'setConsumerGroups':
                     setConsumerGroups(payload);
                     break;
+
+                case 'setLoggedInAzure':
+                    console.log('setLoggedInAzure', payload);
+
+                    setIsLoggedInAzure(payload);
+
+                    if (payload === true) {
+                        vscode.postMessage({ command: 'getSubscriptions' });
+                    }
+                    break;
             }
         };
 
         window.addEventListener('message', handleMessage);
 
-        vscode.postMessage({
-            command: 'getSubscriptions',
-        });
+        // vscode.postMessage({ command: 'getSubscriptions' });
+        vscode.postMessage({ command: 'getIsLoggedInAzure' });
 
         return () => window.removeEventListener('message', handleMessage);
     }, []);
@@ -234,9 +247,22 @@ const MainPanel = () => {
                             </VSCodeDropdown>
                         </div>
                     )}
-                <VSCodeButton className="main-panel__header_button" onClick={onClickSendMessage}>
-                    Send Message
-                </VSCodeButton>
+
+                {IsLoggedInAzure ? (
+                    <VSCodeButton className="main-panel__header_button" onClick={onClickSendMessage}>
+                        Send Message
+                    </VSCodeButton>
+                ) : (
+                    <VSCodeButton
+                        className="main-panel__header_button"
+                        onClick={() =>
+                            vscode.postMessage({
+                                command: 'singInWithAzure',
+                            })
+                        }>
+                        Sign In With Azure
+                    </VSCodeButton>
+                )}
             </div>
             <div className="main-panel__wrapper">
                 <div className="main-panel__wrapper-colunm">

@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as http from 'http';
 import * as url from 'url';
 import * as html from '../../html';
-import { StoreHelper } from '../storeHelper';
+import { StoreHelper } from '../index';
 import { AzureTokenResponse } from '../types';
 import { getAzureLoginURI, getAzureTokens } from '../clients';
 
@@ -36,7 +36,9 @@ export const authenticateAzure = async (context: StoreHelper): Promise<AzureToke
                         vscode.window.showInformationMessage('Authentication successful!');
                     } catch (error: any) {
                         res.end(html.errorHTML);
-                        vscode.window.showErrorMessage(`Authentication failed!. Error during Azure authentication: ${error.message}`);
+                        vscode.window.showErrorMessage(
+                            `Authentication failed!. Error during Azure authentication: ${error.message}`
+                        );
                         reject(error);
                         return;
                     }
@@ -44,10 +46,10 @@ export const authenticateAzure = async (context: StoreHelper): Promise<AzureToke
                     server.close(async () => {
                         console.log('server stopped');
                         resolve({
-                            accessToken: await context.getValueAsync('azureAccessToken') as string,
-                            accessTokenExpiredAt: await context.getValueAsync('azureaccessTokenExpiredAt') as string,
-                            refreshToken: await context.getValueAsync('azureRefreshToken') as string,
-                            idToken: await context.getValueAsync('azureIdToken') as string,
+                            accessToken: (await context.getValueAsync('azureAccessToken')) as string,
+                            accessTokenExpiredAt: (await context.getValueAsync('azureaccessTokenExpiredAt')) as string,
+                            refreshToken: (await context.getValueAsync('azureRefreshToken')) as string,
+                            idToken: (await context.getValueAsync('azureIdToken')) as string,
                         });
                     });
                 }

@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { SideBarProvider } from './providers';
 import { MainPanel } from './panels';
-import { TokenCredential } from '@azure/identity';
 import {
     AzureToken,
     StoreHelper,
@@ -10,6 +9,10 @@ import {
     authenticateGitHub,
     authenticateAzure,
 } from './core';
+import { useIdentityPlugin } from '@azure/identity';
+import { vsCodePlugin } from '@azure/identity-vscode';
+
+useIdentityPlugin(vsCodePlugin);
 
 // Azure
 export let azureAccessToken: string = '';
@@ -24,7 +27,6 @@ export let githubUserId: string = '';
 export async function activate(context: vscode.ExtensionContext) {
     // use this helper if you want to get any secrets
     const storeHelper = new StoreHelper(context);
-    const azureTokenCredential: TokenCredential = new AzureToken(azureAccessToken, azureAccessTokenExpiredAt);
 
     await configData(storeHelper);
 
@@ -34,7 +36,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand('feedboard.main-view', () => {
-            MainPanel.render(context.extensionUri, azureTokenCredential);
+            MainPanel.render(context.extensionUri, context);
         })
     );
 
@@ -51,20 +53,27 @@ export async function activate(context: vscode.ExtensionContext) {
         })
     );
 
-    context.subscriptions.push (
+    context.subscriptions.push(
         vscode.commands.registerCommand('feedboard.singInWithAzure', async () => {
+            console.log('start singInWithAzure');
+
             const result: AzureTokenResponse = await authenticateAzure(storeHelper);
+
+            const res = await new AzureToken(result.accessToken, result.accessTokenExpiredAt).getToken('');
+            console.log('TOKEN AZURE');
 
             // if (result.accessToken !== undefined &&
             //     result.accessTokenExpiredAt !== undefined &&
             //     result.idToken !== undefined &&
             //     result.refreshToken !== undefined
             // ) {
-                azureAccessToken = result.accessToken;
-                azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
-                azureIdToken = result.idToken;
-                azureRefreshToken = result.refreshToken;
+            azureAccessToken = result.accessToken;
+            azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
+            azureIdToken = result.idToken;
+            azureRefreshToken = result.refreshToken;
             // }
+
+            return result;
         })
     );
 }
@@ -74,7 +83,7 @@ const configData = async (storeHelper: StoreHelper) => {
         azureAccessToken: 'azureAccessToken',
         azureIdToken: 'azureIdToken',
         azureRefreshToken: 'azureRefreshToken',
-        azureAccessTokenExpiredAt: 'azureAccessTokenExpiredAt'
+        azureAccessTokenExpiredAt: 'azureAccessTokenExpiredAt',
     };
 
     for (const [key, variableName] of Object.entries(keysToVariables)) {
