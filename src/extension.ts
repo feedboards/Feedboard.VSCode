@@ -55,12 +55,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand('feedboard.singInWithAzure', async () => {
-            console.log('start singInWithAzure');
-
             const result: AzureTokenResponse = await authenticateAzure(storeHelper);
-
-            const res = await new AzureToken(result.accessToken, result.accessTokenExpiredAt).getToken('');
-            console.log('TOKEN AZURE');
 
             // if (result.accessToken !== undefined &&
             //     result.accessTokenExpiredAt !== undefined &&
