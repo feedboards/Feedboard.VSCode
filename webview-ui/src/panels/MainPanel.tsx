@@ -9,44 +9,39 @@ import {
 import '../scss/mainPanel.scss';
 import { render, vscode } from '../utilities';
 import { useEffect, useState } from 'react';
-import { TTmp } from './types';
 import JsonView from '@uiw/react-json-view';
 import { vscodeTheme } from '@uiw/react-json-view/vscode';
+import { Subscription } from '@azure/arm-subscriptions';
+import { ResourceGroup } from '@azure/arm-resources';
+import { ConsumerGroup, EHNamespace, Eventhub } from '@azure/arm-eventhub';
+import { EMainPanelCommands } from '../../../src/helpers';
 
 const MainPanel = () => {
     // Dropdown States
-    const [subscriptions, setSubscriptions] = useState<TTmp[]>();
-    const [selectedSubscription, setSelectedSubscription] = useState<TTmp | undefined>(undefined);
+    const [subscriptions, setSubscriptions] = useState<Subscription[]>();
+    const [selectedSubscription, setSelectedSubscription] = useState<Subscription | undefined>(undefined);
 
-    const [resourceGroups, setResourceGroups] = useState<TTmp[]>();
-    const [selectedResourceGroup, setSelectedResourceGroup] = useState<TTmp | undefined>(undefined);
+    const [resourceGroups, setResourceGroups] = useState<ResourceGroup[]>();
+    const [selectedResourceGroup, setSelectedResourceGroup] = useState<ResourceGroup | undefined>(undefined);
 
-    const [namespaces, setNamespaces] = useState<TTmp[]>();
-    const [selectedNamespace, setSelectedNamespace] = useState<TTmp | undefined>(undefined);
+    const [namespaces, setNamespaces] = useState<EHNamespace[]>();
+    const [selectedNamespace, setSelectedNamespace] = useState<EHNamespace | undefined>(undefined);
 
-    const [eventHubs, setEventHubs] = useState<TTmp[]>();
-    const [selectedEventHub, setSelectedEventHub] = useState<TTmp | undefined>(undefined);
+    const [eventHubs, setEventHubs] = useState<Eventhub[]>();
+    const [selectedEventHub, setSelectedEventHub] = useState<ConsumerGroup | undefined>(undefined);
 
-    const [consumerGroups, setConsumerGroups] = useState<TTmp[]>();
-    const [selectedConsumerGroup, setSelectedConsumerGroup] = useState<TTmp | undefined>(undefined);
+    const [consumerGroups, setConsumerGroups] = useState<Eventhub[]>();
+    const [selectedConsumerGroup, setSelectedConsumerGroup] = useState<ConsumerGroup | undefined>(undefined);
 
     const [messages, setMessages] = useState<any[] | undefined>(undefined);
     const [selectedMessage, setSelectedMessages] = useState<any | undefined>(undefined);
 
-    const [IsLoggedInAzure, setIsLoggedInAzure] = useState<boolean>(false);
-
-    // TODO Clean up this useEffect
-    useEffect(() => {
-        setSubscriptions([{ name: 'test-1' }, { name: 'test-2' }]);
-        setResourceGroups([{ name: 'test-1' }, { name: 'test-2' }]);
-        setNamespaces([{ name: 'test-1' }, { name: 'test-2' }]);
-        setEventHubs([{ name: 'test-123' }, { name: 'test-423' }, { name: 'test-23423' }, { name: 'test-1255553' }]);
-    }, []);
+    const [isLoggedInAzure, setIsLoggedInAzure] = useState<boolean>(false);
 
     useEffect(() => {
         const handleMessage = (
             event: MessageEvent<{
-                command: string;
+                command: EMainPanelCommands;
                 payload: any;
             }>
         ) => {
@@ -55,7 +50,7 @@ const MainPanel = () => {
             const payload = event.data.payload;
 
             switch (event.data.command) {
-                case 'setMessages':
+                case EMainPanelCommands.setMessages:
                     console.log(payload);
 
                     setMessages((prev) => {
@@ -71,33 +66,35 @@ const MainPanel = () => {
                     });
                     break;
 
-                case 'setSubscriptions':
+                case EMainPanelCommands.setSubscriptions:
                     setSubscriptions(payload);
                     break;
 
-                case 'setResourceGroups':
+                case EMainPanelCommands.setResourceGroups:
                     setResourceGroups(payload);
                     break;
 
-                case 'setNamespaces':
+                case EMainPanelCommands.setNamespaces:
+                    console.log('setNamespaces', payload);
+
                     setNamespaces(payload);
                     break;
 
-                case 'setEventHubs':
+                case EMainPanelCommands.setEventHubs:
                     setEventHubs(payload);
                     break;
 
-                case 'setConsumerGroups':
+                case EMainPanelCommands.setConsumerGroups:
                     setConsumerGroups(payload);
                     break;
 
-                case 'setLoggedInAzure':
-                    console.log('setLoggedInAzure', payload);
+                case EMainPanelCommands.setIsLoggedInAzure:
+                    console.log(EMainPanelCommands.setIsLoggedInAzure, payload);
 
                     setIsLoggedInAzure(payload);
 
                     if (payload === true) {
-                        vscode.postMessage({ command: 'getSubscriptions' });
+                        vscode.postMessage({ command: EMainPanelCommands.getSubscriptions });
                     }
                     break;
             }
@@ -105,11 +102,24 @@ const MainPanel = () => {
 
         window.addEventListener('message', handleMessage);
 
-        // vscode.postMessage({ command: 'getSubscriptions' });
-        vscode.postMessage({ command: 'getIsLoggedInAzure' });
+        vscode.postMessage({ command: EMainPanelCommands.getIsLoggedInAzure });
 
         return () => window.removeEventListener('message', handleMessage);
     }, []);
+
+    useEffect(() => {
+        if (isLoggedInAzure) {
+            console.log('isLoggedInAzure useEffect', isLoggedInAzure);
+
+            vscode.postMessage({
+                command: EMainPanelCommands.getSubscriptions,
+            });
+        }
+    }, [isLoggedInAzure]);
+
+    useEffect(() => {
+        console.log(subscriptions);
+    }, [subscriptions]);
 
     function handleDropdownChange<TState>(event: any, setState: Function, state: TState[]) {
         const index: number = event.target.selectedIndex - 1;
@@ -127,16 +137,7 @@ const MainPanel = () => {
         setState(element);
     }
 
-    const onClickSendMessage = () => {
-        vscode.postMessage({
-            command: 'startMonitoring',
-            payload: {
-                namespace: '',
-                eventHubName: '',
-                consumerGroup: '',
-            },
-        });
-    };
+    const onClickSendMessage = () => {};
 
     return (
         <main className="main-panel">
@@ -147,22 +148,31 @@ const MainPanel = () => {
                         id="subscriptions"
                         onChange={(x) =>
                             subscriptions &&
-                            handleDropdownChange<TTmp>(
+                            handleDropdownChange<Subscription>(
                                 x,
-                                (x: undefined | TTmp) => {
+                                (x: undefined | Subscription) => {
                                     setSelectedSubscription(x);
                                     setSelectedResourceGroup(undefined);
                                     setSelectedNamespace(undefined);
                                     setSelectedEventHub(undefined);
                                     setSelectedMessages(undefined);
+
+                                    if (x !== undefined) {
+                                        vscode.postMessage({
+                                            command: EMainPanelCommands.getResourceGroups,
+                                            payload: {
+                                                subscriptionId: x.subscriptionId,
+                                            },
+                                        });
+                                    }
                                 },
                                 subscriptions
                             )
                         }>
                         <VSCodeOption value="">Select a subscription</VSCodeOption>
-                        {subscriptions?.map((x: TTmp, index: number) => (
-                            <VSCodeOption key={index} value={x.name}>
-                                {x.name}
+                        {subscriptions?.map((x: Subscription, index: number) => (
+                            <VSCodeOption key={index} value={x.subscriptionId}>
+                                {x.displayName}
                             </VSCodeOption>
                         ))}
                     </VSCodeDropdown>
@@ -175,19 +185,31 @@ const MainPanel = () => {
                             value={selectedResourceGroup?.name}
                             onChange={(x) =>
                                 resourceGroups &&
-                                handleDropdownChange<TTmp>(
+                                handleDropdownChange<ResourceGroup>(
                                     x,
-                                    (x: undefined | TTmp) => {
+                                    (x: undefined | ResourceGroup) => {
                                         setSelectedResourceGroup(x);
                                         setSelectedNamespace(undefined);
                                         setSelectedEventHub(undefined);
                                         setSelectedMessages(undefined);
+
+                                        console.log('handleDropdownChange<ResourceGroup> - x', x);
+
+                                        if (x !== undefined) {
+                                            vscode.postMessage({
+                                                command: EMainPanelCommands.getNamespaces,
+                                                payload: {
+                                                    subscriptionId: selectedSubscription.subscriptionId,
+                                                    resourceGroupName: x.name,
+                                                },
+                                            });
+                                        }
                                     },
                                     resourceGroups
                                 )
                             }>
                             <VSCodeOption value="">Select a resource group</VSCodeOption>
-                            {resourceGroups?.map((x: TTmp, index: number) => (
+                            {resourceGroups?.map((x: ResourceGroup, index: number) => (
                                 <VSCodeOption key={index} value={x.name}>
                                     {x.name}
                                 </VSCodeOption>
@@ -202,18 +224,29 @@ const MainPanel = () => {
                             id="namespaces"
                             onChange={(x) =>
                                 namespaces &&
-                                handleDropdownChange<TTmp>(
+                                handleDropdownChange<EHNamespace>(
                                     x,
-                                    (x: undefined | TTmp) => {
+                                    (x: undefined | EHNamespace) => {
                                         setSelectedNamespace(x);
                                         setSelectedEventHub(undefined);
                                         setSelectedMessages(undefined);
+
+                                        if (x !== undefined) {
+                                            vscode.postMessage({
+                                                command: EMainPanelCommands.getEventHubs,
+                                                payload: {
+                                                    subscriptionId: selectedSubscription.subscriptionId,
+                                                    resourceGroupName: selectedResourceGroup.name,
+                                                    namespaceName: x.name,
+                                                },
+                                            });
+                                        }
                                     },
                                     namespaces
                                 )
                             }>
                             <VSCodeOption value="">Select a namespace</VSCodeOption>
-                            {eventHubs?.map((x: TTmp, index: number) => (
+                            {namespaces?.map((x: EHNamespace, index: number) => (
                                 <VSCodeOption key={index} value={x.name}>
                                     {x.name}
                                 </VSCodeOption>
@@ -231,15 +264,28 @@ const MainPanel = () => {
                             <VSCodeDropdown
                                 id="consumerGroup"
                                 onChange={(x) =>
-                                    namespaces &&
-                                    handleDropdownChange<TTmp>(
+                                    consumerGroups &&
+                                    handleDropdownChange<ConsumerGroup>(
                                         x,
-                                        (x: undefined | TTmp) => setSelectedConsumerGroup(x),
-                                        namespaces
+                                        (x: undefined | ConsumerGroup) => {
+                                            setSelectedConsumerGroup(x);
+
+                                            if (x !== undefined) {
+                                                vscode.postMessage({
+                                                    command: EMainPanelCommands.startMonitoring,
+                                                    payload: {
+                                                        namespaceName: selectedNamespace?.name,
+                                                        eventHubName: selectedEventHub?.name,
+                                                        consumerGroupName: selectedConsumerGroup?.name,
+                                                    },
+                                                });
+                                            }
+                                        },
+                                        consumerGroups
                                     )
                                 }>
                                 <VSCodeOption value="">Select a consumer group</VSCodeOption>
-                                {eventHubs?.map((x: TTmp, index: number) => (
+                                {consumerGroups?.map((x: ConsumerGroup, index: number) => (
                                     <VSCodeOption key={index} value={x.name}>
                                         {x.name}
                                     </VSCodeOption>
@@ -248,7 +294,7 @@ const MainPanel = () => {
                         </div>
                     )}
 
-                {IsLoggedInAzure ? (
+                {isLoggedInAzure ? (
                     <VSCodeButton className="main-panel__header_button" onClick={onClickSendMessage}>
                         Send Message
                     </VSCodeButton>
@@ -257,7 +303,7 @@ const MainPanel = () => {
                         className="main-panel__header_button"
                         onClick={() =>
                             vscode.postMessage({
-                                command: 'singInWithAzure',
+                                command: EMainPanelCommands.singInWithAzure,
                             })
                         }>
                         Sign In With Azure
@@ -276,8 +322,24 @@ const MainPanel = () => {
                                     </VSCodeDataGridCell>
                                 </VSCodeDataGridRow>
 
-                                {eventHubs?.map((x: TTmp, index: number) => (
-                                    <VSCodeDataGridRow key={index} onClick={() => setSelectedEventHub(x)}>
+                                {eventHubs?.map((x: Eventhub, index: number) => (
+                                    <VSCodeDataGridRow
+                                        key={index}
+                                        onClick={() => {
+                                            setSelectedEventHub(x);
+
+                                            if (x !== undefined) {
+                                                vscode.postMessage({
+                                                    command: EMainPanelCommands.getConsumerGroups,
+                                                    payload: {
+                                                        subscriptionId: selectedSubscription.subscriptionId,
+                                                        resourceGroupName: selectedResourceGroup.name,
+                                                        namespaceName: selectedNamespace.name,
+                                                        eventHubName: x.name,
+                                                    },
+                                                });
+                                            }
+                                        }}>
                                         <VSCodeDataGridCell gridColumn="1">{x.name}</VSCodeDataGridCell>
                                     </VSCodeDataGridRow>
                                 ))}

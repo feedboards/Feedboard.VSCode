@@ -3,6 +3,16 @@ import { getUri } from '../utilities/getUri';
 import { getNonce } from '../utilities/getNonce';
 import { AzureClient, AzureTokenResponse, EventHubClient, TokenHelper } from '../core';
 import { TokenCredential } from '@azure/identity';
+import {
+    TMainPanelPayload,
+    EMainPanelCommands,
+    isTMainPanelGetResourceGroups,
+    isTMainPanelGetNamespaces,
+    isTMainPanelGetEventHubs,
+    isTMainPanelGetConsumerGroups,
+    TMainPanelGetNamespaces,
+    isTMainPanelStartMonitoring,
+} from '../helpers';
 
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
@@ -24,7 +34,8 @@ export class MainPanel {
     private _azureClient: AzureClient | undefined;
     private _azureToken: TokenCredential | null = null;
     private _isMonitoring: boolean = false;
-    private _isLoggedInAzure: boolean = true;
+    private _isLoggedInAzure: boolean = false;
+    private _webview: Webview | undefined;
 
     /**
      * The MainPanel class private constructor (called only from the render method).
@@ -39,8 +50,14 @@ export class MainPanel {
             if (token !== null) {
                 this._azureToken = token;
                 this._isLoggedInAzure = true;
-
                 this._azureClient = new AzureClient(token);
+
+                if (this._webview !== undefined) {
+                    this._webview.postMessage({
+                        command: EMainPanelCommands.setIsLoggedInAzure,
+                        payload: true,
+                    });
+                }
             }
         });
 
@@ -164,26 +181,35 @@ export class MainPanel {
     //     webview.onDidReceiveMessage((x) => this._commandsHandler(x, webview), undefined, this._disposables);
     // }
     private _setWebviewMessageListener(webview: Webview) {
+        this._webview = webview;
+
         webview.onDidReceiveMessage(
-            async (message: any) => {
+            async (message: { command: EMainPanelCommands; payload: TMainPanelPayload }) => {
                 const payload = message.payload;
 
+                console.log('message', message);
+
                 switch (message.command) {
-                    case 'startMonitoring':
+                    case EMainPanelCommands.startMonitoring:
                         window.showInformationMessage('startMonitoring');
 
-                        // if (this._azureToken !== null) {
+                        // if (this._azureToken !== null && isTMainPanelStartMonitoring(payload)) {
+                        //     console.log('this._azureToken', this._azureToken);
                         //     this._eventHubClient = new EventHubClient(
-                        //         payload.namespace,
+                        //         payload.namespaceName,
                         //         this._azureToken,
                         //         payload.eventHubName,
-                        //         payload.consumerGroup !== undefined ? payload.consumerGroup : '$Default'
+                        //         payload.consumerGroupName !== undefined ? payload.consumerGroupName : '$Default'
                         //     );
 
                         //     if (!this._isMonitoring) {
+                        //         console.log('this._eventHubClient', this._eventHubClient);
+
                         //         this._eventHubClient.startMonitoring(async (events, _) => {
-                        //             webview.postMessage({
-                        //                 command: 'setMessages',
+                        //             console.log(events);
+
+                        //             await webview.postMessage({
+                        //                 command: EMainPanelCommands.setMessages,
                         //                 payload: events[0].body,
                         //             });
                         //         });
@@ -191,14 +217,14 @@ export class MainPanel {
                         // }
 
                         this._eventHubClient = new EventHubClient(
-                            `Endpoint=sb://event-hubs-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SFlC9l5c9Ei0AzjQrEvWmYOkW83FNQJmo+AEhALncUE=`,
-                            'event-hub'
+                            `Endpoint=sb://feedboard-test-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=OvF2Hq7GdWTmpU1neaIA4HtAJ3B552l30+AEhI+CxhI=`,
+                            'eventhub'
                         ); // TODO get connectionString or credential
 
                         if (!this._isMonitoring) {
                             this._eventHubClient.startMonitoring(async (events, _) => {
-                                webview.postMessage({
-                                    command: 'setMessages',
+                                await webview.postMessage({
+                                    command: EMainPanelCommands.setMessages,
                                     payload: events[0].body,
                                 });
                             });
@@ -206,36 +232,34 @@ export class MainPanel {
 
                         break;
 
-                    case 'stopMonitoring':
+                    case EMainPanelCommands.stopMonitoring:
                         if (this._isMonitoring && this._eventHubClient !== undefined) {
                             await this._eventHubClient.stopMonitoring();
                         }
                         break;
 
-                    case 'getSubscriptions':
+                    case EMainPanelCommands.getSubscriptions:
                         if (this._azureClient !== undefined) {
-                            console.log('getSubscriptions._credential', this._azureClient._credential);
-
-                            webview.postMessage({
-                                command: 'setSubscriptions',
+                            await webview.postMessage({
+                                command: EMainPanelCommands.setSubscriptions.toString(),
                                 payload: await this._azureClient.getSubscriptions(),
                             });
                         }
                         break;
 
-                    case 'getResourceGroups':
-                        if (this._azureClient !== undefined) {
-                            webview.postMessage({
-                                command: 'setResourceGroups',
+                    case EMainPanelCommands.getResourceGroups:
+                        if (this._azureClient !== undefined && isTMainPanelGetResourceGroups(payload)) {
+                            await webview.postMessage({
+                                command: EMainPanelCommands.setResourceGroups,
                                 payload: await this._azureClient.getResourceGroups(payload.subscriptionId),
                             });
                         }
                         break;
 
-                    case 'getNamespaces':
-                        if (this._azureClient !== undefined) {
-                            webview.postMessage({
-                                command: 'setNamespaces',
+                    case EMainPanelCommands.getNamespaces:
+                        if (this._azureClient !== undefined && isTMainPanelGetNamespaces(payload)) {
+                            await webview.postMessage({
+                                command: EMainPanelCommands.setNamespaces,
                                 payload: await this._azureClient.getNamespacesByResourceGroup(
                                     payload.subscriptionId,
                                     payload.resourceGroupName
@@ -244,10 +268,10 @@ export class MainPanel {
                         }
                         break;
 
-                    case 'getEventHubs':
-                        if (this._azureClient !== undefined) {
-                            webview.postMessage({
-                                command: 'setEventHubs',
+                    case EMainPanelCommands.getEventHubs:
+                        if (this._azureClient !== undefined && isTMainPanelGetEventHubs(payload)) {
+                            await webview.postMessage({
+                                command: EMainPanelCommands.setEventHubs,
                                 payload: await this._azureClient.getEventHubsByNamespace(
                                     payload.subscriptionId,
                                     payload.resourceGroupName,
@@ -257,10 +281,10 @@ export class MainPanel {
                         }
                         break;
 
-                    case 'getConsumerGroups':
-                        if (this._azureClient !== undefined) {
-                            webview.postMessage({
-                                command: 'setEventHubs',
+                    case EMainPanelCommands.getConsumerGroups:
+                        if (this._azureClient !== undefined && isTMainPanelGetConsumerGroups(payload)) {
+                            await webview.postMessage({
+                                command: EMainPanelCommands.setConsumerGroups,
                                 payload: await this._azureClient.getConsumerGroups(
                                     payload.subscriptionId,
                                     payload.resourceGroupName,
@@ -271,14 +295,14 @@ export class MainPanel {
                         }
                         break;
 
-                    case 'getIsLoggedInAzure':
-                        webview.postMessage({
-                            command: 'setIsLoggedInAzure',
+                    case EMainPanelCommands.getIsLoggedInAzure:
+                        await webview.postMessage({
+                            command: EMainPanelCommands.setIsLoggedInAzure,
                             payload: this._isLoggedInAzure,
                         });
                         break;
 
-                    case 'singInWithAzure':
+                    case EMainPanelCommands.singInWithAzure:
                         const result = await commands.executeCommand<AzureTokenResponse>('feedboard.singInWithAzure');
 
                         this._azureToken = this._tokenHelper.createAzureToken(
@@ -286,13 +310,11 @@ export class MainPanel {
                             result.accessTokenExpiredAt
                         );
 
-                        console.log('_azureToken', this._azureToken);
-
                         if (this._azureToken !== null) {
                             this._azureClient = new AzureClient(this._azureToken);
 
-                            webview.postMessage({
-                                command: 'setLoggedInAzure',
+                            await webview.postMessage({
+                                command: EMainPanelCommands.setIsLoggedInAzure,
                                 payload: true,
                             });
                         }
