@@ -2,5 +2,5 @@ node_modules
 .vscode
 out
 .npmrc
-yarn.lock
 yarn-error.log
+yarn.lock

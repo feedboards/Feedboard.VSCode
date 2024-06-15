@@ -10,9 +10,6 @@ import {
     authenticateAzure,
 } from './core';
 import { useIdentityPlugin } from '@azure/identity';
-import { vsCodePlugin } from '@azure/identity-vscode';
-
-useIdentityPlugin(vsCodePlugin);
 
 // Azure
 export let azureAccessToken: string = '';
