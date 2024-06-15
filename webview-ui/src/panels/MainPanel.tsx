@@ -274,9 +274,11 @@ const MainPanel = () => {
                                                 vscode.postMessage({
                                                     command: EMainPanelCommands.startMonitoring,
                                                     payload: {
-                                                        namespaceName: selectedNamespace?.name,
-                                                        eventHubName: selectedEventHub?.name,
-                                                        consumerGroupName: selectedConsumerGroup?.name,
+                                                        eventHubName: selectedEventHub.name,
+                                                        consumerGroupName: x.name,
+                                                        resourceGroupName: selectedResourceGroup.name,
+                                                        namespaceName: selectedNamespace.name,
+                                                        subscriptionId: selectedSubscription.subscriptionId,
                                                     },
                                                 });
                                             }

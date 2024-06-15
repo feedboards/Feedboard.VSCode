@@ -193,43 +193,52 @@ export class MainPanel {
                     case EMainPanelCommands.startMonitoring:
                         window.showInformationMessage('startMonitoring');
 
-                        // if (this._azureToken !== null && isTMainPanelStartMonitoring(payload)) {
-                        //     console.log('this._azureToken', this._azureToken);
-                        //     this._eventHubClient = new EventHubClient(
-                        //         payload.namespaceName,
-                        //         this._azureToken,
-                        //         payload.eventHubName,
-                        //         payload.consumerGroupName !== undefined ? payload.consumerGroupName : '$Default'
-                        //     );
+                        if (this._azureToken !== null && isTMainPanelStartMonitoring(payload)) {
+                            console.log('startMonitoring', payload);
 
-                        //     if (!this._isMonitoring) {
-                        //         console.log('this._eventHubClient', this._eventHubClient);
+                            const rules = await this._azureClient?.getAuthorizationRules(
+                                payload?.subscriptionId,
+                                payload?.resourceGroupName,
+                                payload?.namespaceName
+                            );
 
-                        //         this._eventHubClient.startMonitoring(async (events, _) => {
-                        //             console.log(events);
+                            if (rules !== undefined) {
+                                const defaultRule = rules.find((x) => x.name === 'RootManageSharedAccessKey');
 
-                        //             await webview.postMessage({
-                        //                 command: EMainPanelCommands.setMessages,
-                        //                 payload: events[0].body,
-                        //             });
-                        //         });
-                        //     }
-                        // }
+                                console.log('defaultRule', defaultRule);
 
-                        this._eventHubClient = new EventHubClient(
-                            `Endpoint=sb://feedboard-test-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=OvF2Hq7GdWTmpU1neaIA4HtAJ3B552l30+AEhI+CxhI=`,
-                            'eventhub'
-                        ); // TODO get connectionString or credential
+                                if (defaultRule !== undefined && defaultRule.name !== undefined) {
+                                    const key = await this._azureClient?.getKeys(
+                                        payload.subscriptionId,
+                                        payload.resourceGroupName,
+                                        payload.namespaceName,
+                                        defaultRule.name
+                                    );
 
-                        if (!this._isMonitoring) {
-                            this._eventHubClient.startMonitoring(async (events, _) => {
-                                await webview.postMessage({
-                                    command: EMainPanelCommands.setMessages,
-                                    payload: events[0].body,
-                                });
-                            });
+                                    console.log('key', key);
+
+                                    if (key?.primaryConnectionString !== undefined) {
+                                        this._eventHubClient = new EventHubClient(
+                                            payload.consumerGroupName,
+                                            payload.eventHubName,
+                                            key?.primaryConnectionString
+                                        );
+
+                                        if (!this._isMonitoring) {
+                                            console.log('_isMonitoring');
+                                            this._eventHubClient.startMonitoring(async (events, _) => {
+                                                console.log(events, _);
+
+                                                await webview.postMessage({
+                                                    command: EMainPanelCommands.setMessages,
+                                                    payload: events[0].body,
+                                                });
+                                            });
+                                        }
+                                    }
+                                }
+                            }
                         }
-
                         break;
 
                     case EMainPanelCommands.stopMonitoring:

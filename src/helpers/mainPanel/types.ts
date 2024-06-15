@@ -23,6 +23,8 @@ export type TMainPanelGetConsumerGroups = TMainPanelGetEventHubs & {
 };
 
 export type TMainPanelStartMonitoring = {
+    subscriptionId: string;
+    resourceGroupName: string;
     namespaceName: string;
     eventHubName: string;
     consumerGroupName: string;

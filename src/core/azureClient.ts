@@ -1,4 +1,11 @@
-import { ConsumerGroup, EHNamespace, EventHubManagementClient, Eventhub } from '@azure/arm-eventhub';
+import {
+    AuthorizationRule,
+    ConsumerGroup,
+    EHNamespace,
+    EventHubManagementClient,
+    Eventhub,
+    NamespacesListKeysResponse,
+} from '@azure/arm-eventhub';
 import { ResourceGroup, ResourceManagementClient } from '@azure/arm-resources';
 import { Subscription, SubscriptionClient } from '@azure/arm-subscriptions';
 import { TokenCredential } from '@azure/identity';
@@ -79,5 +86,30 @@ export class AzureClient {
         }
 
         return result;
+    }
+
+    public async getAuthorizationRules(
+        subscriptionId: string,
+        resourceGroupName: string,
+        namespaceName: string
+    ): Promise<AuthorizationRule[]> {
+        const client = new EventHubManagementClient(this._credential, subscriptionId);
+        const result: AuthorizationRule[] = [];
+
+        for await (const rules of client.namespaces.listAuthorizationRules(resourceGroupName, namespaceName)) {
+            result.push(rules);
+        }
+
+        return result;
+    }
+
+    public async getKeys(
+        subscriptionId: string,
+        resourceGroupName: string,
+        namespaceName: string,
+        authorizationRuleName: string
+    ): Promise<NamespacesListKeysResponse> {
+        const client = new EventHubManagementClient(this._credential, subscriptionId);
+        return await client.namespaces.listKeys(resourceGroupName, namespaceName, authorizationRuleName);
     }
 }
