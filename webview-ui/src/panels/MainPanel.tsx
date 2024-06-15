@@ -36,7 +36,6 @@ const MainPanel = () => {
 
     const [consumerGroups, setConsumerGroups] = useState<Eventhub[]>();
     const [consumerGroupLoading, setConsumerGroupLoading] = useState<boolean>(false);
-    const [selectedConsumerGroup, setSelectedConsumerGroup] = useState<ConsumerGroup | undefined>(undefined);
 
     const [messages, setMessages] = useState<any[] | undefined>(undefined);
     const [messageLoading, setMessageLoading] = useState<boolean>(false);
@@ -313,8 +312,6 @@ const MainPanel = () => {
                                     handleDropdownChange<ConsumerGroup>(
                                         x,
                                         (x: undefined | ConsumerGroup) => {
-                                            setSelectedConsumerGroup(x);
-
                                             if (x !== undefined) {
                                                 vscode.postMessage({
                                                     command: EMainPanelCommands.startMonitoring,
