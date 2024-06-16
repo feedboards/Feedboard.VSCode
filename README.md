@@ -81,8 +81,9 @@ Once the app is open inside VS Code you can run the extension by doing the follo
 1. Press `F5` to open a new Extension Development Host window
 
 > [!IMPORTANT]
-> port 17988 is the Azure server port
-> port 17989 is the GitHub server port
+> Port 17988 is the Azure server port.
+>
+> Port 17989 is the GitHub server port.
 
 ## Build the application
 
