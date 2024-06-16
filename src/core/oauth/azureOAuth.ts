@@ -31,6 +31,10 @@ export const authenticateAzure = async (context: StoreHelper): Promise<AzureToke
                         await context.storeValueAsync('azureRefreshToken', response.data.refreshToken);
                         await context.storeValueAsync('azureaccessTokenExpiredAt', response.data.accessTokenExpiredAt);
 
+                        // TODO make redirect to our web site
+                        // res.writeHead(302, { 'Location': 'http://example.com/success' });  // Update the URL as needed
+                        // res.end();
+
                         res.end(html.successHTML);
 
                         vscode.window.showInformationMessage('Authentication successful!');
