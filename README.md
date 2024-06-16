@@ -1,4 +1,4 @@
-# feedboard vscode plaguin with (React + Vite)
+# feedboard vscode plugin with (React + Vite)
 
 ## setup vscode setting in the .vecode folder
 
@@ -55,11 +55,11 @@ create a folder `.vscode` in this folder, and create these files
 }
 ```
 
-## setup feedboard-core lib
+## Setup feedboard-core lib
 
-u need to create a `.npmrc` file in the root directory then u need to add this code in the file `.npmrc`
+you need to create a `.npmrc` file in the root directory, and then you need to add this code in the file `.npmrc`
 
-also, if u want u can copy the example from `example.npmrc`
+also, if you want you can copy the example from `example.npmrc`
 
 ```bash
 @katyara1:registry=https://npm.pkg.github.com/
@@ -80,12 +80,11 @@ Once the app is open inside VS Code you can run the extension by doing the follo
 
 1. Press `F5` to open a new Extension Development Host window
 
-## Info
+> [!IMPORTANT]
+> port 17988 is the Azure server port
+> port 17989 is the GitHub server port
 
-port 17988 it's Azure server port
-port 17989 it's GitHub server port
-
-## build app
+## Build the application
 
 install `vsce` package
 
@@ -95,19 +94,19 @@ using npm
 npm i -g vsce
 ```
 
-or yarn (but maybe you will get error like `ObjectNotFound: (vsce:String)` when you try to build app)
+or yarn (but you can get an error like `ObjectNotFound: (vsce:String)` when you try to build the application)
 
 ```bash
 yarn global add vsce
 ```
 
-make folder `build`
+make a folder `build`
 
 ```bash
 mkdir build
 ```
 
-build app
+build the application
 
 ```
 vsce package -o build/feedboard-<version>.vsix
