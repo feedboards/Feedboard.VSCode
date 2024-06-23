@@ -8,6 +8,10 @@ import { EMainPanelCommands } from '../../../src/helpers';
 import { GlobalProvider, Header, addLoading, useGlobal } from '.';
 import { useEffect, useRef, useState } from 'react';
 
+const startObject = {
+    str: 'str',
+};
+
 const MainPanel = () => {
     const {
         setSelectedEventHub,
@@ -22,28 +26,26 @@ const MainPanel = () => {
         eventHubs,
     } = useGlobal();
 
-    const [activeButtons, setActiveButtons] = useState<boolean[]>([false, true]);
+    const [activeButtons, setActiveButtons] = useState<boolean[]>([true, false]);
     const [displayJson, setDisplayJson] = useState<boolean>(true);
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const startObject = {
-        str: 'str',
-    };
-
     useEffect(() => {
         if (!displayJson && textareaRef.current) {
             if (selectedMessage === undefined) {
-                textareaRef.current.value = JSON.stringify(startObject, null, '\t');
+                textareaRef.current.value = convertToJson(startObject);
             } else {
-                textareaRef.current.value = JSON.stringify(selectedMessage, null, '\t');
+                textareaRef.current.value = convertToJson(selectedMessage);
             }
         }
     }, [displayJson]);
 
-    const changeDisplayJson = (value: boolean) => {
-        setActiveButtons([!value, value]);
-        setDisplayJson(value);
+    const convertToJson = (data: any) => JSON.stringify(data, null, '\t');
+
+    const changeDisplayJson = (isJsonBtn: boolean) => {
+        setActiveButtons([isJsonBtn ? true : false, isJsonBtn ? false : true]);
+        setDisplayJson(isJsonBtn ? true : false);
     };
 
     return (
@@ -116,17 +118,15 @@ const MainPanel = () => {
                         <div className="main-panel__wrapper_json-header">
                             <VSCodeButton
                                 className="main-panel__wrapper_json-header_button"
-                                disabled={!activeButtons[0]}
                                 appearance={activeButtons[0] ? 'primary' : 'secondary'}
-                                onClick={() => changeDisplayJson(activeButtons[0])}>
+                                onClick={() => changeDisplayJson(true)}>
                                 Json
                             </VSCodeButton>
                             <VSCodeButton
                                 className="main-panel__wrapper_json-header_button"
-                                disabled={!activeButtons[1]}
                                 appearance={activeButtons[1] ? 'primary' : 'secondary'}
-                                onClick={() => changeDisplayJson(!activeButtons[1])}>
-                                Row
+                                onClick={() => changeDisplayJson(false)}>
+                                Raw
                             </VSCodeButton>
                         </div>
                         {displayJson ? (
