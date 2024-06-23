@@ -2,7 +2,7 @@
 
 .main-panel {
     display: block;
-    padding: 14px 0;
+    // padding: 14px 0;
     box-sizing: border-box;
     height: inherit;
 
@@ -19,9 +19,9 @@
     }
 
     &__header {
-        margin-bottom: 14px;
+        // margin-bottom: 14px;
         display: flex;
-        padding: 0 24px;
+        padding: 12px;
         align-items: center;
 
         &_button {
@@ -53,7 +53,7 @@
 
     &__wrapper {
         display: flex;
-        height: calc(100% - 45px);
+        height: calc(100% - 70px);
         box-sizing: border-box;
 
         &-colunm {
@@ -69,6 +69,42 @@
 
             &:nth-child(3) {
                 flex: 2;
+                display: flex;
+            }
+        }
+
+        &_json {
+            width: 100%;
+            position: relative;
+
+            &-header {
+                align-items: center;
+                height: 50px;
+                position: absolute;
+                right: 12px;
+                top: 12px;
+
+                &_button {
+                    border-radius: 0 0 0 0;
+
+                    &:nth-child(1) {
+                        margin-left: auto;
+                    }
+                }
+            }
+
+            &-body_area {
+                background-color: var(--vscode-editor-background);
+                font-family: var(--vscode-font-family);
+                color: var(--vscode-foreground);
+                resize: none;
+                border: none;
+                width: calc(100% - 6px);
+                height: calc(100% - 9px);
+
+                &:focus {
+                    outline: none;
+                }
             }
         }
     }

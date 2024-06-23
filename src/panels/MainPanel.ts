@@ -161,7 +161,7 @@ export class MainPanel {
                                                         x.body !== null ||
                                                         (Array.isArray(x.body) && x.body.length > 0)
                                                     ) {
-                                                        result.push(x.body);
+                                                        result.push(...x.body);
                                                     }
                                                 });
 
