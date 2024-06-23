@@ -9,13 +9,22 @@ import {
 export class EventHubClient {
     private readonly _client: EventHubConsumerClient;
 
+    public static isMonitoring: boolean = false;
+
     private _subscription: Subscription | undefined;
 
     constructor(consumerGroup: string, eventHubName: string, connectionString: string) {
         this._client = new EventHubConsumerClient(consumerGroup, connectionString, eventHubName);
     }
 
+    public static test() {}
+
     public startMonitoring(processEvents: ProcessEventsHandler, processError?: ProcessErrorHandler): void {
+        if (EventHubClient.isMonitoring) {
+            console.log('Monitoring is already active.');
+            return;
+        }
+
         try {
             const handleError =
                 processError ||
@@ -38,6 +47,7 @@ export class EventHubClient {
     public async stopMonitoring(): Promise<void> {
         if (this._subscription) {
             await this._subscription.close();
+            EventHubClient.isMonitoring = false;
         }
     }
 

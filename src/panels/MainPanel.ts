@@ -33,7 +33,6 @@ export class MainPanel {
     private _eventHubClient: EventHubClient | undefined;
     private _azureClient: AzureClient | undefined;
     private _azureToken: TokenCredential | null = null;
-    private _isMonitoring: boolean = false;
     private _isLoggedInAzure: boolean = false;
     private _webview: Webview | undefined;
 
@@ -224,7 +223,7 @@ export class MainPanel {
                                             key?.primaryConnectionString
                                         );
 
-                                        if (!this._isMonitoring) {
+                                        if (!EventHubClient.isMonitoring) {
                                             console.log('_isMonitoring');
                                             this._eventHubClient.startMonitoring(async (events, _) => {
                                                 console.log(events, _);
@@ -242,7 +241,7 @@ export class MainPanel {
                         break;
 
                     case EMainPanelCommands.stopMonitoring:
-                        if (this._isMonitoring && this._eventHubClient !== undefined) {
+                        if (EventHubClient.isMonitoring && this._eventHubClient !== undefined) {
                             await this._eventHubClient.stopMonitoring();
                         }
                         break;
