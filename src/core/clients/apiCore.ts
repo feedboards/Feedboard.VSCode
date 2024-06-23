@@ -1,12 +1,12 @@
-import * as constants from "../../constants/APIRouts";
-import axios, { AxiosResponse } from "axios";
+import * as constants from '../../constants';
+import axios, { AxiosResponse } from 'axios';
 
 export class APICore {
     constructor() {
         this.configAxios();
     }
 
-    public get (endpoint: string, params: any): Promise<AxiosResponse<any, any>> {
+    public get(endpoint: string, params: any): Promise<AxiosResponse<any, any>> {
         let response;
         if (params) {
             var queryString = params
@@ -19,9 +19,9 @@ export class APICore {
             response = axios.get(`${constants.baseAPIURI}/${endpoint}`, params);
         }
         return response;
-    };
+    }
 
-    public getFile (endpoint: string, params: any): Promise<AxiosResponse<any, any>> {
+    public getFile(endpoint: string, params: any): Promise<AxiosResponse<any, any>> {
         let response;
         if (params) {
             var queryString = params
@@ -34,7 +34,7 @@ export class APICore {
             response = axios.get(`${constants.baseAPIURI}/${endpoint}`, { responseType: 'blob' });
         }
         return response;
-    };
+    }
 
     public getMultiple(endpoints: string, params: any): Promise<AxiosResponse<any, any>[]> {
         const reqs = [];
@@ -51,25 +51,25 @@ export class APICore {
             reqs.push(axios.get(`${constants.baseAPIURI}/${endpoint}?${queryString}`));
         }
         return axios.all(reqs);
-    };
+    }
 
-    public post<R = AxiosResponse<any>> (endpoint: string, data: any): Promise<R> {
+    public post<R = AxiosResponse<any>>(endpoint: string, data: any): Promise<R> {
         return axios.post(`${constants.baseAPIURI}/${endpoint}`, data);
-    };
+    }
 
-    public updatePatch<R = AxiosResponse<any>> (endpoint: string, data: any): Promise<R> {
+    public updatePatch<R = AxiosResponse<any>>(endpoint: string, data: any): Promise<R> {
         return axios.patch(`${constants.baseAPIURI}/${endpoint}`, data);
-    };
+    }
 
-    public put<R = AxiosResponse<any>> (endpoint: string, data: any): Promise<R> {
+    public put<R = AxiosResponse<any>>(endpoint: string, data: any): Promise<R> {
         return axios.put(`${constants.baseAPIURI}/${endpoint}`, data);
-    };
+    }
 
-    public delete<R = AxiosResponse<any>> (endpoint: string): Promise<R> {
+    public delete<R = AxiosResponse<any>>(endpoint: string): Promise<R> {
         return axios.delete(`${constants}/${endpoint}`);
-    };
+    }
 
-    public createWithFile<R = AxiosResponse<any>> (endpoint: string, data: any): Promise<R> {
+    public createWithFile<R = AxiosResponse<any>>(endpoint: string, data: any): Promise<R> {
         const formData = new FormData();
         for (const k in data) {
             formData.append(k, data[k]);
@@ -82,9 +82,9 @@ export class APICore {
             },
         };
         return axios.post(`${constants.baseAPIURI}/${endpoint}`, formData, config);
-    };
+    }
 
-    public updateWithFile<R = AxiosResponse<any>> (endpoint: string, data: any): Promise<R> {
+    public updateWithFile<R = AxiosResponse<any>>(endpoint: string, data: any): Promise<R> {
         const formData = new FormData();
         for (const k in data) {
             formData.append(k, data[k]);
@@ -97,7 +97,7 @@ export class APICore {
             },
         };
         return axios.patch(`${constants.baseAPIURI}/${endpoint}`, formData, config);
-    };
+    }
 
     private configAxios(): void {
         // content type
@@ -105,10 +105,10 @@ export class APICore {
 
         // intercepting to capture errors
         axios.interceptors.response.use(
-            response => {
+            (response) => {
                 return response;
             },
-            error => {
+            (error) => {
                 // Any status codes that falls outside the range of 2xx cause this function to trigger
                 let message;
 
@@ -124,7 +124,9 @@ export class APICore {
                         break;
                     default: {
                         message =
-                            error.response && error.response.data ? error.response.data['message'] : error.message || error;
+                            error.response && error.response.data
+                                ? error.response.data['message']
+                                : error.message || error;
                     }
                 }
 
@@ -132,4 +134,4 @@ export class APICore {
             }
         );
     }
-};
+}

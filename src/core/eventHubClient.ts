@@ -5,11 +5,10 @@ import {
     Subscription,
     earliestEventPosition,
 } from '@azure/event-hubs';
+import { MainPanelConstants } from '../constants';
 
 export class EventHubClient {
     private readonly _client: EventHubConsumerClient;
-
-    public static isMonitoring: boolean = false;
 
     private _subscription: Subscription | undefined;
 
@@ -20,10 +19,12 @@ export class EventHubClient {
     public static test() {}
 
     public startMonitoring(processEvents: ProcessEventsHandler, processError?: ProcessErrorHandler): void {
-        if (EventHubClient.isMonitoring) {
+        if (MainPanelConstants.isMonitoring) {
             console.log('Monitoring is already active.');
             return;
         }
+
+        MainPanelConstants.isMonitoring = true;
 
         try {
             const handleError =
@@ -34,7 +35,10 @@ export class EventHubClient {
 
             this._subscription = this._client.subscribe(
                 {
-                    processEvents,
+                    processEvents: (events, context) => {
+                        console.log(`Processing event at ${new Date().toISOString()}: `, events);
+                        return processEvents(events, context);
+                    },
                     processError: handleError,
                 },
                 { startPosition: earliestEventPosition }
@@ -47,13 +51,14 @@ export class EventHubClient {
     public async stopMonitoring(): Promise<void> {
         if (this._subscription) {
             await this._subscription.close();
-            EventHubClient.isMonitoring = false;
+            MainPanelConstants.isMonitoring = false;
         }
     }
 
     public async closeClient(): Promise<void> {
         if (this._client) {
             await this._client.close();
+            MainPanelConstants.isMonitoring = false;
         }
     }
 }

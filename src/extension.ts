@@ -1,25 +1,8 @@
 import * as vscode from 'vscode';
 import { SideBarProvider } from './providers';
 import { MainPanel } from './panels';
-import {
-    AzureToken,
-    StoreHelper,
-    AzureTokenResponse,
-    GithubTokenResponse,
-    authenticateGitHub,
-    authenticateAzure,
-} from './core';
-import { useIdentityPlugin } from '@azure/identity';
-
-// Azure
-export let azureAccessToken: string = '';
-export let azureIdToken: string = '';
-export let azureRefreshToken: string = '';
-export let azureAccessTokenExpiredAt: string = '';
-
-// GitHub
-export let githubAccessToken: string = '';
-export let githubUserId: string = '';
+import { StoreHelper, AzureTokenResponse, GithubTokenResponse, authenticateGitHub, authenticateAzure } from './core';
+import { OAuthConstants } from './constants';
 
 export async function activate(context: vscode.ExtensionContext) {
     // use this helper if you want to get any secrets
@@ -45,8 +28,8 @@ export async function activate(context: vscode.ExtensionContext) {
             // test
             console.log('github result', result);
 
-            githubAccessToken = result.accessToken;
-            githubUserId = result.userId;
+            OAuthConstants.githubAccessToken = result.accessToken;
+            OAuthConstants.githubUserId = result.userId;
         })
     );
 
@@ -59,10 +42,10 @@ export async function activate(context: vscode.ExtensionContext) {
             //     result.idToken !== undefined &&
             //     result.refreshToken !== undefined
             // ) {
-            azureAccessToken = result.accessToken;
-            azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
-            azureIdToken = result.idToken;
-            azureRefreshToken = result.refreshToken;
+            OAuthConstants.azureAccessToken = result.accessToken;
+            OAuthConstants.azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
+            OAuthConstants.azureIdToken = result.idToken;
+            OAuthConstants.azureRefreshToken = result.refreshToken;
             // }
 
             return result;

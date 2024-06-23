@@ -2,7 +2,6 @@ import { ConsumerGroup, EHNamespace, Eventhub } from '@azure/arm-eventhub';
 import { ResourceGroup } from '@azure/arm-resources';
 import { Subscription } from '@azure/arm-subscriptions';
 import { ReactNode } from 'react';
-import { EMainPanelCommands } from '../../../src/helpers';
 
 export interface IGlobalProviderProps {
     children: ReactNode;
