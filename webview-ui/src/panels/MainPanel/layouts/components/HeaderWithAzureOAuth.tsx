@@ -5,6 +5,7 @@ import { vscode } from '../../../../utilities';
 import { ResourceGroup } from '@azure/arm-resources';
 import { ConsumerGroup, EHNamespace } from '@azure/arm-eventhub';
 import { addLoading, useGlobal } from '../..';
+import { ChangeLayoutButtons } from '.';
 
 export const HeaderWithAzureOAuth = () => {
     const {
@@ -244,6 +245,8 @@ export const HeaderWithAzureOAuth = () => {
                     Sign In With Azure
                 </VSCodeButton>
             )}
+
+            <ChangeLayoutButtons />
         </div>
     );
 };

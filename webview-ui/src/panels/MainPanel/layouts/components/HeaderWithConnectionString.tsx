@@ -3,6 +3,7 @@ import { EMainPanelCommands } from '../../../../../../src/helpers';
 import { vscode } from '../../../../utilities';
 import { VSCodeInput } from '../../components';
 import { ChangeEvent, useState } from 'react';
+import { ChangeLayoutButtons } from '.';
 
 export const HeaderWithConnectionString = () => {
     const [connectionString, setConnectionString] = useState<string | null>(null);
@@ -65,6 +66,7 @@ export const HeaderWithConnectionString = () => {
             <VSCodeButton className="main-panel__header_button" onClick={startMonitoring}>
                 Connect
             </VSCodeButton>
+            <ChangeLayoutButtons />
         </div>
     );
 };
