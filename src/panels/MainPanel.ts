@@ -13,7 +13,7 @@ import {
     isTMainPanelStartMonitoringByConnectionString,
     isString,
 } from '../helpers';
-import { MainPanelConstants } from '../constants';
+import { MainPanelConstants, OAuthConstants } from '../constants';
 
 export class MainPanel {
     public static currentPanel: MainPanel | undefined;
@@ -30,7 +30,7 @@ export class MainPanel {
         this._tokenHelper = new TokenHelper(context);
         this._tokenHelper.getAzureToken().then((token) => {
             if (token !== null) {
-                MainPanelConstants.azureToken = token;
+                OAuthConstants.azureToken = token;
                 this._azureClient = new AzureClient(token);
 
                 if (this._webview !== undefined) {
@@ -121,7 +121,7 @@ export class MainPanel {
                 switch (message.command) {
                     case EMainPanelCommands.startMonitoring:
                         if (
-                            MainPanelConstants.azureToken !== null &&
+                            OAuthConstants.azureToken !== null &&
                             isTMainPanelStartMonitoring(payload) &&
                             !MainPanelConstants.isMonitoring
                         ) {
@@ -283,13 +283,13 @@ export class MainPanel {
                     case EMainPanelCommands.singInWithAzure:
                         const result = await commands.executeCommand<AzureTokenResponse>('feedboard.singInWithAzure');
 
-                        MainPanelConstants.azureToken = this._tokenHelper.createAzureToken(
+                        OAuthConstants.azureToken = this._tokenHelper.createAzureToken(
                             result.accessToken,
                             result.accessTokenExpiredAt
                         );
 
-                        if (MainPanelConstants.azureToken !== null) {
-                            this._azureClient = new AzureClient(MainPanelConstants.azureToken);
+                        if (OAuthConstants.azureToken !== null) {
+                            this._azureClient = new AzureClient(OAuthConstants.azureToken);
 
                             await webview.postMessage({
                                 command: EMainPanelCommands.setIsLoggedInAzure,
