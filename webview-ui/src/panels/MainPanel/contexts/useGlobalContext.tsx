@@ -62,19 +62,12 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
         }
     }, [isLoggedInAzure]);
 
-    // logs
-    useEffect(() => {
-        console.log(subscriptions);
-    }, [subscriptions]);
-
     const _handleMessage = (
         event: MessageEvent<{
             command: EMainPanelCommands;
             payload: any;
         }>
     ) => {
-        console.log(event);
-
         const payload = event.data.payload;
 
         switch (event.data.command) {
