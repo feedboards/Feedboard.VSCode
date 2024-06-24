@@ -1,12 +1,12 @@
 import { Subscription } from '@azure/arm-subscriptions';
 import { VSCodeButton, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
-import { EMainPanelCommands } from '../../../../src/helpers';
-import { vscode } from '../../utilities';
+import { EMainPanelCommands } from '../../../../../../src/helpers';
+import { vscode } from '../../../../utilities';
 import { ResourceGroup } from '@azure/arm-resources';
 import { ConsumerGroup, EHNamespace } from '@azure/arm-eventhub';
-import { addLoading, useGlobal } from '..';
+import { addLoading, useGlobal } from '../..';
 
-export const Header = () => {
+export const HeaderWithAzureOAuth = () => {
     const {
         setSelectedSubscription,
         setResourceGroupLoading,

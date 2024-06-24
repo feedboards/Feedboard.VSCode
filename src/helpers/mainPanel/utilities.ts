@@ -4,6 +4,7 @@ import {
     TMainPanelGetNamespaces,
     TMainPanelGetResourceGroups,
     TMainPanelStartMonitoring,
+    TMainPanelStartMonitoringByConnectionString,
 } from '.';
 
 export const isTMainPanelGetResourceGroups = (obj: any): obj is TMainPanelGetResourceGroups => {
@@ -24,4 +25,14 @@ export const isTMainPanelGetConsumerGroups = (obj: any): obj is TMainPanelGetCon
 
 export const isTMainPanelStartMonitoring = (obj: any): obj is TMainPanelStartMonitoring => {
     return obj && typeof obj === 'object' && 'consumerGroupName' in obj;
+};
+
+export const isTMainPanelStartMonitoringByConnectionString = (
+    obj: any
+): obj is TMainPanelStartMonitoringByConnectionString => {
+    return obj && typeof obj === 'object' && 'connectionString' in obj;
+};
+
+export const isString = (obj: any): obj is string => {
+    return obj && typeof obj === 'string';
 };

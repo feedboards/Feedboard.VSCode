@@ -1,10 +1,12 @@
 export type TMainPanelPayload =
     | undefined
+    | string
     | TMainPanelGetResourceGroups
     | TMainPanelGetNamespaces
     | TMainPanelGetEventHubs
     | TMainPanelGetConsumerGroups
-    | TMainPanelStartMonitoring;
+    | TMainPanelStartMonitoring
+    | TMainPanelStartMonitoringByConnectionString;
 
 export type TMainPanelGetResourceGroups = {
     subscriptionId: string;
@@ -28,4 +30,10 @@ export type TMainPanelStartMonitoring = {
     namespaceName: string;
     eventHubName: string;
     consumerGroupName: string;
+};
+
+export type TMainPanelStartMonitoringByConnectionString = {
+    eventHubName: string;
+    consumerGroupName: string;
+    connectionString: string;
 };

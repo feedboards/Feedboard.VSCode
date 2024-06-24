@@ -2,7 +2,6 @@
 
 .main-panel {
     display: block;
-    // padding: 14px 0;
     box-sizing: border-box;
     height: inherit;
 
@@ -19,10 +18,27 @@
     }
 
     &__header {
-        // margin-bottom: 14px;
         display: flex;
         padding: 12px;
         align-items: center;
+
+        &_input {
+            margin-right: 12px;
+
+            &_group {
+                display: flex;
+                width: 100%;
+            }
+
+            &:nth-child(1) {
+                flex: 2;
+            }
+
+            &:nth-child(2),
+            &:nth-child(3) {
+                flex: 0.5;
+            }
+        }
 
         &_button {
             margin-left: auto;
@@ -53,18 +69,26 @@
 
     &__wrapper {
         display: flex;
-        height: calc(100% - 70px);
+        height: calc(100% - 69px);
         box-sizing: border-box;
+
+        &-connectionString {
+            height: calc(100% - 51px) !important;
+        }
 
         &-colunm {
             flex: 0.9;
             border-top: 1px solid $border-color;
             overflow-y: auto;
 
-            &:nth-child(2) {
+            &-half {
+                flex: 1 !important;
+            }
+
+            &:nth-child(2),
+            &:nth-child(3) {
                 flex: 2;
                 border-left: 1px solid $border-color;
-                border-right: 1px solid $border-color;
             }
 
             &:nth-child(3) {

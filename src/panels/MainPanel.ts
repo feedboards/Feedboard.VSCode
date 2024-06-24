@@ -10,6 +10,8 @@ import {
     isTMainPanelGetEventHubs,
     isTMainPanelGetConsumerGroups,
     isTMainPanelStartMonitoring,
+    isTMainPanelStartMonitoringByConnectionString,
+    isString,
 } from '../helpers';
 import { MainPanelConstants } from '../constants';
 
@@ -21,8 +23,6 @@ export class MainPanel {
     private readonly _tokenHelper: TokenHelper;
     private _eventHubClient: EventHubClient | undefined;
     private _azureClient: AzureClient | undefined;
-    // private _azureToken: TokenCredential | null = null;
-    // private _isLoggedInAzure: boolean = false;
     private _webview: Webview | undefined;
 
     private constructor(panel: WebviewPanel, extensionUri: Uri, context: ExtensionContext) {
@@ -120,7 +120,11 @@ export class MainPanel {
 
                 switch (message.command) {
                     case EMainPanelCommands.startMonitoring:
-                        if (MainPanelConstants.azureToken !== null && isTMainPanelStartMonitoring(payload)) {
+                        if (
+                            MainPanelConstants.azureToken !== null &&
+                            isTMainPanelStartMonitoring(payload) &&
+                            !MainPanelConstants.isMonitoring
+                        ) {
                             const rules = await this._azureClient?.getAuthorizationRules(
                                 payload?.subscriptionId,
                                 payload?.resourceGroupName,
@@ -145,37 +149,64 @@ export class MainPanel {
                                             key?.primaryConnectionString
                                         );
 
-                                        console.log('isMonitoring', MainPanelConstants.isMonitoring);
+                                        this._eventHubClient.startMonitoring(async (events, _) => {
+                                            const result: any[] = [];
 
-                                        if (!MainPanelConstants.isMonitoring) {
-                                            console.log('isMonitoring on');
-                                            this._eventHubClient.startMonitoring(async (events, _) => {
-                                                console.log(events, _);
-                                                const result: any[] = [];
-
-                                                events.forEach((x) => {
-                                                    console.log('body', x.body);
-
-                                                    if (
-                                                        x.body !== undefined ||
-                                                        x.body !== null ||
-                                                        (Array.isArray(x.body) && x.body.length > 0)
-                                                    ) {
-                                                        result.push(...x.body);
-                                                    }
-                                                });
-
-                                                if (result.length > 0) {
-                                                    await webview.postMessage({
-                                                        command: EMainPanelCommands.setMessages,
-                                                        payload: result,
-                                                    });
+                                            events.forEach((x) => {
+                                                if (
+                                                    x.body !== undefined ||
+                                                    x.body !== null ||
+                                                    (Array.isArray(x.body) && x.body.length > 0)
+                                                ) {
+                                                    result.push(...x.body);
                                                 }
                                             });
-                                        }
+
+                                            if (result.length > 0) {
+                                                await webview.postMessage({
+                                                    command: EMainPanelCommands.setMessages,
+                                                    payload: result,
+                                                });
+                                            }
+                                        });
                                     }
                                 }
                             }
+                        }
+                        break;
+
+                    case EMainPanelCommands.startMonitoringByConnectionString:
+                        if (isTMainPanelStartMonitoringByConnectionString(payload)) {
+                            this._eventHubClient = new EventHubClient(
+                                payload.consumerGroupName,
+                                payload.eventHubName,
+                                payload.connectionString
+                            );
+
+                            console.log('EventHubClient', payload);
+
+                            this._eventHubClient.startMonitoring(async (events, _) => {
+                                const result: any[] = [];
+
+                                events.forEach((x) => {
+                                    if (
+                                        x.body !== undefined ||
+                                        x.body !== null ||
+                                        (Array.isArray(x.body) && x.body.length > 0)
+                                    ) {
+                                        result.push(...x.body);
+                                    }
+                                });
+
+                                console.log('result', result);
+
+                                if (result.length > 0) {
+                                    await webview.postMessage({
+                                        command: EMainPanelCommands.setMessages,
+                                        payload: result,
+                                    });
+                                }
+                            });
                         }
                         break;
 
@@ -264,6 +295,12 @@ export class MainPanel {
                                 command: EMainPanelCommands.setIsLoggedInAzure,
                                 payload: true,
                             });
+                        }
+                        break;
+
+                    case EMainPanelCommands.showError:
+                        if (isString(payload)) {
+                            window.showErrorMessage(payload);
                         }
                         break;
                 }

@@ -1,13 +1,14 @@
 export enum EMainPanelCommands {
     startMonitoring = 'startMonitoring',
     stopMonitoring = 'stopMonitoring',
+    startMonitoringByConnectionString = 'startMonitoringByConnectionString',
+
     getSubscriptions = 'getSubscriptions',
     getResourceGroups = 'getResourceGroups',
     getNamespaces = 'getNamespaces',
     getEventHubs = 'getEventHubs',
     getConsumerGroups = 'getConsumerGroups',
     getIsLoggedInAzure = 'getIsLoggedInAzure',
-    singInWithAzure = 'singInWithAzure',
 
     setMessages = 'setMessages',
     setSubscriptions = 'setSubscriptions',
@@ -16,4 +17,7 @@ export enum EMainPanelCommands {
     setEventHubs = 'setEventHubs',
     setConsumerGroups = 'setConsumerGroups',
     setIsLoggedInAzure = 'setIsLoggedInAzure',
+
+    singInWithAzure = 'singInWithAzure',
+    showError = 'showError',
 }

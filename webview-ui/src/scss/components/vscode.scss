@@ -1,0 +1,13 @@
+.vscode {
+    &_input {
+        background-color: var(--vscode-editorHoverWidget-statusBarBackground);
+        color: var(--vscode-foreground);
+        height: 15px;
+        padding: 5px;
+        border: none;
+
+        &:focus {
+            outline: none;
+        }
+    }
+}

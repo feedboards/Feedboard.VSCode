@@ -1,9 +1,10 @@
 import { ConsumerGroup, EHNamespace, Eventhub } from '@azure/arm-eventhub';
 import { ResourceGroup } from '@azure/arm-resources';
 import { Subscription } from '@azure/arm-subscriptions';
-import { ReactNode } from 'react';
+import { DetailedHTMLProps, InputHTMLAttributes, ReactNode } from 'react';
+import { ELayoutTypes } from '.';
 
-export interface IGlobalProviderProps {
+export interface IContextProviderProps {
     children: ReactNode;
 }
 
@@ -51,3 +52,14 @@ export interface IGlobalContext {
     setIsLoggedInAzure: (value: boolean) => void;
     isLoggedInAzure: boolean;
 }
+
+export interface ILayoutContext {
+    changeLayoutType: (type: ELayoutTypes) => void;
+    layoutType: ELayoutTypes;
+}
+
+export interface IPanelWithConnectionString {
+    half?: boolean;
+}
+
+export interface IVSCodeInput extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {}

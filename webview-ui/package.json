@@ -13,6 +13,7 @@
         "@babel/runtime": "^7.24.6",
         "@uiw/react-json-view": "^2.0.0-alpha.24",
         "@vscode/webview-ui-toolkit": "^1.2.2",
+        "classnames": "^2.5.1",
         "react": "^18",
         "react-dom": "^18"
     },

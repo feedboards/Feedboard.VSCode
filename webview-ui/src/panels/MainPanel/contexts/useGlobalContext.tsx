@@ -1,10 +1,10 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { IGlobalContext, IGlobalProviderProps } from '..';
+import { IGlobalContext, IContextProviderProps } from '..';
 import { Subscription } from '@azure/arm-subscriptions';
 import { ResourceGroup } from '@azure/arm-resources';
 import { ConsumerGroup, EHNamespace, Eventhub } from '@azure/arm-eventhub';
-import { EMainPanelCommands } from '../../../../src/helpers';
-import { vscode } from '../../utilities';
+import { EMainPanelCommands } from '../../../../../src/helpers';
+import { vscode } from '../../../utilities';
 
 const GlobalContext = createContext<IGlobalContext | undefined>(undefined);
 
@@ -18,7 +18,7 @@ export const useGlobal = () => {
     return context;
 };
 
-export const GlobalProvider: React.FC<IGlobalProviderProps> = ({ children }) => {
+export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) => {
     const [subscriptions, setSubscriptions] = useState<Subscription[]>();
     const [subscriptionLoading, setSubscriptionLoading] = useState<boolean>(false);
     const [selectedSubscription, setSelectedSubscription] = useState<Subscription | undefined>(undefined);
