@@ -1,25 +1,18 @@
 import classNames from 'classnames';
 import { useLayout, ELayoutTypes } from '..';
-import {
-    HeaderWithAzureOAuth,
-    HeaderWithConnectionString,
-    PanelWithAzureOAuth,
-    PanelWithConnectionString,
-} from './components';
+import { Header, Panel } from './components';
 
 export const Layout = () => {
     const { layoutType } = useLayout();
 
     return (
         <main className="main-panel">
-            {layoutType === ELayoutTypes.withAzureOAuth && <HeaderWithAzureOAuth />}
-            {layoutType === ELayoutTypes.withConnectionString && <HeaderWithConnectionString />}
+            <Header />
             <div
                 className={classNames('main-panel__wrapper', {
                     ['main-panel__wrapper-connectionString']: layoutType === ELayoutTypes.withConnectionString,
                 })}>
-                {layoutType === ELayoutTypes.withAzureOAuth && <PanelWithAzureOAuth />}
-                {layoutType === ELayoutTypes.withConnectionString && <PanelWithConnectionString half />}
+                <Panel half />
             </div>
         </main>
     );

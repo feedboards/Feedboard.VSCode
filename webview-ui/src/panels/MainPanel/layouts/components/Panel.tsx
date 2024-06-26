@@ -1,5 +1,5 @@
 import { VSCodeButton, VSCodeDataGrid, VSCodeDataGridCell, VSCodeDataGridRow } from '@vscode/webview-ui-toolkit/react';
-import { IPanelWithConnectionString, useGlobal } from '../..';
+import { IPanel, useGlobal } from '../..';
 import JsonView from '@uiw/react-json-view';
 import { vscodeTheme } from '@uiw/react-json-view/vscode';
 import { useEffect, useRef, useState } from 'react';
@@ -9,7 +9,7 @@ const startObject = {
     str: 'str',
 };
 
-export const PanelWithConnectionString = ({ half = false }: IPanelWithConnectionString) => {
+export const Panel = ({ half = false }: IPanel) => {
     const { setSelectedMessages, messages, selectedMessage } = useGlobal();
 
     const [activeButtons, setActiveButtons] = useState<boolean[]>([true, false]);

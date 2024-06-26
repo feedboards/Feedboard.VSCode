@@ -75,9 +75,11 @@
         "@azure/arm-subscriptions": "^5.1.0",
         "@azure/event-hubs": "^5.12.0",
         "@azure/identity": "^4.2.0",
+        "@types/uuid": "^10.0.0",
         "axios": "^1.7.2",
         "polka": "^0.5.2",
         "util": "^0.12.5",
+        "uuid": "^10.0.0",
         "vsce": "^2.15.0"
     }
 }

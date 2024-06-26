@@ -3,44 +3,30 @@ import { ResourceGroup } from '@azure/arm-resources';
 import { Subscription } from '@azure/arm-subscriptions';
 import { DetailedHTMLProps, InputHTMLAttributes, ReactNode } from 'react';
 import { ELayoutTypes } from '.';
+import { TConnection } from '../../../../src/helpers';
 
 export interface IContextProviderProps {
     children: ReactNode;
 }
 
 export interface IGlobalContext {
-    setSubscriptions: (value: Subscription[]) => void;
-    setSubscriptionLoading: (value: boolean) => void;
-    setSelectedSubscription: (value: Subscription | undefined) => void;
-    subscriptions: Subscription[] | undefined;
-    subscriptionLoading: boolean;
-    selectedSubscription: Subscription | undefined;
-
-    setResourceGroups: (value: ResourceGroup[]) => void;
-    setResourceGroupLoading: (value: boolean) => void;
-    setSelectedResourceGroup: (value: ResourceGroup | undefined) => void;
-    resourceGroups: ResourceGroup[] | undefined;
-    resourceGroupLoading: boolean;
-    selectedResourceGroup: ResourceGroup | undefined;
-
-    setNamespaces: (value: EHNamespace[]) => void;
-    setNamespaceLoading: (value: boolean) => void;
-    setSelectedNamespace: (value: EHNamespace | undefined) => void;
-    namespaces: EHNamespace[] | undefined;
-    namespaceLoading: boolean;
-    selectedNamespace: EHNamespace | undefined;
-
     setEventHubs: (value: Eventhub[]) => void;
     setEventHubLoading: (value: boolean) => void;
     setSelectedEventHub: (value: Eventhub | undefined) => void;
+    setEventHubNameConnectionString: (value: string) => void;
     eventHubs: Eventhub[] | undefined;
     eventHubLoading: boolean;
     selectedEventHub: Eventhub | undefined;
+    eventHubNameConnectionString: string | undefined;
 
     setConsumerGroups: (value: ConsumerGroup[]) => void;
     setConsumerGroupLoading: (value: boolean) => void;
+    setSelectedConsumerGroups: (value: ConsumerGroup | undefined) => void;
+    setConsumerGroupNameConnectionString: (value: string) => void;
     consumerGroups: ConsumerGroup[] | undefined;
     consumerGroupLoading: boolean;
+    selectedConsumerGroups: ConsumerGroup | undefined;
+    consumerGroupNameConnectionString: string | undefined;
 
     setMessages: (value: any[] | undefined) => void;
     setMessageLoading: (value: boolean) => void;
@@ -51,6 +37,8 @@ export interface IGlobalContext {
 
     setIsLoggedInAzure: (value: boolean) => void;
     isLoggedInAzure: boolean;
+
+    connection: TConnection | undefined;
 }
 
 export interface ILayoutContext {
@@ -58,7 +46,7 @@ export interface ILayoutContext {
     layoutType: ELayoutTypes;
 }
 
-export interface IPanelWithConnectionString {
+export interface IPanel {
     half?: boolean;
 }
 

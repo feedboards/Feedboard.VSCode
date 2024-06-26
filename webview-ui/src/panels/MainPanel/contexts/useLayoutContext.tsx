@@ -1,5 +1,6 @@
-import { createContext, useContext, useState } from 'react';
-import { IContextProviderProps, ILayoutContext, ELayoutTypes } from '..';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { IContextProviderProps, ILayoutContext, ELayoutTypes, useGlobal } from '..';
+import { ELoginType } from '../../../../../src/helpers';
 
 const LayoutContext = createContext<ILayoutContext | undefined>(undefined);
 
@@ -14,7 +15,29 @@ export const useLayout = () => {
 };
 
 export const LayoutProvider: React.FC<IContextProviderProps> = ({ children }) => {
-    const [layoutType, setLayoutType] = useState<ELayoutTypes>(ELayoutTypes.withConnectionString);
+    const [layoutType, setLayoutType] = useState<ELayoutTypes>(ELayoutTypes.withAzureOAuth);
+
+    const { connection } = useGlobal();
+
+    useEffect(() => {
+        if (connection !== undefined) {
+            const layoutType = ConvertELoginTypeTOElayoutTypes(connection.settings.loginType);
+
+            if (layoutType !== null) {
+                setLayoutType(layoutType);
+            }
+        }
+    }, [connection]);
+
+    const ConvertELoginTypeTOElayoutTypes = (loginType: ELoginType): ELayoutTypes | null => {
+        if (loginType === ELoginType.connectionString) {
+            return ELayoutTypes.withConnectionString;
+        } else if (loginType === ELoginType.oAuth) {
+            return ELayoutTypes.withAzureOAuth;
+        }
+
+        return null;
+    };
 
     return (
         <LayoutContext.Provider value={{ layoutType, changeLayoutType: setLayoutType }}>

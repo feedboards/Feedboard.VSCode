@@ -1,5 +1,3 @@
-export * from './PanelWithAzureOAuth';
-export * from './PanelWithConnectionString';
-export * from './HeaderWithAzureOAuth';
-export * from './HeaderWithConnectionString';
+export * from './Panel';
 export * from './ChangeLayoutButtons';
+export * from './Header';

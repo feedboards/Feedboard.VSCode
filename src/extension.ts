@@ -2,21 +2,26 @@ import * as vscode from 'vscode';
 import { SideBarProvider } from './providers';
 import { MainPanel } from './panels';
 import { StoreHelper, AzureTokenResponse, GithubTokenResponse, authenticateGitHub, authenticateAzure } from './core';
-import { OAuthConstants } from './constants';
+import { Constnants } from './constants';
+import { TConnection } from './helpers';
 
 export async function activate(context: vscode.ExtensionContext) {
     // use this helper if you want to get any secrets
     const storeHelper = new StoreHelper(context);
 
     await configData(storeHelper);
+    Constnants.init();
 
     context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider('feedboard-sidebar-view', new SideBarProvider(context.extensionUri))
+        vscode.window.registerWebviewViewProvider(
+            'feedboard-sidebar-view',
+            new SideBarProvider(context.extensionUri, context)
+        )
     );
 
     context.subscriptions.push(
-        vscode.commands.registerCommand('feedboard.main-view', () => {
-            MainPanel.render(context.extensionUri, context);
+        vscode.commands.registerCommand('feedboard.main-view', (connection: TConnection) => {
+            MainPanel.render(context.extensionUri, context, connection);
         })
     );
 
@@ -28,8 +33,8 @@ export async function activate(context: vscode.ExtensionContext) {
             // test
             console.log('github result', result);
 
-            OAuthConstants.githubAccessToken = result.accessToken;
-            OAuthConstants.githubUserId = result.userId;
+            Constnants.githubAccessToken = result.accessToken;
+            Constnants.githubUserId = result.userId;
         })
     );
 
@@ -42,10 +47,10 @@ export async function activate(context: vscode.ExtensionContext) {
             //     result.idToken !== undefined &&
             //     result.refreshToken !== undefined
             // ) {
-            OAuthConstants.azureAccessToken = result.accessToken;
-            OAuthConstants.azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
-            OAuthConstants.azureIdToken = result.idToken;
-            OAuthConstants.azureRefreshToken = result.refreshToken;
+            Constnants.azureAccessToken = result.accessToken;
+            Constnants.azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
+            Constnants.azureIdToken = result.idToken;
+            Constnants.azureRefreshToken = result.refreshToken;
             // }
 
             return result;

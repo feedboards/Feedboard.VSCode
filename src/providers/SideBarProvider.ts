@@ -1,10 +1,42 @@
 import * as vscode from 'vscode';
 import { getNonce, getUri } from '../utilities';
+import { AzureClient, AzureTokenResponse, EventHubClient, TokenHelper } from '../core';
+import {
+    TMainPanelPayload,
+    EMainSideBarCommands,
+    isTMainPanelGetResourceGroups,
+    isTMainPanelGetNamespaces,
+    isTMainPanelGetEventHubs,
+    isTMainPanelGetConsumerGroups,
+    isTMainPanelStartMonitoring,
+    isTMainPanelStartMonitoringByConnectionString,
+    isString,
+} from '../helpers';
+import { Constnants } from '../constants';
 
 export class SideBarProvider implements vscode.WebviewViewProvider {
     public view?: vscode.WebviewView;
 
-    constructor(private readonly _extensionUri: vscode.Uri) {}
+    private readonly _tokenHelper: TokenHelper;
+    private _azureClient: AzureClient | undefined;
+    private _webview: vscode.Webview | undefined;
+
+    constructor(private readonly _extensionUri: vscode.Uri, context: vscode.ExtensionContext) {
+        this._tokenHelper = new TokenHelper(context);
+        this._tokenHelper.getAzureToken().then((token) => {
+            if (token !== null) {
+                Constnants.azureToken = token;
+                this._azureClient = new AzureClient(token);
+
+                if (this._webview !== undefined) {
+                    this._webview.postMessage({
+                        command: EMainSideBarCommands.setIsLoggedInAzure,
+                        payload: true,
+                    });
+                }
+            }
+        });
+    }
 
     public resolveWebviewView(
         webviewView: vscode.WebviewView,
@@ -19,32 +51,135 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
         };
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+
+        this._setWebviewMessageListener(webviewView.webview);
     }
 
     private _getHtmlForWebview(webview: vscode.Webview) {
         const nonce = getNonce();
 
-        // <link rel="stylesheet" type="text/css" href="${getUri(webview, this._extensionUri, ['webview-ui', 'build', 'assets', 'jsx-runtime.css'])}">
-
         return /*html*/ `
           <!DOCTYPE html>
-          <html lang="en">
+          <html lang="en" class="main-side-bar__html">
             <head>
               <meta charset="UTF-8" />
               <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-              <meta http-equiv="Content-Security-Policy" style-src 'self' 'unsafe-inline';">
+              <link rel="stylesheet" type="text/css" href="${getUri(webview, this._extensionUri, [
+                  'webview-ui',
+                  'build',
+                  'assets',
+                  'mainSideBar.css',
+              ])}">
               <title>feedboard</title>
             </head>
-            <body>
-              <div id="root"></div>
+            <body class="main-side-bar__body">
+              <div id="root" class="main-side-bar__root"></div>
               <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
             'webview-ui',
             'build',
             'assets',
             'mainSideBar.js',
         ])}"></script>
+        <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
+            'webview-ui',
+            'build',
+            'assets',
+            'index.js',
+        ])}"></script>
             </body>
           </html>
         `;
+    }
+
+    private _setWebviewMessageListener(webview: vscode.Webview) {
+        webview.onDidReceiveMessage(async (message: { command: EMainSideBarCommands; payload: any }) => {
+            this._webview = webview;
+
+            const payload = message.payload;
+
+            switch (message.command) {
+                case EMainSideBarCommands.openConnection:
+                    Constnants.openConnections.push(payload);
+                    vscode.commands.executeCommand('feedboard.main-view', payload);
+                    console.log(Constnants.openConnections);
+                    break;
+
+                case EMainSideBarCommands.getIsLoggedInAzure:
+                    await webview.postMessage({
+                        command: EMainSideBarCommands.setIsLoggedInAzure,
+                        payload: Constnants.isLoggedInAzure,
+                    });
+                    break;
+
+                case EMainSideBarCommands.getSavedConnections:
+                    await webview.postMessage({
+                        command: EMainSideBarCommands.setSavedConnections,
+                        payload: Constnants.connections,
+                    });
+                    break;
+
+                case EMainSideBarCommands.getSubscriptions:
+                    if (this._azureClient !== undefined) {
+                        await webview.postMessage({
+                            command: EMainSideBarCommands.setSubscriptions.toString(),
+                            payload: await this._azureClient.getSubscriptions(),
+                        });
+                    }
+                    break;
+
+                case EMainSideBarCommands.getResourceGroups:
+                    if (this._azureClient !== undefined && isTMainPanelGetResourceGroups(payload)) {
+                        await webview.postMessage({
+                            command: EMainSideBarCommands.setResourceGroups,
+                            payload: await this._azureClient.getResourceGroups(payload.subscriptionId),
+                        });
+                    }
+                    break;
+
+                case EMainSideBarCommands.getNamespaces:
+                    if (this._azureClient !== undefined && isTMainPanelGetNamespaces(payload)) {
+                        await webview.postMessage({
+                            command: EMainSideBarCommands.setNamespaces,
+                            payload: await this._azureClient.getNamespacesByResourceGroup(
+                                payload.subscriptionId,
+                                payload.resourceGroupName
+                            ),
+                        });
+                    }
+                    break;
+
+                case EMainSideBarCommands.getIsLoggedInAzure:
+                    await webview.postMessage({
+                        command: EMainSideBarCommands.setIsLoggedInAzure,
+                        payload: Constnants.isLoggedInAzure,
+                    });
+                    break;
+
+                case EMainSideBarCommands.singInWithAzure:
+                    const result = await vscode.commands.executeCommand<AzureTokenResponse>(
+                        'feedboard.singInWithAzure'
+                    );
+
+                    Constnants.azureToken = this._tokenHelper.createAzureToken(
+                        result.accessToken,
+                        result.accessTokenExpiredAt
+                    );
+
+                    if (Constnants.azureToken !== null) {
+                        this._azureClient = new AzureClient(Constnants.azureToken);
+
+                        await webview.postMessage({
+                            command: EMainSideBarCommands.setIsLoggedInAzure,
+                            payload: true,
+                        });
+                    }
+                    break;
+
+                case EMainSideBarCommands.addConnection:
+                    console.log(payload);
+                    Constnants.addConnection(payload);
+                    break;
+            }
+        });
     }
 }

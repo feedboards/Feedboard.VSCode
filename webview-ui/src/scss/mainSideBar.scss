@@ -1,0 +1,98 @@
+@import './variables';
+@import './components/vscode';
+
+.main-side-bar {
+    display: block;
+    box-sizing: border-box;
+    height: inherit;
+
+    &__html {
+        box-sizing: border-box;
+        height: 100%;
+    }
+
+    &__body,
+    &__root {
+        height: inherit;
+        box-sizing: border-box;
+        padding: 0;
+    }
+
+    &__input {
+        background-color: var(--vscode-badge-background);
+        margin-top: $gap;
+    }
+
+    &__header {
+        width: 100%;
+        box-sizing: border-box;
+        padding: $gap;
+
+        & > div {
+            border-bottom: 1px solid $border-color;
+        }
+
+        &_button {
+            width: 100%;
+            margin-bottom: $gap;
+        }
+    }
+
+    &__wrapper {
+        box-sizing: border-box;
+        padding: 0 $gap $gap $gap;
+
+        &[data-has-header='true'] {
+            height: calc(100% - 65px);
+        }
+
+        &[data-has-header='false'] {
+            height: 100%;
+        }
+
+        &_add-new-connection {
+            box-sizing: border-box;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+
+            &_button {
+                width: 100%;
+                margin-top: $gap;
+            }
+
+            &_dropdown {
+                &-group {
+                    border-bottom: 1px solid $border-color;
+                }
+
+                margin: $gap 0 $gap 0;
+                width: 100%;
+            }
+
+            &_container {
+                margin-top: $gap;
+
+                & > vscode-dropdown {
+                    width: 100%;
+                    margin-top: $gap;
+                }
+            }
+
+            &_button-group {
+                margin-top: auto;
+                display: flex;
+                border-top: 1px solid $border-color;
+
+                & > vscode-button {
+                    width: 100%;
+                    margin-top: $gap;
+
+                    &:nth-child(1) {
+                        margin-right: $gap;
+                    }
+                }
+            }
+        }
+    }
+}

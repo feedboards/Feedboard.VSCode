@@ -1,9 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { IGlobalContext, IContextProviderProps } from '..';
-import { Subscription } from '@azure/arm-subscriptions';
-import { ResourceGroup } from '@azure/arm-resources';
-import { ConsumerGroup, EHNamespace, Eventhub } from '@azure/arm-eventhub';
-import { EMainPanelCommands } from '../../../../../src/helpers';
+import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
+import { ELoginType, EMainPanelCommands, TConnection } from '../../../../../src/helpers';
 import { vscode } from '../../../utilities';
 
 const GlobalContext = createContext<IGlobalContext | undefined>(undefined);
@@ -19,33 +17,41 @@ export const useGlobal = () => {
 };
 
 export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) => {
-    const [subscriptions, setSubscriptions] = useState<Subscription[]>();
-    const [subscriptionLoading, setSubscriptionLoading] = useState<boolean>(false);
-    const [selectedSubscription, setSelectedSubscription] = useState<Subscription | undefined>(undefined);
+    const [eventHubLoading, setEventHubLoading] = useState<boolean>(false);
+    const [consumerGroupLoading, setConsumerGroupLoading] = useState<boolean>(false);
+    const [messageLoading, setMessageLoading] = useState<boolean>(false);
 
-    const [resourceGroups, setResourceGroups] = useState<ResourceGroup[]>();
-    const [resourceGroupLoading, setResourceGroupLoading] = useState<boolean>(false);
-    const [selectedResourceGroup, setSelectedResourceGroup] = useState<ResourceGroup | undefined>(undefined);
-
-    const [namespaces, setNamespaces] = useState<EHNamespace[]>();
-    const [namespaceLoading, setNamespaceLoading] = useState<boolean>(false);
-    const [selectedNamespace, setSelectedNamespace] = useState<EHNamespace | undefined>(undefined);
+    const [selectedEventHub, setSelectedEventHub] = useState<Eventhub | undefined>(undefined);
+    const [selectedConsumerGroups, setSelectedConsumerGroups] = useState<ConsumerGroup | undefined>(undefined);
+    const [selectedMessage, setSelectedMessages] = useState<any | undefined>(undefined);
 
     const [eventHubs, setEventHubs] = useState<Eventhub[]>();
-    const [eventHubLoading, setEventHubLoading] = useState<boolean>(false);
-    const [selectedEventHub, setSelectedEventHub] = useState<Eventhub | undefined>(undefined);
-
     const [consumerGroups, setConsumerGroups] = useState<ConsumerGroup[]>();
-    const [consumerGroupLoading, setConsumerGroupLoading] = useState<boolean>(false);
-
     const [messages, setMessages] = useState<any[] | undefined>(undefined);
-    const [messageLoading, setMessageLoading] = useState<boolean>(false);
-    const [selectedMessage, setSelectedMessages] = useState<any | undefined>(undefined);
+
+    const [eventHubNameConnectionString, setEventHubNameConnectionString] = useState<string>();
+    const [consumerGroupNameConnectionString, setConsumerGroupNameConnectionString] = useState<string>();
+
+    const [connection, setConnection] = useState<TConnection>({
+        id: 'asd',
+        name: 'name',
+        settings: {
+            loginType: ELoginType.oAuth,
+            subscriptionId: 'subscriptionId',
+            resourceGroupName: 'resourceGroupName',
+            namespaceName: 'namespaceName',
+            eventHubName: 'eventHubName',
+            consumerGroupName: 'consumerGroupName',
+            connectionString: 'connectionString',
+        },
+    });
 
     const [isLoggedInAzure, setIsLoggedInAzure] = useState<boolean>(false);
 
     useEffect(() => {
         window.addEventListener('message', _handleMessage);
+
+        console.log('main window');
 
         vscode.postMessage({ command: EMainPanelCommands.getIsLoggedInAzure });
 
@@ -54,13 +60,17 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
 
     useEffect(() => {
         if (isLoggedInAzure) {
-            console.log('isLoggedInAzure useEffect', isLoggedInAzure);
-
             vscode.postMessage({
                 command: EMainPanelCommands.getSubscriptions,
             });
         }
     }, [isLoggedInAzure]);
+
+    useEffect(() => {
+        vscode.postMessage({
+            command: EMainPanelCommands.getConnection,
+        });
+    }, []);
 
     const _handleMessage = (
         event: MessageEvent<{
@@ -71,6 +81,21 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
         const payload = event.data.payload;
 
         switch (event.data.command) {
+            case EMainPanelCommands.setConnection:
+                setConnection(payload);
+
+                if (payload.settings.loginType == ELoginType.oAuth) {
+                    vscode.postMessage({
+                        command: EMainPanelCommands.getEventHubs,
+                        payload: {
+                            subscriptionId: payload.settings.subscriptionId,
+                            resourceGroupName: payload.settings.resourceGroupName,
+                            namespaceName: payload.settings.namespaceName,
+                        },
+                    });
+                }
+                break;
+
             case EMainPanelCommands.setMessages:
                 console.log(payload);
 
@@ -87,21 +112,6 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
                 });
                 break;
 
-            case EMainPanelCommands.setSubscriptions:
-                setSubscriptions(payload);
-                setSubscriptionLoading(false);
-                break;
-
-            case EMainPanelCommands.setResourceGroups:
-                setResourceGroups(payload);
-                setResourceGroupLoading(false);
-                break;
-
-            case EMainPanelCommands.setNamespaces:
-                setNamespaces(payload);
-                setNamespaceLoading(false);
-                break;
-
             case EMainPanelCommands.setEventHubs:
                 setEventHubs(payload);
                 setEventHubLoading(false);
@@ -113,13 +123,10 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
                 break;
 
             case EMainPanelCommands.setIsLoggedInAzure:
-                console.log(EMainPanelCommands.setIsLoggedInAzure, payload);
-
                 setIsLoggedInAzure(payload);
 
                 if (payload === true) {
                     vscode.postMessage({ command: EMainPanelCommands.getSubscriptions });
-                    setSubscriptionLoading(true);
                 }
                 break;
         }
@@ -128,24 +135,13 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
     return (
         <GlobalContext.Provider
             value={{
-                setSubscriptions,
-                setSubscriptionLoading,
-                setSelectedSubscription,
-                subscriptions,
-                subscriptionLoading,
-                selectedSubscription,
-                setResourceGroups,
-                setResourceGroupLoading,
-                setSelectedResourceGroup,
-                resourceGroups,
-                resourceGroupLoading,
-                selectedResourceGroup,
-                setNamespaces,
-                setNamespaceLoading,
-                setSelectedNamespace,
-                namespaces,
-                namespaceLoading,
-                selectedNamespace,
+                eventHubNameConnectionString,
+                setEventHubNameConnectionString,
+                consumerGroupNameConnectionString,
+                setConsumerGroupNameConnectionString,
+                selectedConsumerGroups,
+                setSelectedConsumerGroups,
+                connection,
                 setEventHubs,
                 setEventHubLoading,
                 setSelectedEventHub,

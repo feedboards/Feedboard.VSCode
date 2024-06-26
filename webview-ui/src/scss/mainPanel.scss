@@ -1,4 +1,5 @@
 @import './variables';
+@import './components/vscode';
 
 .main-panel {
     display: block;
@@ -19,11 +20,11 @@
 
     &__header {
         display: flex;
-        padding: 12px;
+        padding: $gap;
         align-items: center;
 
         &_input {
-            margin-right: 12px;
+            margin-right: $gap;
 
             &_group {
                 display: flex;
@@ -41,13 +42,16 @@
         }
 
         &_button {
-            margin-left: auto;
+            &:nth-child(2) {
+                margin-left: auto;
+                margin-right: $gap;
+            }
 
             &-toggle {
                 border-radius: 0 0 0 0;
 
                 &:nth-child(1) {
-                    margin-left: 12px;
+                    margin-left: $gap;
                     width: 135px;
                 }
 
@@ -118,8 +122,8 @@
                 align-items: center;
                 height: 50px;
                 position: absolute;
-                right: 12px;
-                top: 12px;
+                right: $gap;
+                top: $gap;
 
                 &_button {
                     border-radius: 0 0 0 0;

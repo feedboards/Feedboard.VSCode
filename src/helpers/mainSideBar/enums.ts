@@ -1,15 +1,11 @@
-export enum EMainPanelCommands {
-    startMonitoring = 'startMonitoring',
-    stopMonitoring = 'stopMonitoring',
-    startMonitoringByConnectionString = 'startMonitoringByConnectionString',
-
+export enum EMainSideBarCommands {
+    getSavedConnections = 'getSavedConnections',
+    getIsLoggedInAzure = 'getIsLoggedInAzure',
     getSubscriptions = 'getSubscriptions',
     getResourceGroups = 'getResourceGroups',
     getNamespaces = 'getNamespaces',
     getEventHubs = 'getEventHubs',
     getConsumerGroups = 'getConsumerGroups',
-    getIsLoggedInAzure = 'getIsLoggedInAzure',
-    getConnection = 'getConnection',
 
     setMessages = 'setMessages',
     setSubscriptions = 'setSubscriptions',
@@ -17,9 +13,15 @@ export enum EMainPanelCommands {
     setNamespaces = 'setNamespaces',
     setEventHubs = 'setEventHubs',
     setConsumerGroups = 'setConsumerGroups',
+    setSavedConnections = 'setSavedConnections',
     setIsLoggedInAzure = 'setIsLoggedInAzure',
-    setConnection = 'setConnection',
 
+    addConnection = 'addConnection',
     singInWithAzure = 'singInWithAzure',
-    showError = 'showError',
+    openConnection = 'openConnection',
+}
+
+export enum ELoginType {
+    oAuth = 'oAuth',
+    connectionString = 'connectionString',
 }
