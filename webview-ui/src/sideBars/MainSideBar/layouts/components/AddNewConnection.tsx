@@ -44,9 +44,18 @@ export const AddNewConnection = () => {
                 name,
                 settings: {
                     loginType: selectedLoginType?.type,
-                    subscriptionId: selectedSubscription?.subscriptionId,
-                    resourceGroupName: selectedResourceGroup?.name,
-                    namespaceName: selectedNamespace?.name,
+                    subscription: {
+                        displayName: selectedSubscription?.displayName,
+                        subscriptionId: selectedSubscription?.subscriptionId,
+                    },
+                    resourceGroup: {
+                        name: selectedResourceGroup?.name,
+                        id: selectedResourceGroup?.id,
+                    },
+                    namespace: {
+                        name: selectedNamespace?.name,
+                        id: selectedNamespace?.id,
+                    },
                     connectionString: connectionString,
                 },
             };

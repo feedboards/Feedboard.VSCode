@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { IGlobalContext, IContextProviderProps } from '..';
+import { IGlobalContext, IContextProviderProps, isOAuthType, isConnectionString } from '..';
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
 import { ELoginType, EMainPanelCommands, TConnection } from '../../../../../src/helpers';
 import { vscode } from '../../../utilities';
@@ -32,19 +32,7 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
     const [eventHubNameConnectionString, setEventHubNameConnectionString] = useState<string>();
     const [consumerGroupNameConnectionString, setConsumerGroupNameConnectionString] = useState<string>();
 
-    const [connection, setConnection] = useState<TConnection>({
-        id: 'asd',
-        name: 'name',
-        settings: {
-            loginType: ELoginType.oAuth,
-            subscriptionId: 'subscriptionId',
-            resourceGroupName: 'resourceGroupName',
-            namespaceName: 'namespaceName',
-            eventHubName: 'eventHubName',
-            consumerGroupName: 'consumerGroupName',
-            connectionString: 'connectionString',
-        },
-    });
+    const [connection, setConnection] = useState<TConnection>();
 
     const [isLoggedInAzure, setIsLoggedInAzure] = useState<boolean>(false);
 
@@ -54,23 +42,25 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
         console.log('main window');
 
         vscode.postMessage({ command: EMainPanelCommands.getIsLoggedInAzure });
+        vscode.postMessage({ command: EMainPanelCommands.getConnection });
 
         return () => window.removeEventListener('message', _handleMessage);
     }, []);
 
     useEffect(() => {
-        if (isLoggedInAzure) {
+        console.log('useEffect(connection)');
+
+        if (connection !== undefined && isOAuthType(connection.settings)) {
             vscode.postMessage({
-                command: EMainPanelCommands.getSubscriptions,
+                command: EMainPanelCommands.getEventHubs,
+                payload: {
+                    subscriptionId: connection.settings.subscription.subscriptionId,
+                    resourceGroupName: connection.settings.resourceGroup.name,
+                    namespaceName: connection.settings.namespace.name,
+                },
             });
         }
-    }, [isLoggedInAzure]);
-
-    useEffect(() => {
-        vscode.postMessage({
-            command: EMainPanelCommands.getConnection,
-        });
-    }, []);
+    }, [connection]);
 
     const _handleMessage = (
         event: MessageEvent<{
@@ -84,13 +74,13 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
             case EMainPanelCommands.setConnection:
                 setConnection(payload);
 
-                if (payload.settings.loginType == ELoginType.oAuth) {
+                if (payload.settings.loginType == ELoginType.oAuth && isLoggedInAzure) {
                     vscode.postMessage({
                         command: EMainPanelCommands.getEventHubs,
                         payload: {
-                            subscriptionId: payload.settings.subscriptionId,
-                            resourceGroupName: payload.settings.resourceGroupName,
-                            namespaceName: payload.settings.namespaceName,
+                            subscriptionId: payload.settings.subscription.subscriptionId,
+                            resourceGroupName: payload.settings.resourceGroup.name,
+                            namespaceName: payload.settings.namespace.name,
                         },
                     });
                 }
@@ -125,8 +115,8 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
             case EMainPanelCommands.setIsLoggedInAzure:
                 setIsLoggedInAzure(payload);
 
-                if (payload === true) {
-                    vscode.postMessage({ command: EMainPanelCommands.getSubscriptions });
+                if (payload == true) {
+                    vscode.postMessage({ command: EMainPanelCommands.getConnection });
                 }
                 break;
         }

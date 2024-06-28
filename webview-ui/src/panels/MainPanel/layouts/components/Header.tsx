@@ -2,18 +2,23 @@ import { VSCodeButton, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-t
 import { useGlobal, useLayout } from '../../contexts';
 import { ELayoutTypes } from '../../enums';
 import { VSCodeInput } from '../../../../components';
-import { ChangeEvent, useEffect } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { addLoading, handleDropdownChange, vscode } from '../../../../utilities';
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
-import { EMainPanelCommands } from '../../../../../../src/helpers';
+import { ELoginType, EMainPanelCommands } from '../../../../../../src/helpers';
+import { isConnectionString, isOAuthType } from '../..';
 
 export const Header = () => {
+    const [consumerGroupName, setConsumerGroupName] = useState<string>();
+
     const { layoutType } = useLayout();
     const {
         connection,
         setConsumerGroupNameConnectionString,
+        consumerGroupNameConnectionString,
         setEventHubNameConnectionString,
         setSelectedEventHub,
+        eventHubNameConnectionString,
         eventHubs,
         eventHubLoading,
         selectedEventHub,
@@ -22,12 +27,39 @@ export const Header = () => {
         consumerGroupLoading,
     } = useGlobal();
 
-    const sendMessage = () => {};
+    const onSendMessage = () => {};
 
-    const singInWithAzure = () => {
+    const onSingInWithAzure = () => {
         vscode.postMessage({
             command: EMainPanelCommands.singInWithAzure,
         });
+    };
+
+    const onConnect = () => {
+        if (connection?.settings.loginType === ELoginType.oAuth && isOAuthType(connection.settings)) {
+            vscode.postMessage({
+                command: EMainPanelCommands.startMonitoring,
+                payload: {
+                    eventHubName: selectedEventHub?.name,
+                    consumerGroupName: consumerGroupName,
+                    resourceGroupName: connection?.settings.resourceGroup.name,
+                    namespaceName: connection.settings.namespace.name,
+                    subscriptionId: connection.settings.subscription.subscriptionId,
+                },
+            });
+        } else if (
+            connection?.settings.loginType === ELoginType.connectionString &&
+            isConnectionString(connection.settings)
+        ) {
+            vscode.postMessage({
+                command: EMainPanelCommands.startMonitoringByConnectionString,
+                payload: {
+                    eventHubName: eventHubNameConnectionString,
+                    connectionString: connection?.settings.connectionString,
+                    consumerGroupName: consumerGroupNameConnectionString,
+                },
+            });
+        }
     };
 
     useEffect(() => {
@@ -42,9 +74,12 @@ export const Header = () => {
                         <VSCodeInput
                             className="main-panel__header_input"
                             value={
+                                isConnectionString(connection?.settings) &&
                                 connection?.settings.connectionString == undefined
                                     ? 'connection string'
-                                    : connection?.settings.connectionString
+                                    : isConnectionString(connection?.settings)
+                                    ? connection?.settings.connectionString
+                                    : 'error' //TODO fix
                             }
                             readOnly
                         />
@@ -56,9 +91,9 @@ export const Header = () => {
                             placeholder="Event Hub"
                         />
                         <VSCodeInput
-                            onChange={(x: ChangeEvent<HTMLInputElement>) =>
-                                setConsumerGroupNameConnectionString(x.target.value)
-                            }
+                            onChange={(x: ChangeEvent<HTMLInputElement>) => {
+                                setConsumerGroupNameConnectionString(x.target.value);
+                            }}
                             className="main-panel__header_input"
                             placeholder="Consumer Group"
                         />
@@ -67,9 +102,10 @@ export const Header = () => {
 
                 {layoutType === ELayoutTypes.withAzureOAuth && (
                     <>
-                        {connection?.settings.subscriptionId !== undefined &&
-                            connection?.settings.resourceGroupName !== undefined &&
-                            connection?.settings.namespaceName !== undefined && (
+                        {isOAuthType(connection?.settings) &&
+                            connection?.settings.subscription.subscriptionId !== undefined &&
+                            connection?.settings.resourceGroup.name !== undefined &&
+                            connection?.settings.namespace.name !== undefined && (
                                 <div className="main-panel__header_container">
                                     <label htmlFor="eventHubs">Event Hubs</label>
                                     <VSCodeDropdown
@@ -79,16 +115,17 @@ export const Header = () => {
                                             handleDropdownChange<Eventhub>(
                                                 x,
                                                 (x: undefined | Eventhub) => {
-                                                    if (x !== undefined) {
+                                                    if (x !== undefined && isOAuthType(connection?.settings)) {
                                                         setSelectedEventHub(x);
 
                                                         vscode.postMessage({
                                                             command: EMainPanelCommands.getConsumerGroups,
                                                             payload: {
-                                                                subscriptionId: connection?.settings.subscriptionId,
+                                                                subscriptionId:
+                                                                    connection?.settings.subscription.subscriptionId,
                                                                 resourceGroupName:
-                                                                    connection?.settings.resourceGroupName,
-                                                                namespaceName: connection?.settings.namespaceName,
+                                                                    connection?.settings.resourceGroup.name,
+                                                                namespaceName: connection?.settings.namespace.name,
                                                                 eventHubName: x.name,
                                                             },
                                                         });
@@ -114,9 +151,10 @@ export const Header = () => {
                                 </div>
                             )}
 
-                        {connection?.settings.subscriptionId !== undefined &&
-                            connection?.settings.resourceGroupName !== undefined &&
-                            connection?.settings.namespaceName !== undefined &&
+                        {isOAuthType(connection?.settings) &&
+                            connection?.settings.subscription.subscriptionId !== undefined &&
+                            connection?.settings.resourceGroup.name !== undefined &&
+                            connection?.settings.namespace.name !== undefined &&
                             selectedEventHub !== undefined && (
                                 <div className="main-panel__header_container">
                                     <label htmlFor="consumerGroup">Consumer Groups</label>
@@ -128,17 +166,7 @@ export const Header = () => {
                                                 x,
                                                 (x: undefined | ConsumerGroup) => {
                                                     if (x !== undefined) {
-                                                        vscode.postMessage({
-                                                            command: EMainPanelCommands.startMonitoring,
-                                                            payload: {
-                                                                eventHubName: selectedEventHub.name,
-                                                                consumerGroupName: x.name,
-                                                                resourceGroupName:
-                                                                    connection.settings.resourceGroupName,
-                                                                namespaceName: connection.settings.namespaceName,
-                                                                subscriptionId: connection.settings.subscriptionId,
-                                                            },
-                                                        });
+                                                        setConsumerGroupName(x.name);
                                                     }
                                                 },
                                                 consumerGroups
@@ -163,14 +191,18 @@ export const Header = () => {
 
                 {layoutType === ELayoutTypes.withAzureOAuth && (
                     <VSCodeButton
-                        className="main-panel__header_button"
+                        className="main-panel__header_button main-panel__header_button-first"
                         appearance="secondary"
-                        onClick={singInWithAzure}>
+                        onClick={onSingInWithAzure}>
                         Sing in with Azure
                     </VSCodeButton>
                 )}
 
-                <VSCodeButton className="main-panel__header_button" onClick={sendMessage}>
+                <VSCodeButton className="main-panel__header_button" appearance="secondary" onClick={onConnect}>
+                    Connect
+                </VSCodeButton>
+
+                <VSCodeButton className="main-panel__header_button" onClick={onSendMessage}>
                     Send Message
                 </VSCodeButton>
             </div>

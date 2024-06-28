@@ -21,7 +21,11 @@ export const LayoutProvider: React.FC<IContextProviderProps> = ({ children }) =>
 
     useEffect(() => {
         if (connection !== undefined) {
+            console.log('connection.settings.loginType', connection.settings.loginType);
+
             const layoutType = ConvertELoginTypeTOElayoutTypes(connection.settings.loginType);
+
+            console.log('layoutType', layoutType);
 
             if (layoutType !== null) {
                 setLayoutType(layoutType);

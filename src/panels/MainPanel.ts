@@ -175,6 +175,8 @@ export class MainPanel {
                         break;
 
                     case EMainPanelCommands.startMonitoringByConnectionString:
+                        window.showInformationMessage('start monitoring');
+
                         if (isTMainPanelStartMonitoringByConnectionString(payload)) {
                             this._eventHubClient = new EventHubClient(
                                 payload.consumerGroupName,
@@ -213,6 +215,13 @@ export class MainPanel {
                         if (Constnants.isMonitoring && this._eventHubClient !== undefined) {
                             await this._eventHubClient.stopMonitoring();
                         }
+                        break;
+
+                    case EMainPanelCommands.getConnection:
+                        await webview.postMessage({
+                            command: EMainPanelCommands.setConnection,
+                            payload: this._connection,
+                        });
                         break;
 
                     case EMainPanelCommands.getEventHubs:

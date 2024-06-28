@@ -5,15 +5,32 @@ export type TMainSideBarPayload = undefined | string;
 export type TConnection = {
     id: string;
     name: string;
-    settings: TConnectionSettingsAzure;
+    settings: TConnectionSettingsAzureConnectionString | TConnectionSettingsAzureOAuth;
 };
 
 export type TConnectionSettingsAzure = {
     loginType: ELoginType;
-    subscriptionId?: string; // OAuth
-    resourceGroupName?: string; // OAuth
-    namespaceName?: string; // OAuth
-    eventHubName?: string; // connectionString, OAuth
-    consumerGroupName?: string; // connectionString, OAuth
-    connectionString?: string; // connectionString
+};
+
+export type TConnectionSettingsAzureConnectionString = TConnectionSettingsAzure & {
+    connectionString?: string;
+};
+
+export type TConnectionSettingsAzureOAuth = TConnectionSettingsAzure & {
+    subscription: TSubscription;
+    resourceGroup: TData;
+    namespace: TData;
+    eventHub: TData;
+    consumerGroup: TData;
+};
+
+type TSubscription = {
+    readonly subscriptionId?: string;
+    readonly displayName?: string;
+    readonly tenantId?: string;
+};
+
+type TData = {
+    readonly id?: string;
+    readonly name?: string;
 };
