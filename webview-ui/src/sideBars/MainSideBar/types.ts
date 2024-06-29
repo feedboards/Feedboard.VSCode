@@ -47,4 +47,13 @@ export interface ILayoutContext {
     hasHeader: boolean;
 }
 
+export interface IAddNewConnectionOAuth {
+    subscriptionsError: boolean;
+    resourceGroupsError: boolean;
+    namespacesError: boolean;
+    setSubscriptionsError: (value: boolean) => void;
+    setResourceGroupsError: (value: boolean) => void;
+    setNamespacesError: (value: boolean) => void;
+}
+
 export interface IVSCodeInput extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {}

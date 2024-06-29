@@ -50,4 +50,6 @@ export interface IPanel {
     half?: boolean;
 }
 
-export interface IVSCodeInput extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {}
+export interface IVSCodeInput extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
+    isError?: boolean;
+}

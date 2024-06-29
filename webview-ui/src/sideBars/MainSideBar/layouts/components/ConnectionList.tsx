@@ -1,4 +1,3 @@
-import { VSCodeDataGrid, VSCodeDataGridCell, VSCodeDataGridRow } from '@vscode/webview-ui-toolkit/react';
 import { useGlobal } from '../../contexts';
 import { EMainSideBarCommands, TConnection } from '../../../../../../src/helpers';
 import { vscode } from '../../../../utilities';
@@ -14,16 +13,15 @@ export const ConnectionList = () => {
     };
 
     return (
-        <VSCodeDataGrid>
-            <VSCodeDataGridRow rowType="header">
-                <VSCodeDataGridCell gridColumn="1">Connection Name</VSCodeDataGridCell>
-            </VSCodeDataGridRow>
-
+        <div className="main-side-bar__connection-list">
+            <div className="main-side-bar__connection-list_header">
+                <b>Connections</b>
+            </div>
             {savedConnections?.map((x) => (
-                <VSCodeDataGridRow onClick={() => onOpen(x)}>
-                    <VSCodeDataGridCell gridColumn="1">{x.name}</VSCodeDataGridCell>
-                </VSCodeDataGridRow>
+                <div className="main-side-bar__connection" onClick={() => onOpen(x)}>
+                    {x.name}
+                </div>
             ))}
-        </VSCodeDataGrid>
+        </div>
     );
 };

@@ -6,6 +6,7 @@ import { AddNewConnectionOAuth } from './AddNewConnectionOAuth';
 import { ELoginType, EMainSideBarCommands, TConnection } from '../../../../../../src/helpers';
 import { VSCodeInput } from '../../../../components';
 import { v4 as uuidv4 } from 'uuid';
+import classNames from 'classnames';
 
 type TLoginType = {
     type: ELoginType;
@@ -13,8 +14,15 @@ type TLoginType = {
 };
 
 export const AddNewConnection = () => {
+    const [nameError, setNameError] = useState<boolean>(false);
+    const [connectionStringError, setConnectionStringError] = useState<boolean>(false);
+    const [loginTypeError, setLoginTypeError] = useState<boolean>(false);
+    const [subscriptionsError, setSubscriptionsError] = useState<boolean>(false);
+    const [resourceGroupsError, setResourceGroupsError] = useState<boolean>(false);
+    const [namespacesError, setNamespacesError] = useState<boolean>(false);
+
     const [selectedLoginType, setSelectedLoginType] = useState<TLoginType | undefined>(undefined);
-    const [name, setName] = useState<string>();
+    const [name, setName] = useState<string | undefined>(undefined);
     const [loginTypes, setLoginTypes] = useState<TLoginType[]>([
         {
             type: ELoginType.connectionString,
@@ -37,7 +45,69 @@ export const AddNewConnection = () => {
         addConnection,
     } = useGlobal();
 
+    const onSetDropdown = (x: TLoginType | undefined) => {
+        if (x !== undefined) {
+            setNameError(false);
+            setConnectionStringError(false);
+            setLoginTypeError(false);
+
+            setSelectedLoginType(x);
+        }
+    };
+
+    const onChangeName = (x: ChangeEvent<HTMLInputElement>) => {
+        if (x.target.value !== undefined && x.target.value !== '') {
+            setNameError(false);
+            setConnectionStringError(false);
+        }
+
+        setName(x.target.value);
+    };
+
+    const onChangeConnectionString = (x: ChangeEvent<HTMLInputElement>) => {
+        if (x.target.value !== undefined && x.target.value !== '') {
+            setConnectionStringError(false);
+        }
+
+        setConnectionString(x.target.value);
+    };
+
     const onAdd = () => {
+        if (name === undefined || name === '') {
+            setNameError(true);
+        }
+
+        if (selectedLoginType === undefined) {
+            setLoginTypeError(true);
+        }
+
+        if (selectedLoginType !== undefined && selectedLoginType.type === ELoginType.connectionString) {
+            if (connectionString === undefined || connectionString === '') {
+                setConnectionStringError(true);
+            }
+        } else if (selectedLoginType !== undefined && selectedLoginType.type === ELoginType.oAuth) {
+            console.log(
+                'selectedSubscription',
+                selectedSubscription,
+                'selectedResourceGroup',
+                selectedResourceGroup,
+                'selectedNamespace',
+                selectedNamespace
+            );
+
+            if (selectedSubscription === undefined) {
+                setSubscriptionsError(true);
+            }
+
+            if (selectedResourceGroup === undefined) {
+                setResourceGroupsError(true);
+            }
+
+            if (selectedNamespace === undefined) {
+                setNamespacesError(true);
+            }
+        }
+
         if (name && selectedLoginType) {
             const connection: TConnection = {
                 id: uuidv4(),
@@ -75,10 +145,12 @@ export const AddNewConnection = () => {
             <div className="main-side-bar__wrapper_add-new-connection_dropdown-group">
                 <label htmlFor="connectioType">Login Type</label>
                 <VSCodeDropdown
-                    className="main-side-bar__wrapper_add-new-connection_dropdown"
+                    className={classNames('main-side-bar__wrapper_add-new-connection_dropdown', {
+                        ['main-side-bar__wrapper_add-new-connection_dropdown_error']: loginTypeError,
+                    })}
                     id="connectioType"
                     onChange={(x) => {
-                        handleDropdownChange<TLoginType>(x, setSelectedLoginType, loginTypes);
+                        handleDropdownChange<TLoginType>(x, onSetDropdown, loginTypes);
                     }}>
                     <VSCodeOption value="">Select a login type</VSCodeOption>
                     {loginTypes?.map((x, index: number) => (
@@ -87,20 +159,38 @@ export const AddNewConnection = () => {
                         </VSCodeOption>
                     ))}
                 </VSCodeDropdown>
+                {loginTypeError && (
+                    <div className="main-side-bar__error-message_with-under-gap">this field is required</div>
+                )}
             </div>
+
+            <label htmlFor="name" className="main-side-bar__lable">
+                Name
+            </label>
 
             <VSCodeInput
                 className="main-side-bar__input"
+                id="name"
+                isError={nameError}
                 placeholder="name"
-                onChange={(x: ChangeEvent<HTMLInputElement>) => setName(x.target.value)}
+                onChange={onChangeName}
             />
+
+            {nameError && <div className="main-side-bar__error-message">this field is required</div>}
 
             {selectedLoginType === undefined && <></>}
 
             {selectedLoginType?.type === ELoginType.oAuth && (
                 <>
                     {isLoggedInAzure ? (
-                        <AddNewConnectionOAuth />
+                        <AddNewConnectionOAuth
+                            subscriptionsError={subscriptionsError}
+                            resourceGroupsError={resourceGroupsError}
+                            namespacesError={namespacesError}
+                            setSubscriptionsError={setSubscriptionsError}
+                            setResourceGroupsError={setResourceGroupsError}
+                            setNamespacesError={setNamespacesError}
+                        />
                     ) : (
                         <VSCodeButton
                             className="main-side-bar__wrapper_add-new-connection_button"
@@ -116,11 +206,21 @@ export const AddNewConnection = () => {
             )}
 
             {selectedLoginType?.type === ELoginType.connectionString && (
-                <VSCodeInput
-                    className="main-side-bar__input"
-                    onChange={(x: ChangeEvent<HTMLInputElement>) => setConnectionString(x.target.value)}
-                    placeholder="Connection string"
-                />
+                <>
+                    <label htmlFor="connectionString" className="main-side-bar__lable">
+                        Connection String
+                    </label>
+                    <VSCodeInput
+                        id="connectionString"
+                        className="main-side-bar__input"
+                        isError={connectionStringError}
+                        onChange={onChangeConnectionString}
+                        placeholder="Connection string"
+                    />
+                    {connectionStringError && (
+                        <div className="main-side-bar__error-message">this field is required</div>
+                    )}
+                </>
             )}
 
             <div className="main-side-bar__wrapper_add-new-connection_button-group">

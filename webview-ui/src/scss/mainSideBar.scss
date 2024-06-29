@@ -23,6 +23,20 @@
         margin-top: $gap;
     }
 
+    &__lable {
+        margin-top: $gap;
+    }
+
+    &__error-message {
+        color: red;
+        margin-top: 6px;
+
+        &_with-under-gap {
+            color: red;
+            margin-bottom: $gap;
+        }
+    }
+
     &__header {
         width: 100%;
         box-sizing: border-box;
@@ -35,6 +49,24 @@
         &_button {
             width: 100%;
             margin-bottom: $gap;
+        }
+    }
+
+    &__connection {
+        padding: 6px $gap;
+        box-sizing: border-box;
+        cursor: pointer;
+
+        &:hover {
+            background-color: var(--vscode-dropdown-background);
+        }
+
+        &-list {
+            &_header {
+                display: flex;
+                margin-bottom: $gap;
+                justify-content: center;
+            }
         }
     }
 
@@ -62,12 +94,17 @@
             }
 
             &_dropdown {
+                border: 1px solid transparent;
+                margin: $gap 0 $gap 0;
+                width: 100%;
+
                 &-group {
                     border-bottom: 1px solid $border-color;
                 }
 
-                margin: $gap 0 $gap 0;
-                width: 100%;
+                &_error {
+                    border: 1px solid red;
+                }
             }
 
             &_container {
@@ -80,7 +117,7 @@
             }
 
             &_button-group {
-                margin-top: auto;
+                margin-top: $gap;
                 display: flex;
                 border-top: 1px solid $border-color;
 

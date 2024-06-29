@@ -1,12 +1,20 @@
 import { VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
 import { addLoading, handleDropdownChange, vscode } from '../../../../utilities';
 import { Subscription } from '@azure/arm-subscriptions';
-import { useGlobal } from '../../contexts';
 import { ResourceGroup } from '@azure/arm-resources';
 import { EHNamespace } from '@azure/arm-eventhub';
 import { EMainSideBarCommands } from '../../../../../../src/helpers';
+import { IAddNewConnectionOAuth, useGlobal } from '../..';
+import classNames from 'classnames';
 
-export const AddNewConnectionOAuth = () => {
+export const AddNewConnectionOAuth = ({
+    subscriptionsError,
+    resourceGroupsError,
+    namespacesError,
+    setSubscriptionsError,
+    setResourceGroupsError,
+    setNamespacesError,
+}: IAddNewConnectionOAuth) => {
     const {
         setSelectedSubscription,
         setResourceGroupLoading,
@@ -23,34 +31,75 @@ export const AddNewConnectionOAuth = () => {
         namespaceLoading,
     } = useGlobal();
 
+    const onChangeSubscriptions = (x: undefined | Subscription) => {
+        setSelectedSubscription(x);
+        setSelectedResourceGroup(undefined);
+        setSelectedNamespace(undefined);
+
+        if (x !== undefined) {
+            setSubscriptionsError(false);
+            setResourceGroupsError(false);
+            setNamespacesError(false);
+
+            vscode.postMessage({
+                command: EMainSideBarCommands.getResourceGroups,
+                payload: {
+                    subscriptionId: x.subscriptionId,
+                },
+            });
+
+            setResourceGroupLoading(true);
+        }
+    };
+
+    const onChangeresourceGroups = (x: undefined | ResourceGroup) => {
+        setSelectedResourceGroup(x);
+        setSelectedNamespace(undefined);
+
+        if (x !== undefined) {
+            setResourceGroupsError(false);
+            setNamespacesError(false);
+
+            vscode.postMessage({
+                command: EMainSideBarCommands.getNamespaces,
+                payload: {
+                    subscriptionId: selectedSubscription?.subscriptionId,
+                    resourceGroupName: x.name,
+                },
+            });
+
+            setNamespaceLoading(true);
+        }
+    };
+
+    const onChangeNamespaces = (x: undefined | EHNamespace) => {
+        setSelectedNamespace(x);
+
+        if (x !== undefined) {
+            setNamespacesError(false);
+
+            vscode.postMessage({
+                command: EMainSideBarCommands.getEventHubs,
+                payload: {
+                    subscriptionId: selectedSubscription?.subscriptionId,
+                    resourceGroupName: selectedResourceGroup?.name,
+                    namespaceName: x.name,
+                },
+            });
+        }
+    };
+
     return (
         <>
             <div className="main-side-bar__wrapper_add-new-connection_container">
                 <label htmlFor="subscriptions">Subscriptions</label>
                 <VSCodeDropdown
                     id="subscriptions"
+                    className={classNames('main-side-bar__wrapper_add-new-connection_dropdown', {
+                        ['main-side-bar__wrapper_add-new-connection_dropdown_error']: subscriptionsError,
+                    })}
                     onChange={(x) =>
-                        subscriptions &&
-                        handleDropdownChange<Subscription>(
-                            x,
-                            (x: undefined | Subscription) => {
-                                setSelectedSubscription(x);
-                                setSelectedResourceGroup(undefined);
-                                setSelectedNamespace(undefined);
-
-                                if (x !== undefined) {
-                                    vscode.postMessage({
-                                        command: EMainSideBarCommands.getResourceGroups,
-                                        payload: {
-                                            subscriptionId: x.subscriptionId,
-                                        },
-                                    });
-
-                                    setResourceGroupLoading(true);
-                                }
-                            },
-                            subscriptions
-                        )
+                        subscriptions && handleDropdownChange<Subscription>(x, onChangeSubscriptions, subscriptions)
                     }>
                     {addLoading(
                         subscriptionLoading,
@@ -71,28 +120,12 @@ export const AddNewConnectionOAuth = () => {
                     <VSCodeDropdown
                         id="resourceGroups"
                         value={selectedResourceGroup?.name}
+                        className={classNames('main-side-bar__wrapper_add-new-connection_dropdown', {
+                            ['main-side-bar__wrapper_add-new-connection_dropdown_error']: resourceGroupsError,
+                        })}
                         onChange={(x) =>
                             resourceGroups &&
-                            handleDropdownChange<ResourceGroup>(
-                                x,
-                                (x: undefined | ResourceGroup) => {
-                                    setSelectedResourceGroup(x);
-                                    setSelectedNamespace(undefined);
-
-                                    if (x !== undefined) {
-                                        vscode.postMessage({
-                                            command: EMainSideBarCommands.getNamespaces,
-                                            payload: {
-                                                subscriptionId: selectedSubscription.subscriptionId,
-                                                resourceGroupName: x.name,
-                                            },
-                                        });
-
-                                        setNamespaceLoading(true);
-                                    }
-                                },
-                                resourceGroups
-                            )
+                            handleDropdownChange<ResourceGroup>(x, onChangeresourceGroups, resourceGroups)
                         }>
                         {addLoading(
                             resourceGroupLoading,
@@ -113,26 +146,11 @@ export const AddNewConnectionOAuth = () => {
                     <label htmlFor="namespaces">Namespaces</label>
                     <VSCodeDropdown
                         id="namespaces"
+                        className={classNames('main-side-bar__wrapper_add-new-connection_dropdown', {
+                            ['main-side-bar__wrapper_add-new-connection_dropdown_error']: namespacesError,
+                        })}
                         onChange={(x) =>
-                            namespaces &&
-                            handleDropdownChange<EHNamespace>(
-                                x,
-                                (x: undefined | EHNamespace) => {
-                                    setSelectedNamespace(x);
-
-                                    if (x !== undefined) {
-                                        vscode.postMessage({
-                                            command: EMainSideBarCommands.getEventHubs,
-                                            payload: {
-                                                subscriptionId: selectedSubscription.subscriptionId,
-                                                resourceGroupName: selectedResourceGroup.name,
-                                                namespaceName: x.name,
-                                            },
-                                        });
-                                    }
-                                },
-                                namespaces
-                            )
+                            namespaces && handleDropdownChange<EHNamespace>(x, onChangeNamespaces, namespaces)
                         }>
                         {addLoading(
                             namespaceLoading,

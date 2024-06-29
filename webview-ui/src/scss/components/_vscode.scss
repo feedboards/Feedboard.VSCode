@@ -3,8 +3,13 @@
         background-color: var(--vscode-editorHoverWidget-statusBarBackground);
         color: var(--foreground);
         height: 15px;
-        padding: 5px;
+        padding: 4px;
         border: none;
+        border: 1px solid var(--vscode-editorHoverWidget-statusBarBackground);
+
+        &-error {
+            border: 1px solid red;
+        }
 
         &:focus {
             outline: none;
