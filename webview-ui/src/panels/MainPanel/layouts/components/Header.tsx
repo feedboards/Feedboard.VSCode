@@ -62,6 +62,14 @@ export const Header = () => {
         }
     };
 
+    const onChandeEventHubConnectionString = (x: ChangeEvent<HTMLInputElement>) => {
+        setEventHubNameConnectionString(x.target.value);
+    };
+
+    const onChandeConsumerGroupConnectionString = (x: ChangeEvent<HTMLInputElement>) => {
+        setConsumerGroupNameConnectionString(x.target.value);
+    };
+
     useEffect(() => {
         console.log(layoutType);
     }, [layoutType]);
@@ -72,28 +80,12 @@ export const Header = () => {
                 {layoutType === ELayoutTypes.withConnectionString && (
                     <>
                         <VSCodeInput
-                            className="main-panel__header_input"
-                            value={
-                                isConnectionString(connection?.settings) &&
-                                connection?.settings.connectionString == undefined
-                                    ? 'connection string'
-                                    : isConnectionString(connection?.settings)
-                                    ? connection?.settings.connectionString
-                                    : 'error' //TODO fix
-                            }
-                            readOnly
-                        />
-                        <VSCodeInput
-                            onChange={(x: ChangeEvent<HTMLInputElement>) =>
-                                setEventHubNameConnectionString(x.target.value)
-                            }
+                            onChange={onChandeEventHubConnectionString}
                             className="main-panel__header_input"
                             placeholder="Event Hub"
                         />
                         <VSCodeInput
-                            onChange={(x: ChangeEvent<HTMLInputElement>) => {
-                                setConsumerGroupNameConnectionString(x.target.value);
-                            }}
+                            onChange={onChandeConsumerGroupConnectionString}
                             className="main-panel__header_input"
                             placeholder="Consumer Group"
                         />
@@ -106,49 +98,63 @@ export const Header = () => {
                             connection?.settings.subscription.subscriptionId !== undefined &&
                             connection?.settings.resourceGroup.name !== undefined &&
                             connection?.settings.namespace.name !== undefined && (
-                                <div className="main-panel__header_container">
-                                    <label htmlFor="eventHubs">Event Hubs</label>
-                                    <VSCodeDropdown
-                                        id="eventHubs"
-                                        onChange={(x) =>
-                                            eventHubs &&
-                                            handleDropdownChange<Eventhub>(
-                                                x,
-                                                (x: undefined | Eventhub) => {
-                                                    if (x !== undefined && isOAuthType(connection?.settings)) {
-                                                        setSelectedEventHub(x);
+                                <>
+                                    <div className="main-panel__header_container">
+                                        <label htmlFor="eventHubs">Event Hubs</label>
+                                        <VSCodeDropdown
+                                            id="eventHubs"
+                                            onChange={(x) =>
+                                                eventHubs &&
+                                                handleDropdownChange<Eventhub>(
+                                                    x,
+                                                    (x: undefined | Eventhub) => {
+                                                        if (x !== undefined && isOAuthType(connection?.settings)) {
+                                                            setSelectedEventHub(x);
 
-                                                        vscode.postMessage({
-                                                            command: EMainPanelCommands.getConsumerGroups,
-                                                            payload: {
-                                                                subscriptionId:
-                                                                    connection?.settings.subscription.subscriptionId,
-                                                                resourceGroupName:
-                                                                    connection?.settings.resourceGroup.name,
-                                                                namespaceName: connection?.settings.namespace.name,
-                                                                eventHubName: x.name,
-                                                            },
-                                                        });
-                                                    }
+                                                            vscode.postMessage({
+                                                                command: EMainPanelCommands.getConsumerGroups,
+                                                                payload: {
+                                                                    subscriptionId:
+                                                                        connection?.settings.subscription
+                                                                            .subscriptionId,
+                                                                    resourceGroupName:
+                                                                        connection?.settings.resourceGroup.name,
+                                                                    namespaceName: connection?.settings.namespace.name,
+                                                                    eventHubName: x.name,
+                                                                },
+                                                            });
+                                                        }
 
-                                                    setConsumerGroupLoading(true);
-                                                },
-                                                eventHubs
-                                            )
-                                        }>
-                                        {addLoading(
-                                            eventHubLoading,
-                                            <>
-                                                <VSCodeOption value="">Select a event hub</VSCodeOption>
-                                                {eventHubs?.map((x: ConsumerGroup, index: number) => (
-                                                    <VSCodeOption key={index} value={x.name}>
-                                                        {x.name}
-                                                    </VSCodeOption>
-                                                ))}
-                                            </>
-                                        )}
-                                    </VSCodeDropdown>
-                                </div>
+                                                        setConsumerGroupLoading(true);
+                                                    },
+                                                    eventHubs
+                                                )
+                                            }>
+                                            {addLoading(
+                                                eventHubLoading,
+                                                <>
+                                                    <VSCodeOption value="">Select a event hub</VSCodeOption>
+                                                    {eventHubs?.map((x: ConsumerGroup, index: number) => (
+                                                        <VSCodeOption key={index} value={x.name}>
+                                                            {x.name}
+                                                        </VSCodeOption>
+                                                    ))}
+                                                </>
+                                            )}
+                                        </VSCodeDropdown>
+                                    </div>
+
+                                    {/* <VSCodeButton
+                                        className="main-panel__header_button main-panel__header_button-first"
+                                        appearance="secondary"
+                                        onClick={onConnect}>
+                                        Connect
+                                    </VSCodeButton>
+
+                                    <VSCodeButton className="main-panel__header_button" onClick={onSendMessage}>
+                                        Send Message
+                                    </VSCodeButton> */}
+                                </>
                             )}
 
                         {isOAuthType(connection?.settings) &&
@@ -156,49 +162,54 @@ export const Header = () => {
                             connection?.settings.resourceGroup.name !== undefined &&
                             connection?.settings.namespace.name !== undefined &&
                             selectedEventHub !== undefined && (
-                                <div className="main-panel__header_container">
-                                    <label htmlFor="consumerGroup">Consumer Groups</label>
-                                    <VSCodeDropdown
-                                        id="consumerGroup"
-                                        onChange={(x) =>
-                                            consumerGroups &&
-                                            handleDropdownChange<ConsumerGroup>(
-                                                x,
-                                                (x: undefined | ConsumerGroup) => {
-                                                    if (x !== undefined) {
-                                                        setConsumerGroupName(x.name);
-                                                    }
-                                                },
-                                                consumerGroups
-                                            )
-                                        }>
-                                        {addLoading(
-                                            consumerGroupLoading,
-                                            <>
-                                                <VSCodeOption value="">Select a consumer group</VSCodeOption>
-                                                {consumerGroups?.map((x: ConsumerGroup, index: number) => (
-                                                    <VSCodeOption key={index} value={x.name}>
-                                                        {x.name}
-                                                    </VSCodeOption>
-                                                ))}
-                                            </>
-                                        )}
-                                    </VSCodeDropdown>
-                                </div>
+                                <>
+                                    <div className="main-panel__header_container">
+                                        <label htmlFor="consumerGroup">Consumer Groups</label>
+                                        <VSCodeDropdown
+                                            id="consumerGroup"
+                                            onChange={(x) =>
+                                                consumerGroups &&
+                                                handleDropdownChange<ConsumerGroup>(
+                                                    x,
+                                                    (x: undefined | ConsumerGroup) => {
+                                                        if (x !== undefined) {
+                                                            setConsumerGroupName(x.name);
+                                                        }
+                                                    },
+                                                    consumerGroups
+                                                )
+                                            }>
+                                            {addLoading(
+                                                consumerGroupLoading,
+                                                <>
+                                                    <VSCodeOption value="">Select a consumer group</VSCodeOption>
+                                                    {consumerGroups?.map((x: ConsumerGroup, index: number) => (
+                                                        <VSCodeOption key={index} value={x.name}>
+                                                            {x.name}
+                                                        </VSCodeOption>
+                                                    ))}
+                                                </>
+                                            )}
+                                        </VSCodeDropdown>
+                                    </div>
+                                </>
                             )}
                     </>
                 )}
 
-                {layoutType === ELayoutTypes.withAzureOAuth && (
+                {/* {layoutType === ELayoutTypes.withAzureOAuth && (
                     <VSCodeButton
                         className="main-panel__header_button main-panel__header_button-first"
                         appearance="secondary"
                         onClick={onSingInWithAzure}>
                         Sing in with Azure
                     </VSCodeButton>
-                )}
+                )} */}
 
-                <VSCodeButton className="main-panel__header_button" appearance="secondary" onClick={onConnect}>
+                <VSCodeButton
+                    className="main-panel__header_button main-panel__header_button-first"
+                    appearance="secondary"
+                    onClick={onConnect}>
                     Connect
                 </VSCodeButton>
 

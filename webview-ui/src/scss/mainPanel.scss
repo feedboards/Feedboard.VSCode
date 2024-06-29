@@ -1,5 +1,5 @@
-@import './variables';
-@import './components/vscode';
+@import "./variables";
+@import "./components/vscode";
 
 .main-panel {
     display: block;
@@ -25,20 +25,21 @@
 
         &_input {
             margin-right: $gap;
+            width: 250px;
 
             &_group {
                 display: flex;
                 width: 100%;
             }
 
-            &:nth-child(1) {
-                flex: 2;
-            }
+            // &:nth-child(1) {
+            //     flex: 2;
+            // }
 
-            &:nth-child(2),
-            &:nth-child(3) {
-                flex: 0.5;
-            }
+            // &:nth-child(2),
+            // &:nth-child(3) {
+            //     flex: 0.5;
+            // }
         }
 
         &_button {

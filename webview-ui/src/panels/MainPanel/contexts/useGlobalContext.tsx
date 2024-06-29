@@ -103,6 +103,7 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
                 break;
 
             case EMainPanelCommands.setEventHubs:
+                console.log('setEventHubs', payload);
                 setEventHubs(payload);
                 setEventHubLoading(false);
                 break;
