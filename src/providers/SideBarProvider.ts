@@ -98,6 +98,10 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
             const payload = message.payload;
 
             switch (message.command) {
+                case EMainSideBarCommands.removeConnection:
+                    Constnants.removeConnection(payload);
+                    break;
+
                 case EMainSideBarCommands.openConnection:
                     Constnants.openConnections.push(payload);
                     vscode.commands.executeCommand('feedboard.main-view', payload);
@@ -178,6 +182,10 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                 case EMainSideBarCommands.addConnection:
                     console.log(payload);
                     Constnants.addConnection(payload);
+                    break;
+
+                case EMainSideBarCommands.updateConnection:
+                    Constnants.updateConnection(payload);
                     break;
             }
         });

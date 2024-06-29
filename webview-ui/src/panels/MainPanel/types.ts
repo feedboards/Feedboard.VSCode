@@ -1,7 +1,5 @@
-import { ConsumerGroup, EHNamespace, Eventhub } from '@azure/arm-eventhub';
-import { ResourceGroup } from '@azure/arm-resources';
-import { Subscription } from '@azure/arm-subscriptions';
-import { DetailedHTMLProps, InputHTMLAttributes, ReactNode } from 'react';
+import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
+import { DetailedHTMLProps, InputHTMLAttributes, ReactNode, SVGProps } from 'react';
 import { ELayoutTypes } from '.';
 import { TConnection } from '../../../../src/helpers';
 
@@ -53,3 +51,5 @@ export interface IPanel {
 export interface IVSCodeInput extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
     isError?: boolean;
 }
+
+export interface IEditIcon extends SVGProps<SVGSVGElement> {}

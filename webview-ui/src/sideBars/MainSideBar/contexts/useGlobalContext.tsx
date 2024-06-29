@@ -94,9 +94,25 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
         });
     };
 
+    const removeConnection = (connection: TConnection) => {
+        setSavedConnections((prev) => {
+            if (prev == undefined) {
+                return prev;
+            }
+
+            return prev?.slice(prev?.indexOf(connection), 1);
+        });
+
+        vscode.postMessage({
+            command: EMainSideBarCommands.removeConnection,
+            payload: connection,
+        });
+    };
+
     return (
         <GlobalContext.Provider
             value={{
+                removeConnection,
                 addConnection,
                 setSubscriptions,
                 setSubscriptionLoading,

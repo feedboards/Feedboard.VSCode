@@ -17,8 +17,11 @@ export enum EMainSideBarCommands {
     setIsLoggedInAzure = 'setIsLoggedInAzure',
 
     addConnection = 'addConnection',
-    singInWithAzure = 'singInWithAzure',
+    removeConnection = 'removeConnection',
+    updateConnection = 'updateConnection',
     openConnection = 'openConnection',
+
+    singInWithAzure = 'singInWithAzure',
 }
 
 export enum ELoginType {

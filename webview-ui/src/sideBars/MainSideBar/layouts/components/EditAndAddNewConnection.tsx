@@ -1,19 +1,20 @@
 import { VSCodeButton, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
-import { ELayoutTypes, useGlobal, useLayout } from '../..';
-import { ChangeEvent, useState } from 'react';
+import { ELayoutTypes, IEditAndAddNewConnection, useGlobal, useLayout } from '../..';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { handleDropdownChange, vscode } from '../../../../utilities';
 import { AddNewConnectionOAuth } from './AddNewConnectionOAuth';
 import { ELoginType, EMainSideBarCommands, TConnection } from '../../../../../../src/helpers';
 import { VSCodeInput } from '../../../../components';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
+import { isConnectionString, isOAuthType } from '../../../../panels/MainPanel';
 
 type TLoginType = {
     type: ELoginType;
     name: string;
 };
 
-export const AddNewConnection = () => {
+export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndAddNewConnection) => {
     const [nameError, setNameError] = useState<boolean>(false);
     const [connectionStringError, setConnectionStringError] = useState<boolean>(false);
     const [loginTypeError, setLoginTypeError] = useState<boolean>(false);
@@ -34,6 +35,18 @@ export const AddNewConnection = () => {
         },
     ]);
 
+    const [connectioTypeDropdownValue, setConnectioTypeDropdownValue] = useState<undefined | string>(
+        connection !== undefined ? connection.settings.loginType : ''
+    );
+
+    const [nameInputValue, setNameInputValue] = useState<undefined | string>(
+        connection !== undefined ? connection.name : ''
+    );
+
+    const [connectionStringInputValue, setConnectionStringInputValue] = useState<undefined | string>(
+        connection !== undefined && isConnectionString(connection.settings) ? connection.settings.connectionString : ''
+    );
+
     const { changeLayoutType } = useLayout();
     const {
         isLoggedInAzure,
@@ -44,6 +57,17 @@ export const AddNewConnection = () => {
         connectionString,
         addConnection,
     } = useGlobal();
+
+    useEffect(() => {
+        if (connection) {
+            console.log('connection', connection);
+
+            setSelectedLoginType({
+                type: connection.settings.loginType,
+                name: loginTypes.find((x) => x.type === connection.settings.loginType)?.name as string,
+            });
+        }
+    }, []);
 
     const onSetDropdown = (x: TLoginType | undefined) => {
         if (x !== undefined) {
@@ -72,7 +96,7 @@ export const AddNewConnection = () => {
         setConnectionString(x.target.value);
     };
 
-    const onAdd = () => {
+    const validateData = () => {
         if (name === undefined || name === '') {
             setNameError(true);
         }
@@ -86,15 +110,6 @@ export const AddNewConnection = () => {
                 setConnectionStringError(true);
             }
         } else if (selectedLoginType !== undefined && selectedLoginType.type === ELoginType.oAuth) {
-            console.log(
-                'selectedSubscription',
-                selectedSubscription,
-                'selectedResourceGroup',
-                selectedResourceGroup,
-                'selectedNamespace',
-                selectedNamespace
-            );
-
             if (selectedSubscription === undefined) {
                 setSubscriptionsError(true);
             }
@@ -107,7 +122,72 @@ export const AddNewConnection = () => {
                 setNamespacesError(true);
             }
         }
+    };
 
+    const onEdit = () => {
+        if (
+            name == undefined ||
+            (selectedLoginType == undefined &&
+                selectedNamespace == undefined &&
+                selectedSubscription == undefined &&
+                selectedResourceGroup == undefined) ||
+            connection == undefined
+        ) {
+            changeLayoutType(ELayoutTypes.default);
+            return;
+        }
+
+        if (name && selectedLoginType) {
+            const editConnection: TConnection = {
+                id: uuidv4(),
+                name,
+                settings: {
+                    loginType: selectedLoginType !== undefined ? selectedLoginType.type : connection.settings.loginType,
+                    subscription: {
+                        displayName:
+                            selectedSubscription === undefined && isOAuthType(connection.settings)
+                                ? connection.settings.subscription.displayName
+                                : selectedSubscription?.displayName,
+                        subscriptionId:
+                            selectedSubscription === undefined && isOAuthType(connection.settings)
+                                ? connection.settings.subscription.subscriptionId
+                                : selectedSubscription?.subscriptionId,
+                    },
+                    resourceGroup: {
+                        name:
+                            selectedResourceGroup === undefined && isOAuthType(connection.settings)
+                                ? connection.settings.resourceGroup.name
+                                : selectedResourceGroup?.name,
+                        id:
+                            selectedResourceGroup === undefined && isOAuthType(connection.settings)
+                                ? connection.settings.resourceGroup.id
+                                : selectedResourceGroup?.id,
+                    },
+                    namespace: {
+                        name:
+                            selectedNamespace === undefined && isOAuthType(connection.settings)
+                                ? connection.settings.namespace.name
+                                : selectedNamespace?.name,
+                        id:
+                            selectedNamespace === undefined && isOAuthType(connection.settings)
+                                ? connection.settings.namespace.id
+                                : selectedNamespace?.id,
+                    },
+                    connectionString: connectionString,
+                },
+            };
+
+            vscode.postMessage({
+                command: EMainSideBarCommands.updateConnection,
+                payload: editConnection,
+            });
+
+            addConnection(connection);
+            changeLayoutType(ELayoutTypes.default);
+        }
+    };
+
+    const onAdd = () => {
         if (name && selectedLoginType) {
             const connection: TConnection = {
                 id: uuidv4(),
@@ -145,6 +225,7 @@ export const AddNewConnection = () => {
             <div className="main-side-bar__wrapper_add-new-connection_dropdown-group">
                 <label htmlFor="connectioType">Login Type</label>
                 <VSCodeDropdown
+                    value={connectioTypeDropdownValue}
                     className={classNames('main-side-bar__wrapper_add-new-connection_dropdown', {
                         ['main-side-bar__wrapper_add-new-connection_dropdown_error']: loginTypeError,
                     })}
@@ -159,6 +240,7 @@ export const AddNewConnection = () => {
                         </VSCodeOption>
                     ))}
                 </VSCodeDropdown>
+
                 {loginTypeError && (
                     <div className="main-side-bar__error-message_with-under-gap">this field is required</div>
                 )}
@@ -172,6 +254,7 @@ export const AddNewConnection = () => {
                 className="main-side-bar__input"
                 id="name"
                 isError={nameError}
+                value={nameInputValue}
                 placeholder="name"
                 onChange={onChangeName}
             />
@@ -190,6 +273,7 @@ export const AddNewConnection = () => {
                             setSubscriptionsError={setSubscriptionsError}
                             setResourceGroupsError={setResourceGroupsError}
                             setNamespacesError={setNamespacesError}
+                            connection={connection}
                         />
                     ) : (
                         <VSCodeButton
@@ -216,6 +300,7 @@ export const AddNewConnection = () => {
                         isError={connectionStringError}
                         onChange={onChangeConnectionString}
                         placeholder="Connection string"
+                        value={connectionStringInputValue}
                     />
                     {connectionStringError && (
                         <div className="main-side-bar__error-message">this field is required</div>
@@ -224,10 +309,28 @@ export const AddNewConnection = () => {
             )}
 
             <div className="main-side-bar__wrapper_add-new-connection_button-group">
-                <VSCodeButton appearance="secondary" onClick={() => changeLayoutType(ELayoutTypes.default)}>
+                <VSCodeButton
+                    appearance="secondary"
+                    onClick={() => {
+                        setConnection(undefined);
+                        changeLayoutType(ELayoutTypes.default);
+                    }}>
                     close
                 </VSCodeButton>
-                <VSCodeButton onClick={onAdd}>Add</VSCodeButton>
+                <VSCodeButton
+                    onClick={() => {
+                        validateData();
+
+                        if (connection) {
+                            onEdit();
+                            setConnection(undefined);
+                            return;
+                        }
+
+                        onAdd();
+                    }}>
+                    {connection !== undefined ? 'Confirm' : 'Add'}
+                </VSCodeButton>
             </div>
         </div>
     );

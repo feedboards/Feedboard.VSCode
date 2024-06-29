@@ -31,11 +31,12 @@ export interface IGlobalContext {
     namespaceLoading: boolean;
     selectedNamespace: EHNamespace | undefined;
 
-    setConnectionString: (value: string) => void;
+    setConnectionString: (value: string | undefined) => void;
     connectionString: string | undefined;
 
     savedConnections: TConnection[] | null;
-    addConnection: (value: TConnection) => void;
+    addConnection: (connection: TConnection) => void;
+    removeConnection: (connection: TConnection) => void;
 
     setIsLoggedInAzure: (value: boolean) => void;
     isLoggedInAzure: boolean;
@@ -54,6 +55,15 @@ export interface IAddNewConnectionOAuth {
     setSubscriptionsError: (value: boolean) => void;
     setResourceGroupsError: (value: boolean) => void;
     setNamespacesError: (value: boolean) => void;
+    connection?: TConnection;
+}
+
+export interface IEditAndAddNewConnection extends IConnectionList {
+    connection?: TConnection;
+}
+
+export interface IConnectionList {
+    setConnection: (value: TConnection | undefined) => void;
 }
 
 export interface IVSCodeInput extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {}

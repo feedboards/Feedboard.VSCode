@@ -48,16 +48,24 @@ export class Constnants {
 
     public static openConnections: TConnection[] = [];
 
-    public static closeOpenConnection(connection: TConnection) {
-        const index = this.openConnections.indexOf(connection);
+    public static removeConnection(connection: TConnection) {
+        const index: number | undefined = this.openConnections.indexOf(connection);
 
         if (index !== undefined && index > -1) {
-            this.openConnections.slice(index, 1);
+            this.openConnections.slice(index, 1); // TODO update connections in Storage
         }
     }
 
     public static addConnection(connection: TConnection) {
-        Constnants.connections.push(connection); // TODO add connection to Storage
+        this.connections.push(connection); // TODO add connection to Storage
+    }
+
+    public static updateConnection(connection: TConnection) {
+        const index: number | undefined = this.connections.indexOf(connection);
+
+        if (index !== undefined && index > -1) {
+            this.connections[index] = connection;
+        }
     }
 
     public static init() {

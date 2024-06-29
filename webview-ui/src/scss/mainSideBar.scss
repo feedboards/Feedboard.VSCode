@@ -55,7 +55,16 @@
     &__connection {
         padding: 6px $gap;
         box-sizing: border-box;
-        cursor: pointer;
+        display: flex;
+
+        & > div {
+            cursor: pointer;
+            width: calc(100% - 16px);
+        }
+
+        & > svg {
+            cursor: pointer;
+        }
 
         &:hover {
             background-color: var(--vscode-dropdown-background);

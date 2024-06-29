@@ -6,6 +6,7 @@ import { EHNamespace } from '@azure/arm-eventhub';
 import { EMainSideBarCommands } from '../../../../../../src/helpers';
 import { IAddNewConnectionOAuth, useGlobal } from '../..';
 import classNames from 'classnames';
+import { isOAuthType } from '../../../../panels/MainPanel';
 
 export const AddNewConnectionOAuth = ({
     subscriptionsError,
@@ -14,6 +15,7 @@ export const AddNewConnectionOAuth = ({
     setSubscriptionsError,
     setResourceGroupsError,
     setNamespacesError,
+    connection,
 }: IAddNewConnectionOAuth) => {
     const {
         setSelectedSubscription,
@@ -89,12 +91,24 @@ export const AddNewConnectionOAuth = ({
         }
     };
 
+    const subscriptionDropdownValue =
+        connection !== undefined && isOAuthType(connection.settings)
+            ? connection.settings.subscription.subscriptionId
+            : '';
+
+    const resourceGroupDropdownValue =
+        connection !== undefined && isOAuthType(connection.settings) ? connection.settings.resourceGroup.name : '';
+
+    const namespacesDropdownValue =
+        connection !== undefined && isOAuthType(connection.settings) ? connection.settings.namespace.name : '';
+
     return (
         <>
             <div className="main-side-bar__wrapper_add-new-connection_container">
                 <label htmlFor="subscriptions">Subscriptions</label>
                 <VSCodeDropdown
                     id="subscriptions"
+                    value={subscriptionDropdownValue}
                     className={classNames('main-side-bar__wrapper_add-new-connection_dropdown', {
                         ['main-side-bar__wrapper_add-new-connection_dropdown_error']: subscriptionsError,
                     })}
@@ -119,7 +133,7 @@ export const AddNewConnectionOAuth = ({
                     <label htmlFor="resourceGroups">Resource Groups</label>
                     <VSCodeDropdown
                         id="resourceGroups"
-                        value={selectedResourceGroup?.name}
+                        value={resourceGroupDropdownValue}
                         className={classNames('main-side-bar__wrapper_add-new-connection_dropdown', {
                             ['main-side-bar__wrapper_add-new-connection_dropdown_error']: resourceGroupsError,
                         })}
@@ -146,6 +160,7 @@ export const AddNewConnectionOAuth = ({
                     <label htmlFor="namespaces">Namespaces</label>
                     <VSCodeDropdown
                         id="namespaces"
+                        value={namespacesDropdownValue}
                         className={classNames('main-side-bar__wrapper_add-new-connection_dropdown', {
                             ['main-side-bar__wrapper_add-new-connection_dropdown_error']: namespacesError,
                         })}
