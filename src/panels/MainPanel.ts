@@ -269,9 +269,11 @@ export class MainPanel {
                         if (Constnants.azureToken !== null) {
                             this._azureClient = new AzureClient(Constnants.azureToken);
 
+                            Constnants.isLoggedInAzure = true;
+
                             await webview.postMessage({
                                 command: EMainPanelCommands.setIsLoggedInAzure,
-                                payload: true,
+                                payload: Constnants.isLoggedInAzure,
                             });
                         }
                         break;

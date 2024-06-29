@@ -172,9 +172,11 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                     if (Constnants.azureToken !== null) {
                         this._azureClient = new AzureClient(Constnants.azureToken);
 
+                        Constnants.isLoggedInAzure = true;
+
                         await webview.postMessage({
                             command: EMainSideBarCommands.setIsLoggedInAzure,
-                            payload: true,
+                            payload: Constnants.isLoggedInAzure,
                         });
                     }
                     break;
