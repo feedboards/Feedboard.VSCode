@@ -108,7 +108,7 @@ export const AddNewConnectionOAuth = ({
                 <label htmlFor="subscriptions">Subscriptions</label>
                 <VSCodeDropdown
                     id="subscriptions"
-                    value={subscriptionDropdownValue}
+                    defaultValue={subscriptionDropdownValue}
                     className={classNames('main-side-bar__wrapper_add-new-connection_dropdown', {
                         ['main-side-bar__wrapper_add-new-connection_dropdown_error']: subscriptionsError,
                     })}
@@ -133,7 +133,7 @@ export const AddNewConnectionOAuth = ({
                     <label htmlFor="resourceGroups">Resource Groups</label>
                     <VSCodeDropdown
                         id="resourceGroups"
-                        value={resourceGroupDropdownValue}
+                        defaultValue={resourceGroupDropdownValue}
                         className={classNames('main-side-bar__wrapper_add-new-connection_dropdown', {
                             ['main-side-bar__wrapper_add-new-connection_dropdown_error']: resourceGroupsError,
                         })}
@@ -160,7 +160,7 @@ export const AddNewConnectionOAuth = ({
                     <label htmlFor="namespaces">Namespaces</label>
                     <VSCodeDropdown
                         id="namespaces"
-                        value={namespacesDropdownValue}
+                        defaultValue={namespacesDropdownValue}
                         className={classNames('main-side-bar__wrapper_add-new-connection_dropdown', {
                             ['main-side-bar__wrapper_add-new-connection_dropdown_error']: namespacesError,
                         })}
