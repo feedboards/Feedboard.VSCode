@@ -40,7 +40,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
     );
 
     const [nameInputValue, setNameInputValue] = useState<undefined | string>(
-        connection !== undefined ? connection.name : ''
+        connection !== undefined ? connection.name : undefined
     );
 
     const [connectionStringInputValue, setConnectionStringInputValue] = useState<undefined | string>(
@@ -74,9 +74,9 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
             setNameError(false);
             setConnectionStringError(false);
             setLoginTypeError(false);
-
-            setSelectedLoginType(x);
         }
+
+        setSelectedLoginType(x);
     };
 
     const onChangeName = (x: ChangeEvent<HTMLInputElement>) => {
@@ -225,7 +225,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
             <div className="main-side-bar__wrapper_add-new-connection_dropdown-group">
                 <label htmlFor="connectioType">Login Type</label>
                 <VSCodeDropdown
-                    value={connectioTypeDropdownValue}
+                    defaultValue={connectioTypeDropdownValue}
                     className={classNames('main-side-bar__wrapper_add-new-connection_dropdown', {
                         ['main-side-bar__wrapper_add-new-connection_dropdown_error']: loginTypeError,
                     })}
