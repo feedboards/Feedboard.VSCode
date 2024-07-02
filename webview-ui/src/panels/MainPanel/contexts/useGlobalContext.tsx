@@ -72,6 +72,7 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
 
         switch (event.data.command) {
             case EMainPanelCommands.setConnection:
+                console.log('payload of setConnection command', payload);
                 setConnection(payload);
 
                 if (payload.settings.loginType == ELoginType.oAuth && isLoggedInAzure) {
@@ -103,6 +104,7 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
                 break;
 
             case EMainPanelCommands.setEventHubs:
+                console.log('payload of uasClobalContext', payload);
                 setEventHubs(payload);
                 setEventHubLoading(false);
                 break;

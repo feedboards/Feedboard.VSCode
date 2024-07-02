@@ -74,6 +74,10 @@ export const Header = () => {
         console.log(layoutType);
     }, [layoutType]);
 
+    useEffect(() => {
+        console.log('eventHubs', eventHubs);
+    }, [eventHubs]);
+
     return (
         <>
             <div className="main-panel__header">
@@ -197,19 +201,16 @@ export const Header = () => {
                     </>
                 )}
 
-                {/* {layoutType === ELayoutTypes.withAzureOAuth && (
+                {layoutType === ELayoutTypes.withAzureOAuth && (
                     <VSCodeButton
                         className="main-panel__header_button main-panel__header_button-first"
                         appearance="secondary"
                         onClick={onSingInWithAzure}>
                         Sing in with Azure
                     </VSCodeButton>
-                )} */}
+                )}
 
-                <VSCodeButton
-                    className="main-panel__header_button main-panel__header_button-first"
-                    appearance="secondary"
-                    onClick={onConnect}>
+                <VSCodeButton className="main-panel__header_button" appearance="secondary" onClick={onConnect}>
                     Connect
                 </VSCodeButton>
 

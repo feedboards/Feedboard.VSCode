@@ -210,6 +210,18 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
                 },
             };
 
+            // if (isOAuthType(connection.settings)) {
+            //     console.log('EditAndAddNewConnection connection is OAuthType');
+            //     vscode.postMessage({
+            //         command: EMainPanelCommands.getEventHubs,
+            //         payload: {
+            //             subscriptionId: connection.settings.subscription.subscriptionId,
+            //             resourceGroupName: connection.settings.resourceGroup.name,
+            //             namespaceName: connection.settings.namespace.name,
+            //         },
+            //     });
+            // }
+
             vscode.postMessage({
                 command: EMainSideBarCommands.addConnection,
                 payload: connection,

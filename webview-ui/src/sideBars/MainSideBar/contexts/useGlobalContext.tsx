@@ -45,6 +45,12 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
         return () => window.removeEventListener('message', _handleMessage);
     }, []);
 
+    // useEffect(() => {
+    //     if (subscriptions !== null && resourceGroups !== null && namespaces !== null) {
+
+    //     }
+    // }, [subscriptions, resourceGroups, namespaces]);
+
     const _handleMessage = (
         event: MessageEvent<{
             command: EMainSideBarCommands;
@@ -59,6 +65,7 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
                 break;
 
             case EMainSideBarCommands.setIsLoggedInAzure:
+                console.log('paload from command setIsLoggedInAzure', payload);
                 setIsLoggedInAzure(payload);
 
                 if (payload === true) {
@@ -68,16 +75,19 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
                 break;
 
             case EMainSideBarCommands.setSubscriptions:
+                console.log('paload from command setSubscriptions', payload);
                 setSubscriptions(payload);
                 setSubscriptionLoading(false);
                 break;
 
             case EMainSideBarCommands.setResourceGroups:
+                console.log('paload from command setResourceGroups', payload);
                 setResourceGroups(payload);
                 setResourceGroupLoading(false);
                 break;
 
             case EMainSideBarCommands.setNamespaces:
+                console.log('paload from command setNamespaces', payload);
                 setNamespaces(payload);
                 setNamespaceLoading(false);
                 break;

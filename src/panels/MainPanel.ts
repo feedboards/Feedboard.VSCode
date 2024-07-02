@@ -225,19 +225,25 @@ export class MainPanel {
                         break;
 
                     case EMainPanelCommands.getEventHubs:
+                        console.log('EMainPanelCommands.getEventHubs');
                         if (this._azureClient !== undefined && isTMainPanelGetEventHubs(payload)) {
+                            const result = await this._azureClient.getEventHubsByNamespace(
+                                payload.subscriptionId,
+                                payload.resourceGroupName,
+                                payload.namespaceName
+                            );
+
+                            console.log('result of the getEventHubs command', result);
+
                             await webview.postMessage({
                                 command: EMainPanelCommands.setEventHubs,
-                                payload: await this._azureClient.getEventHubsByNamespace(
-                                    payload.subscriptionId,
-                                    payload.resourceGroupName,
-                                    payload.namespaceName
-                                ),
+                                payload: result,
                             });
                         }
                         break;
 
                     case EMainPanelCommands.getConsumerGroups:
+                        console.log('payload from getConsumerGroups command', payload);
                         if (this._azureClient !== undefined && isTMainPanelGetConsumerGroups(payload)) {
                             await webview.postMessage({
                                 command: EMainPanelCommands.setConsumerGroups,

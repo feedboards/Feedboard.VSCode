@@ -4,10 +4,20 @@ import { MainPanel } from './panels';
 import { StoreHelper, AzureTokenResponse, GithubTokenResponse, authenticateGitHub, authenticateAzure } from './core';
 import { Constnants } from './constants';
 import { TConnection } from './helpers';
+import { ContextManager } from './core/managers/contextManager';
 
 export async function activate(context: vscode.ExtensionContext) {
     // use this helper if you want to get any secrets
-    const storeHelper = new StoreHelper(context);
+    StoreHelper.initialize(context);
+
+    // Usage elsewhere in the code
+    const storeHelper = StoreHelper.getInstance();
+
+    // initializing ContextManager
+    ContextManager.initialize(context);
+
+    // if you need to get context you ContextManager.getInstance().getContext();
+    ContextManager.getInstance().setContext(context);
 
     await configData(storeHelper);
     Constnants.init();
@@ -59,7 +69,7 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 const configData = async (storeHelper: StoreHelper) => {
-    const keysToVariables = {
+    const keysToVariables: Object = {
         azureAccessToken: 'azureAccessToken',
         azureIdToken: 'azureIdToken',
         azureRefreshToken: 'azureRefreshToken',
