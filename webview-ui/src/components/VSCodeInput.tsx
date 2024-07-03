@@ -1,4 +1,4 @@
-import { IVSCodeInput } from '../panels/MainPanel';
+import { IVSCodeInput } from '.';
 import classNames from 'classnames';
 
 export const VSCodeInput = ({ className, isError = false, ...InputProps }: IVSCodeInput) => {

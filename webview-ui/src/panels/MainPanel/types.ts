@@ -1,5 +1,5 @@
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
-import { DetailedHTMLProps, InputHTMLAttributes, ReactNode, SVGProps } from 'react';
+import { ReactNode } from 'react';
 import { ELayoutTypes } from '.';
 import { TConnection } from '../../../../src/helpers';
 
@@ -47,9 +47,3 @@ export interface ILayoutContext {
 export interface IPanel {
     half?: boolean;
 }
-
-export interface IVSCodeInput extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
-    isError?: boolean;
-}
-
-export interface IEditIcon extends SVGProps<SVGSVGElement> {}

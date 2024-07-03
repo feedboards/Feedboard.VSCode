@@ -23,10 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
     Constnants.init();
 
     context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider(
-            'feedboard-sidebar-view',
-            new SideBarProvider(context.extensionUri, context)
-        )
+        vscode.window.registerWebviewViewProvider('feedboard-sidebar-view', new SideBarProvider(context.extensionUri))
     );
 
     context.subscriptions.push(

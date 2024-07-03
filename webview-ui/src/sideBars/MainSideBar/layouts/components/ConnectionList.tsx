@@ -1,10 +1,10 @@
 import { ELayoutTypes, IConnectionList, useGlobal, useLayout } from '../..';
 import { EMainSideBarCommands, TConnection } from '../../../../../../src/helpers';
 import { vscode } from '../../../../utilities';
-import { EditIcon } from '../../../../icons';
+import { DeleteIcon, EditIcon } from '../../../../icons';
 
 export const ConnectionList = ({ setConnection }: IConnectionList) => {
-    const { savedConnections } = useGlobal();
+    const { savedConnections, removeConnection } = useGlobal();
     const { changeLayoutType } = useLayout();
 
     const onOpen = (connection: TConnection) => {
@@ -19,6 +19,10 @@ export const ConnectionList = ({ setConnection }: IConnectionList) => {
         setConnection(connection);
     };
 
+    const onDelete = (connect: TConnection) => {
+        removeConnection(connect);
+    };
+
     return (
         <div className="main-side-bar__connection-list">
             <div className="main-side-bar__connection-list_header">
@@ -28,6 +32,7 @@ export const ConnectionList = ({ setConnection }: IConnectionList) => {
                 <div className="main-side-bar__connection">
                     <div onClick={() => onOpen(x)}>{x.name}</div>
                     <EditIcon onClick={() => onEdit(x)} />
+                    <DeleteIcon className="main-side-bar__connection_icon" onClick={() => onDelete(x)} />
                 </div>
             ))}
         </div>

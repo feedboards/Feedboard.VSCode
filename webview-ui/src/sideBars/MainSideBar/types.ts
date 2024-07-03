@@ -65,5 +65,3 @@ export interface IEditAndAddNewConnection extends IConnectionList {
 export interface IConnectionList {
     setConnection: (value: TConnection | undefined) => void;
 }
-
-export interface IVSCodeInput extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {}

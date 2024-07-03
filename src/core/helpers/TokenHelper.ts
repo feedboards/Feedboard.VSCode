@@ -1,13 +1,8 @@
 import { AzureToken } from '../oauth';
 import { StoreHelper } from './storeHelper';
-import * as vscode from 'vscode';
 
 export class TokenHelper {
-    private readonly storeHelper: StoreHelper;
-
-    constructor(context: vscode.ExtensionContext) {
-        this.storeHelper = new StoreHelper(context);
-    }
+    private readonly storeHelper: StoreHelper = StoreHelper.getInstance();
 
     public createAzureToken(accessToken: string, expiredAt: string): AzureToken {
         return new AzureToken(accessToken, expiredAt);

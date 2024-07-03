@@ -70,6 +70,10 @@
             background-color: var(--vscode-dropdown-background);
         }
 
+        &_icon {
+            margin-left: $gap;
+        }
+
         &-list {
             &_header {
                 display: flex;

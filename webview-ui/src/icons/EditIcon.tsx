@@ -1,6 +1,6 @@
-import { IEditIcon } from '../panels/MainPanel';
+import { IIcon } from './types';
 
-export const EditIcon = ({ ...props }: IEditIcon) => {
+export const EditIcon = ({ ...props }: IIcon) => {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

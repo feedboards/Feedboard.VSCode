@@ -28,10 +28,10 @@ export class MainPanel {
     private static _openConnection: MainPanel[] | undefined;
     private readonly _connection: TConnection;
 
-    private constructor(panel: WebviewPanel, extensionUri: Uri, context: ExtensionContext, connection: TConnection) {
+    private constructor(panel: WebviewPanel, extensionUri: Uri, connection: TConnection) {
         this._panel = panel;
         this._connection = connection;
-        this._tokenHelper = new TokenHelper(context);
+        this._tokenHelper = new TokenHelper();
         this._tokenHelper.getAzureToken().then((token) => {
             if (token !== null) {
                 Constnants.azureToken = token;
@@ -62,7 +62,7 @@ export class MainPanel {
                 localResourceRoots: [Uri.joinPath(extensionUri, 'out'), Uri.joinPath(extensionUri, 'webview-ui/build')],
             });
 
-            MainPanel._openPanels[connection.id] = new MainPanel(panel, extensionUri, context, connection);
+            MainPanel._openPanels[connection.id] = new MainPanel(panel, extensionUri, connection);
         }
     }
 

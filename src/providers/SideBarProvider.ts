@@ -21,8 +21,8 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
     private _azureClient: AzureClient | undefined;
     private _webview: vscode.Webview | undefined;
 
-    constructor(private readonly _extensionUri: vscode.Uri, context: vscode.ExtensionContext) {
-        this._tokenHelper = new TokenHelper(context);
+    constructor(private readonly _extensionUri: vscode.Uri) {
+        this._tokenHelper = new TokenHelper();
         this._tokenHelper.getAzureToken().then((token) => {
             if (token !== null) {
                 Constnants.azureToken = token;
