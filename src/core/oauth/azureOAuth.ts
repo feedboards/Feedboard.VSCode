@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as http from 'http';
 import * as url from 'url';
-import * as html from '../../html';
+import * as html from '../../htmls';
 import { StoreHelper } from '../index';
 import { AzureTokenResponse } from '../types';
 import { getAzureLoginURI, getAzureTokens } from '../clients';

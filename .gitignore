@@ -1,6 +1,11 @@
-node_modules
 .vscode
 out
 .npmrc
-yarn-error.log
-yarn.lock
+node_modules
+.DS_Store
+dist
+dist-ssr
+build
+build-ssr
+*.local
+*.lock

@@ -1,3 +1,4 @@
+export const errorHTML = /*html*/ `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,4 +30,4 @@
         <p>There was an error during the authentication process. Please try again.</p>
     </div>
 </body>
-</html>
+</html>`;

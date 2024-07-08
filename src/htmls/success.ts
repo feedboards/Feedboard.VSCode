@@ -1,3 +1,4 @@
+export const successHTML = /*html*/ `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,4 +30,4 @@
         <p>You can close this window.</p>
     </div>
 </body>
-</html>
+</html>`;
