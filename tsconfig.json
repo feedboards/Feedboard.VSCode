@@ -3,9 +3,9 @@
         "module": "commonjs",
         "target": "es6",
         "outDir": "out",
-        "rootDir": "src",
+        "rootDir": ".",
         "strict": true
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "common/**/*"],
     "exclude": ["node_modules", ".vscode-test", "webview-ui"]
 }

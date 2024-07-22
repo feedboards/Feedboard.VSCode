@@ -1,7 +1,8 @@
 import { ELayoutTypes, IConnectionList, useGlobal, useLayout } from '../..';
-import { EMainSideBarCommands, TConnection } from '../../../../../../src/helpers';
 import { vscode } from '../../../../utilities';
 import { DeleteIcon, EditIcon } from '../../../../icons';
+import { TConnection } from '../../../../../../common/types';
+import { EMainSideBarCommands } from '../../../../../../common/commands';
 
 export const ConnectionList = ({ setConnection }: IConnectionList) => {
     const { savedConnections, removeConnection } = useGlobal();

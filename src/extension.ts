@@ -3,8 +3,8 @@ import { SideBarProvider } from './providers';
 import { MainPanel } from './panels';
 import { StoreHelper, AzureTokenResponse, GithubTokenResponse, authenticateGitHub, authenticateAzure } from './core';
 import { Constnants } from './constants';
-import { TConnection } from './helpers';
 import { ContextManager } from './core/managers/contextManager';
+import { TConnection } from '../common/types';
 
 export async function activate(context: vscode.ExtensionContext) {
     // use this helper if you want to get any secrets

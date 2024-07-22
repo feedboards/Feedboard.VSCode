@@ -1,15 +1,7 @@
-import { ELoginType } from './enums';
-
-export type TMainSideBarPayload = undefined | string;
-
 export type TConnection = {
     id: string;
     name: string;
     settings: TConnectionSettingsAzureConnectionString | TConnectionSettingsAzureOAuth;
-};
-
-export type TConnectionSettingsAzure = {
-    loginType: ELoginType;
 };
 
 export type TConnectionSettingsAzureConnectionString = TConnectionSettingsAzure & {
@@ -23,6 +15,15 @@ export type TConnectionSettingsAzureOAuth = TConnectionSettingsAzure & {
     eventHub: TData;
     consumerGroup: TData;
 };
+
+export type TConnectionSettingsAzure = {
+    loginType: ELoginType;
+};
+
+export enum ELoginType {
+    oAuth = 'oAuth',
+    connectionString = 'connectionString',
+}
 
 type TSubscription = {
     readonly subscriptionId?: string;

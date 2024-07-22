@@ -5,8 +5,8 @@ import { VSCodeInput } from '../../../../components';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { addLoading, handleDropdownChange, vscode } from '../../../../utilities';
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
-import { ELoginType, EMainPanelCommands } from '../../../../../../src/helpers';
-import { isConnectionString, isOAuthType } from '../..';
+import { EMainPanelCommands } from '../../../../../../common/commands';
+import { ELoginType, isConnectionString, isOAuthType } from '../../../../../../common/types';
 
 export const Header = () => {
     const [consumerGroupName, setConsumerGroupName] = useState<string>();

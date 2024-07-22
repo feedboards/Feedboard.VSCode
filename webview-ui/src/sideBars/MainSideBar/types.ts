@@ -1,9 +1,9 @@
-import { DetailedHTMLProps, InputHTMLAttributes, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { ELayoutTypes } from './enums';
 import { Subscription } from '@azure/arm-subscriptions';
 import { ResourceGroup } from '@azure/arm-resources';
 import { EHNamespace } from '@azure/arm-eventhub';
-import { TConnection } from '../../../../src/helpers';
+import { TConnection } from '../../../../common/types';
 
 export interface IContextProviderProps {
     children: ReactNode;

@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { IGlobalContext, IContextProviderProps, isOAuthType, isConnectionString } from '..';
+import { IGlobalContext, IContextProviderProps } from '..';
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
-import { ELoginType, EMainPanelCommands, TConnection } from '../../../../../src/helpers';
+import { ELoginType, TConnection, isOAuthType } from '../../../../../common/types';
+import { EMainPanelCommands } from '../../../../../common/commands';
 import { vscode } from '../../../utilities';
 
 const GlobalContext = createContext<IGlobalContext | undefined>(undefined);

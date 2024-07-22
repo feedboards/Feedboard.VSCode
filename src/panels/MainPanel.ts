@@ -2,17 +2,17 @@ import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, ExtensionCo
 import { getUri } from '../utilities/getUri';
 import { getNonce } from '../utilities/getNonce';
 import { AzureClient, AzureTokenResponse, EventHubClient, TokenHelper } from '../core';
+import { Constnants } from '../constants';
 import {
-    TMainPanelPayload,
-    EMainPanelCommands,
-    isTMainPanelGetEventHubs,
+    isString,
     isTMainPanelGetConsumerGroups,
+    isTMainPanelGetEventHubs,
     isTMainPanelStartMonitoring,
     isTMainPanelStartMonitoringByConnectionString,
-    isString,
     TConnection,
-} from '../helpers';
-import { Constnants } from '../constants';
+    TMainPanelPayload,
+} from '../../common/types';
+import { EMainPanelCommands } from '../../common/commands/EMainPanelCommands';
 
 export class MainPanel {
     private readonly _panel: WebviewPanel;

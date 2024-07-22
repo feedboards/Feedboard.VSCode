@@ -5,6 +5,9 @@ import {
     TMainPanelGetResourceGroups,
     TMainPanelStartMonitoring,
     TMainPanelStartMonitoringByConnectionString,
+    ELoginType,
+    TConnectionSettingsAzureConnectionString,
+    TConnectionSettingsAzureOAuth,
 } from '.';
 
 export const isTMainPanelGetResourceGroups = (obj: any): obj is TMainPanelGetResourceGroups => {
@@ -35,4 +38,12 @@ export const isTMainPanelStartMonitoringByConnectionString = (
 
 export const isString = (obj: any): obj is string => {
     return obj && typeof obj === 'string';
+};
+
+export const isOAuthType = (obj: any): obj is TConnectionSettingsAzureOAuth => {
+    return obj && typeof obj === 'object' && obj.loginType === ELoginType.oAuth;
+};
+
+export const isConnectionString = (obj: any): obj is TConnectionSettingsAzureConnectionString => {
+    return obj && typeof obj === 'object' && obj.loginType === ELoginType.connectionString;
 };

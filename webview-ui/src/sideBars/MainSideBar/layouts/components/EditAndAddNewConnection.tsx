@@ -3,11 +3,11 @@ import { ELayoutTypes, IEditAndAddNewConnection, useGlobal, useLayout } from '..
 import { ChangeEvent, useEffect, useState } from 'react';
 import { handleDropdownChange, vscode } from '../../../../utilities';
 import { AddNewConnectionOAuth } from './AddNewConnectionOAuth';
-import { ELoginType, EMainSideBarCommands, TConnection } from '../../../../../../src/helpers';
 import { VSCodeInput } from '../../../../components';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
-import { isConnectionString, isOAuthType } from '../../../../panels/MainPanel';
+import { ELoginType, isConnectionString, isOAuthType, TConnection } from '../../../../../../common/types';
+import { EMainSideBarCommands } from '../../../../../../common/commands';
 
 type TLoginType = {
     type: ELoginType;

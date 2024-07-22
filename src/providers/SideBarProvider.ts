@@ -1,18 +1,9 @@
 import * as vscode from 'vscode';
 import { getNonce, getUri } from '../utilities';
-import { AzureClient, AzureTokenResponse, EventHubClient, TokenHelper } from '../core';
-import {
-    TMainPanelPayload,
-    EMainSideBarCommands,
-    isTMainPanelGetResourceGroups,
-    isTMainPanelGetNamespaces,
-    isTMainPanelGetEventHubs,
-    isTMainPanelGetConsumerGroups,
-    isTMainPanelStartMonitoring,
-    isTMainPanelStartMonitoringByConnectionString,
-    isString,
-} from '../helpers';
+import { AzureClient, AzureTokenResponse, TokenHelper } from '../core';
 import { Constnants } from '../constants';
+import { EMainSideBarCommands } from '../../common/commands/EMainSideBarCommands';
+import { isTMainPanelGetNamespaces, isTMainPanelGetResourceGroups } from '../../common/types';
 
 export class SideBarProvider implements vscode.WebviewViewProvider {
     public view?: vscode.WebviewView;

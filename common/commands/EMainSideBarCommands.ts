@@ -23,8 +23,3 @@ export enum EMainSideBarCommands {
 
     singInWithAzure = 'singInWithAzure',
 }
-
-export enum ELoginType {
-    oAuth = 'oAuth',
-    connectionString = 'connectionString',
-}

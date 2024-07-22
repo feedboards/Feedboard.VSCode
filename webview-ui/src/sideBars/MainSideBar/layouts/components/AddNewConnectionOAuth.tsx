@@ -3,10 +3,10 @@ import { addLoading, handleDropdownChange, vscode } from '../../../../utilities'
 import { Subscription } from '@azure/arm-subscriptions';
 import { ResourceGroup } from '@azure/arm-resources';
 import { EHNamespace } from '@azure/arm-eventhub';
-import { EMainSideBarCommands } from '../../../../../../src/helpers';
 import { IAddNewConnectionOAuth, useGlobal } from '../..';
 import classNames from 'classnames';
-import { isOAuthType } from '../../../../panels/MainPanel';
+import { EMainSideBarCommands } from '../../../../../../common/commands';
+import { isOAuthType } from '../../../../../../common/types';
 
 export const AddNewConnectionOAuth = ({
     subscriptionsError,

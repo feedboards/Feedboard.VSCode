@@ -1,5 +1,5 @@
 import { TokenCredential } from '@azure/identity';
-import { ELoginType, TConnection } from '../helpers';
+import { ELoginType, TConnection } from '../../common/types';
 
 export class Constnants {
     public static azureAccessToken: string = '';
@@ -43,7 +43,7 @@ export class Constnants {
                     subscriptionId: 'a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9',
                 },
             },
-        },
+        }, // test data
     ];
 
     public static openConnections: TConnection[] = [];

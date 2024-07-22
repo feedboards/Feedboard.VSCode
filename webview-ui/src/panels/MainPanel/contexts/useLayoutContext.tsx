@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { IContextProviderProps, ILayoutContext, ELayoutTypes, useGlobal } from '..';
-import { ELoginType } from '../../../../../src/helpers';
+import { ELoginType } from '../../../../../common/types';
 
 const LayoutContext = createContext<ILayoutContext | undefined>(undefined);
 
