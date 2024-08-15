@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, FC, useContext, useState } from 'react';
 import { IContextProviderProps, ILayoutContext } from '../types';
 import { ELayoutTypes } from '../enums';
 
@@ -14,9 +14,9 @@ export const useLayout = () => {
     return context;
 };
 
-export const LayoutProvider: React.FC<IContextProviderProps> = ({ children }) => {
+export const LayoutProvider: FC<IContextProviderProps> = ({ children }) => {
     const [layoutType, setLayoutType] = useState<ELayoutTypes>(ELayoutTypes.default);
-    const [hasHeader, setHasHeader] = useState<boolean>(layoutType === ELayoutTypes.default ? true : false);
+    const [hasHeader, setHasHeader] = useState<boolean>(layoutType === ELayoutTypes.default);
 
     const changeLayoutType = (type: ELayoutTypes) => {
         setLayoutType(type);

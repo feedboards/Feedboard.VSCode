@@ -1,7 +1,7 @@
 import { TokenCredential } from '@azure/identity';
 import { ELoginType, TConnection } from '../../common/types';
 
-export class Constnants {
+export class Constants {
     public static azureAccessToken: string = '';
     public static azureIdToken: string = '';
     public static azureRefreshToken: string = '';

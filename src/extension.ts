@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { SideBarProvider } from './providers';
 import { MainPanel } from './panels';
 import { StoreHelper, AzureTokenResponse, GithubTokenResponse, authenticateGitHub, authenticateAzure } from './core';
-import { Constnants } from './constants';
+import { Constants } from './constants';
 import { ContextManager } from './core/managers/contextManager';
 import { TConnection } from '../common/types';
 
@@ -20,7 +20,7 @@ export async function activate(context: vscode.ExtensionContext) {
     ContextManager.getInstance().setContext(context);
 
     await configData(storeHelper);
-    Constnants.init();
+    Constants.init();
 
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('feedboard-sidebar-view', new SideBarProvider(context.extensionUri))
@@ -40,8 +40,8 @@ export async function activate(context: vscode.ExtensionContext) {
             // test
             console.log('github result', result);
 
-            Constnants.githubAccessToken = result.accessToken;
-            Constnants.githubUserId = result.userId;
+            Constants.githubAccessToken = result.accessToken;
+            Constants.githubUserId = result.userId;
         })
     );
 
@@ -54,15 +54,19 @@ export async function activate(context: vscode.ExtensionContext) {
             //     result.idToken !== undefined &&
             //     result.refreshToken !== undefined
             // ) {
-            Constnants.azureAccessToken = result.accessToken;
-            Constnants.azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
-            Constnants.azureIdToken = result.idToken;
-            Constnants.azureRefreshToken = result.refreshToken;
+            Constants.azureAccessToken = result.accessToken;
+            Constants.azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
+            Constants.azureIdToken = result.idToken;
+            Constants.azureRefreshToken = result.refreshToken;
             // }
 
             return result;
         })
     );
+
+    const registerCommand = (command: string, callback: (...arg: any[]) => any) => {
+
+    };
 }
 
 const configData = async (storeHelper: StoreHelper) => {

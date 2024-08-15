@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, FC, useContext, useEffect, useState } from 'react';
 import { IGlobalContext, IContextProviderProps } from '..';
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
 import { ELoginType, TConnection, isOAuthType } from '../../../../../common/types';
@@ -17,7 +17,7 @@ export const useGlobal = () => {
     return context;
 };
 
-export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) => {
+export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
     const [eventHubLoading, setEventHubLoading] = useState<boolean>(false);
     const [consumerGroupLoading, setConsumerGroupLoading] = useState<boolean>(false);
     const [messageLoading, setMessageLoading] = useState<boolean>(false);
@@ -105,7 +105,8 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
                 break;
 
             case EMainPanelCommands.setEventHubs:
-                console.log('payload of uasClobalContext', payload);
+                console.log('payload of useGlobalContext', payload);
+
                 setEventHubs(payload);
                 setEventHubLoading(false);
                 break;

@@ -2,7 +2,7 @@ import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, ExtensionCo
 import { getUri } from '../utilities/getUri';
 import { getNonce } from '../utilities/getNonce';
 import { AzureClient, AzureTokenResponse, EventHubClient, TokenHelper } from '../core';
-import { Constnants } from '../constants';
+import { Constants } from '../constants';
 import {
     isString,
     isTMainPanelGetConsumerGroups,
@@ -34,7 +34,7 @@ export class MainPanel {
         this._tokenHelper = new TokenHelper();
         this._tokenHelper.getAzureToken().then((token) => {
             if (token !== null) {
-                Constnants.azureToken = token;
+                Constants.azureToken = token;
                 this._azureClient = new AzureClient(token);
 
                 if (this._webview !== undefined) {
@@ -120,9 +120,9 @@ export class MainPanel {
                 switch (message.command) {
                     case EMainPanelCommands.startMonitoring:
                         if (
-                            Constnants.azureToken !== null &&
+                            Constants.azureToken !== null &&
                             isTMainPanelStartMonitoring(payload) &&
-                            !Constnants.isMonitoring
+                            !Constants.isMonitoring
                         ) {
                             const rules = await this._azureClient?.getAuthorizationRules(
                                 payload?.subscriptionId,
@@ -212,7 +212,7 @@ export class MainPanel {
                         break;
 
                     case EMainPanelCommands.stopMonitoring:
-                        if (Constnants.isMonitoring && this._eventHubClient !== undefined) {
+                        if (Constants.isMonitoring && this._eventHubClient !== undefined) {
                             await this._eventHubClient.stopMonitoring();
                         }
                         break;
@@ -260,26 +260,26 @@ export class MainPanel {
                     case EMainPanelCommands.getIsLoggedInAzure:
                         await webview.postMessage({
                             command: EMainPanelCommands.setIsLoggedInAzure,
-                            payload: Constnants.isLoggedInAzure,
+                            payload: Constants.isLoggedInAzure,
                         });
                         break;
 
                     case EMainPanelCommands.singInWithAzure:
                         const result = await commands.executeCommand<AzureTokenResponse>('feedboard.singInWithAzure');
 
-                        Constnants.azureToken = this._tokenHelper.createAzureToken(
+                        Constants.azureToken = this._tokenHelper.createAzureToken(
                             result.accessToken,
                             result.accessTokenExpiredAt
                         );
 
-                        if (Constnants.azureToken !== null) {
-                            this._azureClient = new AzureClient(Constnants.azureToken);
+                        if (Constants.azureToken !== null) {
+                            this._azureClient = new AzureClient(Constants.azureToken);
 
-                            Constnants.isLoggedInAzure = true;
+                            Constants.isLoggedInAzure = true;
 
                             await webview.postMessage({
                                 command: EMainPanelCommands.setIsLoggedInAzure,
-                                payload: Constnants.isLoggedInAzure,
+                                payload: Constants.isLoggedInAzure,
                             });
                         }
                         break;

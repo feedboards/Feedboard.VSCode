@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { getNonce, getUri } from '../utilities';
 import { AzureClient, AzureTokenResponse, TokenHelper } from '../core';
-import { Constnants } from '../constants';
+import { Constants } from '../constants';
 import { EMainSideBarCommands } from '../../common/commands/EMainSideBarCommands';
 import { isTMainPanelGetNamespaces, isTMainPanelGetResourceGroups } from '../../common/types';
 
@@ -16,7 +16,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
         this._tokenHelper = new TokenHelper();
         this._tokenHelper.getAzureToken().then((token) => {
             if (token !== null) {
-                Constnants.azureToken = token;
+                Constants.azureToken = token;
                 this._azureClient = new AzureClient(token);
 
                 if (this._webview !== undefined) {
@@ -90,26 +90,26 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
 
             switch (message.command) {
                 case EMainSideBarCommands.removeConnection:
-                    Constnants.removeConnection(payload);
+                    Constants.removeConnection(payload);
                     break;
 
                 case EMainSideBarCommands.openConnection:
-                    Constnants.openConnections.push(payload);
+                    Constants.openConnections.push(payload);
                     vscode.commands.executeCommand('feedboard.main-view', payload);
-                    console.log(Constnants.openConnections);
+                    console.log(Constants.openConnections);
                     break;
 
                 case EMainSideBarCommands.getIsLoggedInAzure:
                     await webview.postMessage({
                         command: EMainSideBarCommands.setIsLoggedInAzure,
-                        payload: Constnants.isLoggedInAzure,
+                        payload: Constants.isLoggedInAzure,
                     });
                     break;
 
                 case EMainSideBarCommands.getSavedConnections:
                     await webview.postMessage({
                         command: EMainSideBarCommands.setSavedConnections,
-                        payload: Constnants.connections,
+                        payload: Constants.connections,
                     });
                     break;
 
@@ -149,7 +149,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                 case EMainSideBarCommands.getIsLoggedInAzure:
                     await webview.postMessage({
                         command: EMainSideBarCommands.setIsLoggedInAzure,
-                        payload: Constnants.isLoggedInAzure,
+                        payload: Constants.isLoggedInAzure,
                     });
                     break;
 
@@ -160,27 +160,27 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
 
                     console.log('result of sude bar provider by singInWithAzure command', result);
 
-                    Constnants.azureToken = this._tokenHelper.createAzureToken(
+                    Constants.azureToken = this._tokenHelper.createAzureToken(
                         result.accessToken,
                         result.accessTokenExpiredAt
                     );
 
-                    if (Constnants.azureToken !== null) {
+                    if (Constants.azureToken !== null) {
                         console.log('azureToken is not null');
-                        this._azureClient = new AzureClient(Constnants.azureToken);
+                        this._azureClient = new AzureClient(Constants.azureToken);
 
-                        Constnants.isLoggedInAzure = true;
+                        Constants.isLoggedInAzure = true;
 
                         await webview.postMessage({
                             command: EMainSideBarCommands.setIsLoggedInAzure,
-                            payload: Constnants.isLoggedInAzure,
+                            payload: Constants.isLoggedInAzure,
                         });
                     }
                     break;
 
                 case EMainSideBarCommands.addConnection:
                     console.log('EMainSideBarCommands.addConnection', payload);
-                    Constnants.addConnection(payload);
+                    Constants.addConnection(payload);
 
                     // await webview.postMessage({
                     //     command: EMainPanelCommands.setConnection,
@@ -189,7 +189,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                     break;
 
                 case EMainSideBarCommands.updateConnection:
-                    Constnants.updateConnection(payload);
+                    Constants.updateConnection(payload);
                     break;
             }
         });

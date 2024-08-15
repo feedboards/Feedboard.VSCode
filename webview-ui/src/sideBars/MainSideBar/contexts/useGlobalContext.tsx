@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, FC, useContext, useEffect, useState } from 'react';
 import { IGlobalContext, IContextProviderProps } from '..';
 import { vscode } from '../../../utilities';
 import { Subscription } from '@azure/arm-subscriptions';
@@ -19,7 +19,7 @@ export const useGlobal = () => {
     return context;
 };
 
-export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) => {
+export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
     const [subscriptionLoading, setSubscriptionLoading] = useState<boolean>(false);
     const [resourceGroupLoading, setResourceGroupLoading] = useState<boolean>(false);
     const [namespaceLoading, setNamespaceLoading] = useState<boolean>(false);
@@ -66,29 +66,34 @@ export const GlobalProvider: React.FC<IContextProviderProps> = ({ children }) =>
                 break;
 
             case EMainSideBarCommands.setIsLoggedInAzure:
-                console.log('paload from command setIsLoggedInAzure', payload);
+                console.log('payload from command setIsLoggedInAzure', payload);
+
                 setIsLoggedInAzure(payload);
 
                 if (payload === true) {
                     vscode.postMessage({ command: EMainSideBarCommands.getSubscriptions });
+
                     setSubscriptionLoading(true);
                 }
                 break;
 
             case EMainSideBarCommands.setSubscriptions:
-                console.log('paload from command setSubscriptions', payload);
+                console.log('payload from command setSubscriptions', payload);
+
                 setSubscriptions(payload);
                 setSubscriptionLoading(false);
                 break;
 
             case EMainSideBarCommands.setResourceGroups:
-                console.log('paload from command setResourceGroups', payload);
+                console.log('payload from command setResourceGroups', payload);
+
                 setResourceGroups(payload);
                 setResourceGroupLoading(false);
                 break;
 
             case EMainSideBarCommands.setNamespaces:
-                console.log('paload from command setNamespaces', payload);
+                console.log('payload from command setNamespaces', payload);
+
                 setNamespaces(payload);
                 setNamespaceLoading(false);
                 break;
