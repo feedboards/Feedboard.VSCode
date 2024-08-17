@@ -30,7 +30,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
             name: 'Connection string',
         },
         {
-            type: ELoginType.oAuth,
+            type: ELoginType.azureOAuth,
             name: 'Azure account',
         },
     ]);
@@ -109,7 +109,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
             if (connectionString === undefined || connectionString === '') {
                 setConnectionStringError(true);
             }
-        } else if (selectedLoginType !== undefined && selectedLoginType.type === ELoginType.oAuth) {
+        } else if (selectedLoginType !== undefined && selectedLoginType.type === ELoginType.azureOAuth) {
             if (selectedSubscription === undefined) {
                 setSubscriptionsError(true);
             }
@@ -133,7 +133,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
                 selectedResourceGroup == undefined) ||
             connection == undefined
         ) {
-            changeLayoutType(ELayoutTypes.default);
+            changeLayoutType(ELayoutTypes.connectionList);
             return;
         }
 
@@ -183,7 +183,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
             });
 
             addConnection(connection);
-            changeLayoutType(ELayoutTypes.default);
+            changeLayoutType(ELayoutTypes.connectionList);
         }
     };
 
@@ -210,25 +210,13 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
                 },
             };
 
-            // if (isOAuthType(connection.settings)) {
-            //     console.log('EditAndAddNewConnection connection is OAuthType');
-            //     vscode.postMessage({
-            //         command: EMainPanelCommands.getEventHubs,
-            //         payload: {
-            //             subscriptionId: connection.settings.subscription.subscriptionId,
-            //             resourceGroupName: connection.settings.resourceGroup.name,
-            //             namespaceName: connection.settings.namespace.name,
-            //         },
-            //     });
-            // }
-
             vscode.postMessage({
                 command: EMainSideBarCommands.addConnection,
                 payload: connection,
             });
 
             addConnection(connection);
-            changeLayoutType(ELayoutTypes.default);
+            changeLayoutType(ELayoutTypes.connectionList);
         }
     };
 
@@ -275,7 +263,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
 
             {selectedLoginType === undefined && <></>}
 
-            {selectedLoginType?.type === ELoginType.oAuth && (
+            {selectedLoginType?.type === ELoginType.azureOAuth && (
                 <>
                     {isLoggedInAzure ? (
                         <AddNewConnectionOAuth
@@ -325,7 +313,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
                     appearance="secondary"
                     onClick={() => {
                         setConnection(undefined);
-                        changeLayoutType(ELayoutTypes.default);
+                        changeLayoutType(ELayoutTypes.connectionList);
                     }}>
                     close
                 </VSCodeButton>

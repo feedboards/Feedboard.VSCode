@@ -36,7 +36,7 @@ export const Header = () => {
     };
 
     const onConnect = () => {
-        if (connection?.settings.loginType === ELoginType.oAuth && isOAuthType(connection.settings)) {
+        if (connection?.settings.loginType === ELoginType.azureOAuth && isOAuthType(connection.settings)) {
             vscode.postMessage({
                 command: EMainPanelCommands.startMonitoring,
                 payload: {
@@ -62,11 +62,11 @@ export const Header = () => {
         }
     };
 
-    const onChandeEventHubConnectionString = (x: ChangeEvent<HTMLInputElement>) => {
+    const onChangeEventHubConnectionString = (x: ChangeEvent<HTMLInputElement>) => {
         setEventHubNameConnectionString(x.target.value);
     };
 
-    const onChandeConsumerGroupConnectionString = (x: ChangeEvent<HTMLInputElement>) => {
+    const onChangeConsumerGroupConnectionString = (x: ChangeEvent<HTMLInputElement>) => {
         setConsumerGroupNameConnectionString(x.target.value);
     };
 
@@ -84,12 +84,12 @@ export const Header = () => {
                 {layoutType === ELayoutTypes.withConnectionString && (
                     <>
                         <VSCodeInput
-                            onChange={onChandeEventHubConnectionString}
+                            onChange={onChangeEventHubConnectionString}
                             className="main-panel__header_input"
                             placeholder="Event Hub"
                         />
                         <VSCodeInput
-                            onChange={onChandeConsumerGroupConnectionString}
+                            onChange={onChangeConsumerGroupConnectionString}
                             className="main-panel__header_input"
                             placeholder="Consumer Group"
                         />

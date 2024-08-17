@@ -9,7 +9,7 @@ export class APICore {
     public get(endpoint: string, params: any): Promise<AxiosResponse<any, any>> {
         let response;
         if (params) {
-            var queryString = params
+            const queryString = params
                 ? Object.keys(params)
                       .map((key) => key + '=' + params[key])
                       .join('&')
@@ -24,7 +24,7 @@ export class APICore {
     public getFile(endpoint: string, params: any): Promise<AxiosResponse<any, any>> {
         let response;
         if (params) {
-            var queryString = params
+            const queryString = params
                 ? Object.keys(params)
                       .map((key) => key + '=' + params[key])
                       .join('&')

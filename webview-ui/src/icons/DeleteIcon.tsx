@@ -1,4 +1,4 @@
-import { IIcon } from './types';
+import { IIcon } from '../types';
 
 export const DeleteIcon = ({ ...props }: IIcon) => {
     return (

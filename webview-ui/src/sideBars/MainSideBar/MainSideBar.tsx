@@ -1,5 +1,5 @@
 import { GlobalProvider, LayoutProvider } from '.';
-import { render } from '../../utilities/render';
+import { render } from '../../utilities';
 import { Layout } from './layouts';
 import '../../scss/mainSideBar.scss';
 

@@ -30,8 +30,8 @@ export const Panel = ({ half = false }: IPanel) => {
     const convertToJson = (data: any) => JSON.stringify(data, null, '\t');
 
     const changeDisplayJson = (isJsonBtn: boolean) => {
-        setActiveButtons([isJsonBtn ? true : false, isJsonBtn ? false : true]);
-        setDisplayJson(isJsonBtn ? true : false);
+        setActiveButtons([isJsonBtn, !isJsonBtn]);
+        setDisplayJson(isJsonBtn);
     };
 
     return (

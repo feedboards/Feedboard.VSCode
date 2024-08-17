@@ -9,7 +9,7 @@ export const Header = () => {
             <div>
                 <VSCodeButton
                     className="main-side-bar__header_button"
-                    onClick={() => changeLayoutType(ELayoutTypes.connection)}>
+                    onClick={() => changeLayoutType(ELayoutTypes.addOrEditConnection)}>
                     Add Connection
                 </VSCodeButton>
             </div>

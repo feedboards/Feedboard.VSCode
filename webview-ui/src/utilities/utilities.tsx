@@ -1,4 +1,5 @@
 import { VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react';
+import ReactDOM from 'react-dom';
 import { ReactElement } from 'react';
 
 export function handleDropdownChange<TState>(event: any, setState: Function, state: TState[]) {
@@ -29,4 +30,8 @@ export const addLoading = (state: boolean, Options: ReactElement) => {
             {!state && Options}
         </>
     );
+};
+
+export const render = (Element: ReactElement) => {
+    return ReactDOM.render(Element, document.getElementById('root'));
 };

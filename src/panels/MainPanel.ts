@@ -12,7 +12,7 @@ import {
     TConnection,
     TMainPanelPayload,
 } from '../../common/types';
-import { EMainPanelCommands } from '../../common/commands/EMainPanelCommands';
+import { EMainPanelCommands } from '../../common/commands';
 
 export class MainPanel {
     private readonly _panel: WebviewPanel;

@@ -77,8 +77,6 @@ export const AddNewConnectionOAuth = ({
     const onChangeNamespaces = (x: undefined | EHNamespace) => {
         setSelectedNamespace(x);
 
-        console.log('onChangeNamespaces', x);
-
         if (x !== undefined) {
             setNamespacesError(false);
 

@@ -133,7 +133,7 @@
 
             &-body_area {
                 background-color: var(--vscode-editor-background);
-                font-family: var(--vscode-font-family);
+                font-family: var(--vscode-font-family), serif;
                 color: var(--vscode-foreground);
                 resize: none;
                 border: none;

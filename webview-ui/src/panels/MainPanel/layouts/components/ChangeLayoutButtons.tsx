@@ -8,7 +8,7 @@ export const ChangeLayoutButtons = () => {
     const { changeLayoutType } = useLayout();
 
     const changeDisplayJson = (layoutType: ELayoutTypes, active: boolean) => {
-        setActiveButtons([active ? true : false, active ? false : true]);
+        setActiveButtons([active, !active]);
         changeLayoutType(layoutType);
     };
 

@@ -1,5 +1,4 @@
 export enum ELayoutTypes {
-    default = 'withAzureOAuthdefault',
-    connection = 'connection',
-    edit = 'edit',
+    connectionList = 'connectionList',
+    addOrEditConnection = 'addOrEditConnection',
 }

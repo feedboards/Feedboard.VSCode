@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { getNonce, getUri } from '../utilities';
 import { AzureClient, AzureTokenResponse, TokenHelper } from '../core';
 import { Constants } from '../constants';
-import { EMainSideBarCommands } from '../../common/commands/EMainSideBarCommands';
+import { EMainSideBarCommands } from '../../common/commands';
 import { isTMainPanelGetNamespaces, isTMainPanelGetResourceGroups } from '../../common/types';
 
 export class SideBarProvider implements vscode.WebviewViewProvider {
@@ -31,7 +31,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
 
     public resolveWebviewView(
         webviewView: vscode.WebviewView,
-        context: vscode.WebviewViewResolveContext<unknown>,
+        context: vscode.WebviewViewResolveContext,
         token: vscode.CancellationToken
     ): void | Thenable<void> {
         this.view = webviewView;
@@ -144,13 +144,6 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                             ),
                         });
                     }
-                    break;
-
-                case EMainSideBarCommands.getIsLoggedInAzure:
-                    await webview.postMessage({
-                        command: EMainSideBarCommands.setIsLoggedInAzure,
-                        payload: Constants.isLoggedInAzure,
-                    });
                     break;
 
                 case EMainSideBarCommands.singInWithAzure:

@@ -21,7 +21,7 @@ export type TConnectionSettingsAzure = {
 };
 
 export enum ELoginType {
-    oAuth = 'oAuth',
+    azureOAuth = 'azureOAuth',
     connectionString = 'connectionString',
 }
 

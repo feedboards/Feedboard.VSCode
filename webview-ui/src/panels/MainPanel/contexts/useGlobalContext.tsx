@@ -40,8 +40,6 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
     useEffect(() => {
         window.addEventListener('message', _handleMessage);
 
-        console.log('main window');
-
         vscode.postMessage({ command: EMainPanelCommands.getIsLoggedInAzure });
         vscode.postMessage({ command: EMainPanelCommands.getConnection });
 
@@ -76,7 +74,7 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
                 console.log('payload of setConnection command', payload);
                 setConnection(payload);
 
-                if (payload.settings.loginType == ELoginType.oAuth && isLoggedInAzure) {
+                if (payload.settings.loginType == ELoginType.azureOAuth && isLoggedInAzure) {
                     vscode.postMessage({
                         command: EMainPanelCommands.getEventHubs,
                         payload: {

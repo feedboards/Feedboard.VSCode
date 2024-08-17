@@ -1,4 +1,4 @@
-import { IVSCodeInput } from '.';
+import { IVSCodeInput } from '../types';
 import classNames from 'classnames';
 
 export const VSCodeInput = ({ className, isError = false, ...InputProps }: IVSCodeInput) => {

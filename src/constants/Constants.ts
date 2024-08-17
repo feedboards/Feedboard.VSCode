@@ -29,7 +29,7 @@ export class Constants {
             id: '4b9ef858-e028-4f88-bc78-a99532a20c64',
             name: 'OAuth',
             settings: {
-                loginType: ELoginType.oAuth,
+                loginType: ELoginType.azureOAuth,
                 namespace: {
                     id: '/subscriptions/a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9/resourceGroups/feedboard-test/providers/Microsoft.EventHub/namespaces/feedboard-test-namespace',
                     name: 'feedboard-test-namespace',

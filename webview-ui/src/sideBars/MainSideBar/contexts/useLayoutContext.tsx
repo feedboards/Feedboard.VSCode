@@ -21,7 +21,7 @@ export const LayoutProvider: FC<IContextProviderProps> = ({ children }) => {
     const changeLayoutType = (type: ELayoutTypes) => {
         setLayoutType(type);
 
-        if (type === ELayoutTypes.connection) {
+        if (type === ELayoutTypes.addOrEditConnection) {
             setHasHeader(false);
         } else {
             setHasHeader(true);

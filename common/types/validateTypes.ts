@@ -41,7 +41,7 @@ export const isString = (obj: any): obj is string => {
 };
 
 export const isOAuthType = (obj: any): obj is TConnectionSettingsAzureOAuth => {
-    return obj && typeof obj === 'object' && obj.loginType === ELoginType.oAuth;
+    return obj && typeof obj === 'object' && obj.loginType === ELoginType.azureOAuth;
 };
 
 export const isConnectionString = (obj: any): obj is TConnectionSettingsAzureConnectionString => {

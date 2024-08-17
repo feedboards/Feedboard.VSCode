@@ -9,10 +9,10 @@ export const Layout = () => {
 
     return (
         <main className="main-side-bar">
-            {layoutType === ELayoutTypes.default && <Header />}
+            {layoutType === ELayoutTypes.connectionList && <Header />}
             <div className="main-side-bar__wrapper" data-has-header={hasHeader}>
-                {layoutType === ELayoutTypes.default && <ConnectionList setConnection={setConnection} />}
-                {layoutType === ELayoutTypes.connection && (
+                {layoutType === ELayoutTypes.connectionList && <ConnectionList setConnection={setConnection} />}
+                {layoutType === ELayoutTypes.addOrEditConnection && (
                     <EditAndAddNewConnection connection={connection} setConnection={setConnection} />
                 )}
             </div>

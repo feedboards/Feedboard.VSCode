@@ -1,2 +1,1 @@
-export * from './azureTokenResponse';
-export * from './githubTokenResponse';
+export * from './oauthResponse';

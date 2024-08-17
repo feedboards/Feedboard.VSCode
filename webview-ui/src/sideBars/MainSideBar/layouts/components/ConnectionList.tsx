@@ -16,7 +16,7 @@ export const ConnectionList = ({ setConnection }: IConnectionList) => {
     };
 
     const onEdit = (connection: TConnection) => {
-        changeLayoutType(ELayoutTypes.connection);
+        changeLayoutType(ELayoutTypes.addOrEditConnection);
         setConnection(connection);
     };
 
