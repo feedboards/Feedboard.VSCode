@@ -1,15 +1,19 @@
-import * as vscode from 'vscode';
+import { ExtensionContext } from 'vscode';
 
+/*
+ * use this helper if you want to get any secrets
+ */
 export class StoreHelper {
     private static instance: StoreHelper;
-    private context: vscode.ExtensionContext;
+    private context: ExtensionContext;
 
-    // Private constructor to ensure singleton behavior
-    private constructor(context: vscode.ExtensionContext) {
+    /*
+     * Private constructor to ensure singleton behavior
+     */
+    private constructor(context: ExtensionContext) {
         this.context = context;
     }
-
-    public static initialize(context: vscode.ExtensionContext) {
+    public static initialize(context: ExtensionContext) {
         if (!StoreHelper.instance) {
             StoreHelper.instance = new StoreHelper(context);
         }
@@ -22,8 +26,8 @@ export class StoreHelper {
         return StoreHelper.instance;
     }
 
-    public async getValueAsync(value: string): Promise<string | undefined> {
-        return await this.context.secrets.get(value);
+    public getValueAsync(value: string): Thenable<string | undefined> {
+        return this.context.secrets.get(value);
     }
 
     public async storeValueAsync(key: string, value: string): Promise<boolean> {

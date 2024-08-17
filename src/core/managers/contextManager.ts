@@ -1,15 +1,20 @@
-import * as vscode from 'vscode';
+import { ExtensionContext } from 'vscode';
 
 export class ContextManager {
     private static instance: ContextManager;
-    private context: vscode.ExtensionContext | null = null;
+    private context: ExtensionContext | null = null;
 
-    // Private constructor to ensure singleton behavior
-    private constructor(context: vscode.ExtensionContext) {
+    /*
+     * Private constructor to ensure singleton behavior
+     */
+    private constructor(context: ExtensionContext) {
         this.context = context;
     }
 
-    public static initialize(context: vscode.ExtensionContext) {
+    /*
+     * initializing ContextManager
+     */
+    public static initialize(context: ExtensionContext) {
         if (!ContextManager.instance) {
             ContextManager.instance = new ContextManager(context);
         }
@@ -17,19 +22,22 @@ export class ContextManager {
 
     public static getInstance(): ContextManager {
         if (!ContextManager.instance) {
-            throw new Error('ContextManager is not initialized yet.');
+            throw new Error("ContextManager hasn't initialized yet.");
         }
         return ContextManager.instance;
     }
 
-    public getContext(): vscode.ExtensionContext {
+    public getContext(): ExtensionContext {
         if (!this.context) {
             throw new Error("Context has not been set");
         }
         return this.context;
     }
 
-    public setContext(context: vscode.ExtensionContext): ContextManager {
+    /*
+     * if you need to get context use ContextManager.getInstance().getContext();
+     */
+    public setContext(context: ExtensionContext): ContextManager {
         this.context = context;
         return this;
     }

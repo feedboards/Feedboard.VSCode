@@ -7,66 +7,53 @@ import { ContextManager } from './core/managers/contextManager';
 import { TConnection } from '../common/types';
 
 export async function activate(context: vscode.ExtensionContext) {
-    // use this helper if you want to get any secrets
     StoreHelper.initialize(context);
 
-    // Usage elsewhere in the code
     const storeHelper = StoreHelper.getInstance();
 
-    // initializing ContextManager
     ContextManager.initialize(context);
-
-    // if you need to get context you ContextManager.getInstance().getContext();
     ContextManager.getInstance().setContext(context);
 
     await configData(storeHelper);
+
     Constants.init();
 
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('feedboard-sidebar-view', new SideBarProvider(context.extensionUri))
     );
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand('feedboard.main-view', (connection: TConnection) => {
-            MainPanel.render(context.extensionUri, context, connection);
-        })
-    );
+    registerCommand('main-view', (connection: TConnection) => {
+        MainPanel.render(context.extensionUri, context, connection);
+    });
 
     // commands
-    context.subscriptions.push(
-        vscode.commands.registerCommand('feedboard.singInWithGitHub', async () => {
-            const result: GithubTokenResponse = await authenticateGitHub(storeHelper);
+    registerCommand('singInWithGitHub', async () => {
+        const result: GithubTokenResponse = await authenticateGitHub(storeHelper);
 
-            // test
-            console.log('github result', result);
+        Constants.githubAccessToken = result.accessToken;
+        Constants.githubUserId = result.userId;
+    });
 
-            Constants.githubAccessToken = result.accessToken;
-            Constants.githubUserId = result.userId;
-        })
-    );
+    registerCommand('singInWithAzure', async () => {
+        const result: AzureTokenResponse = await authenticateAzure(storeHelper);
 
-    context.subscriptions.push(
-        vscode.commands.registerCommand('feedboard.singInWithAzure', async () => {
-            const result: AzureTokenResponse = await authenticateAzure(storeHelper);
-
-            // if (result.accessToken !== undefined &&
-            //     result.accessTokenExpiredAt !== undefined &&
-            //     result.idToken !== undefined &&
-            //     result.refreshToken !== undefined
-            // ) {
+        if (result.accessToken !== undefined &&
+            result.accessTokenExpiredAt !== undefined &&
+            result.idToken !== undefined &&
+            result.refreshToken !== undefined
+        ) {
             Constants.azureAccessToken = result.accessToken;
             Constants.azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
             Constants.azureIdToken = result.idToken;
             Constants.azureRefreshToken = result.refreshToken;
-            // }
+        }
 
-            return result;
-        })
-    );
+        return result;
+    });
 
-    const registerCommand = (command: string, callback: (...arg: any[]) => any) => {
-
-    };
+    function registerCommand(command: string, callback: (...arg: any[]) => any) {
+        context.subscriptions.push(vscode.commands.registerCommand(`feedboard.${command}`, callback));
+    }
 }
 
 const configData = async (storeHelper: StoreHelper) => {
