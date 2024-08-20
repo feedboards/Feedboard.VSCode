@@ -2,7 +2,7 @@ import { AzureToken, TAzureTokenResponseDto } from '@feedboard/feedboard.core';
 import { StoreHelper } from './storeHelper';
 
 export class TokenHelper {
-    private static readonly _storeHelper: StoreHelper = StoreHelper.getInstance();
+    private static readonly _storeHelper: StoreHelper = StoreHelper.instance;
     private static readonly _azureToken: AzureToken = new AzureToken();
 
     public async createAzureToken(token: TAzureTokenResponseDto): Promise<AzureToken> {
@@ -12,7 +12,7 @@ export class TokenHelper {
     }
 
     public async getAzureToken(): Promise<AzureToken | null> {
-        const json = await TokenHelper._storeHelper.getValueAsync('azureToken');
+        const json: string | undefined = await TokenHelper._storeHelper.getValueAsync('azureToken');
 
         if (json) {
             return new AzureToken(JSON.parse(json));

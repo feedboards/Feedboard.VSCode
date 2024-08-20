@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import { getNonce, getUri } from '../utilities';
-import { Constants } from '../constants';
 import { EMainSideBarCommands } from '../../common/commands';
 import { isTMainPanelGetNamespaces, isTMainPanelGetResourceGroups } from '../../common/types';
 import { AzureClient, AzureToken, TAzureTokenResponseDto } from '@feedboard/feedboard.core';
 import { TokenHelper } from '../helpers';
+import { ConnectionHelper } from '../helpers/connectionHelper';
 
 export class SideBarProvider implements vscode.WebviewViewProvider {
     public view?: vscode.WebviewView;
@@ -96,11 +96,11 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
 
             switch (message.command) {
                 case EMainSideBarCommands.removeConnection:
-                    Constants.removeConnection(payload);
+                    ConnectionHelper.removeConnection(payload);
                     break;
 
                 case EMainSideBarCommands.openConnection:
-                    Constants.openConnections.push(payload);
+                    ConnectionHelper.addOpenConnection(payload);
 
                     vscode.commands.executeCommand('feedboard.main-view', payload);
                     break;
@@ -115,7 +115,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                 case EMainSideBarCommands.getSavedConnections:
                     await webview.postMessage({
                         command: EMainSideBarCommands.setSavedConnections,
-                        payload: Constants.connections,
+                        payload: ConnectionHelper.connections,
                     });
                     break;
 
@@ -174,7 +174,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                 case EMainSideBarCommands.addConnection:
                     console.log('EMainSideBarCommands.addConnection', payload);
 
-                    Constants.addConnection(payload);
+                    ConnectionHelper.addConnection(payload);
 
                     // await webview.postMessage({
                     //     command: EMainPanelCommands.setConnection,
@@ -183,7 +183,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                     break;
 
                 case EMainSideBarCommands.updateConnection:
-                    Constants.updateConnection(payload);
+                    ConnectionHelper.updateConnection(payload);
                     break;
             }
         });

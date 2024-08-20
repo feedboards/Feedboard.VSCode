@@ -4,35 +4,38 @@ import { ExtensionContext } from 'vscode';
  * use this helper if you want to get any secrets
  */
 export class StoreHelper {
-    private static instance: StoreHelper;
-    private context: ExtensionContext;
+    private static _instance: StoreHelper;
+    private _context: ExtensionContext;
 
     /*
      * Private constructor to ensure singleton behavior
      */
     private constructor(context: ExtensionContext) {
-        this.context = context;
+        this._context = context;
     }
+
     public static initialize(context: ExtensionContext) {
-        if (!StoreHelper.instance) {
-            StoreHelper.instance = new StoreHelper(context);
+        if (!StoreHelper._instance) {
+            StoreHelper._instance = new StoreHelper(context);
         }
     }
 
-    public static getInstance(): StoreHelper {
-        if (!StoreHelper.instance) {
+    public static get instance(): StoreHelper {
+        if (!StoreHelper._instance) {
             throw new Error('StoreHelper is not initialized yet.');
         }
-        return StoreHelper.instance;
+
+        return StoreHelper._instance;
     }
 
-    public getValueAsync(value: string): Thenable<string | undefined> {
-        return this.context.secrets.get(value);
+    public getValueAsync(key: string): Thenable<string | undefined> {
+        return this._context.secrets.get(key);
     }
 
     public async storeValueAsync(key: string, value: string): Promise<boolean> {
         try {
-            await this.context.secrets.store(key, value);
+            await this._context.secrets.store(key, value);
+
             return true;
         } catch (error) {
             return false;
@@ -41,7 +44,7 @@ export class StoreHelper {
 
     public async deleteAsync(key: string): Promise<boolean> {
         try {
-            this.context.secrets.delete(key);
+            this._context.secrets.delete(key);
             return true;
         } catch (error) {
             return false;

@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import { SideBarProvider } from './providers';
 import { MainPanel } from './panels';
 import { authenticateGitHub, authenticateAzure } from './oauth';
-import { Constants } from './constants';
 import { ContextManager } from './managers';
 import {
     Feedboard,
@@ -13,18 +12,19 @@ import {
     TAzureTokenResponseDto,
 } from '@feedboard/feedboard.core';
 import { StoreHelper } from './helpers';
+import { ConnectionHelper } from './helpers/connectionHelper';
 
-export async function activate(context: vscode.ExtensionContext) {
+export const activate = async (context: vscode.ExtensionContext) => {
     StoreHelper.initialize(context);
-    Feedboard.init('');
+    Feedboard.init(''); // TODO add baseURL
 
-    const storeHelper = StoreHelper.getInstance();
+    const storeHelper = StoreHelper.instance;
     const githubToken = new GithubToken();
     const azureToken = new AzureToken();
 
     ContextManager.initialize(context);
     ContextManager.getInstance().setContext(context);
-    Constants.init();
+    ConnectionHelper.init();
 
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('feedboard-sidebar-view', new SideBarProvider(context.extensionUri))
@@ -65,4 +65,8 @@ export async function activate(context: vscode.ExtensionContext) {
     function registerCommand(command: string, callback: (...arg: any[]) => any) {
         context.subscriptions.push(vscode.commands.registerCommand(`feedboard.${command}`, callback));
     }
-}
+};
+
+export const deactivate = async () => {
+    await ConnectionHelper.saveCurrentConnectionIntoStorage();
+};
