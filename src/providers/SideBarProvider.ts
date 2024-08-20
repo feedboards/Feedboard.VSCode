@@ -1,30 +1,36 @@
 import * as vscode from 'vscode';
 import { getNonce, getUri } from '../utilities';
-import { AzureClient, AzureTokenResponse, TokenHelper } from '../core';
+import { TokenHelper } from '../core';
 import { Constants } from '../constants';
 import { EMainSideBarCommands } from '../../common/commands';
 import { isTMainPanelGetNamespaces, isTMainPanelGetResourceGroups } from '../../common/types';
+import { AzureClient, AzureToken, TAzureTokenResponseDto } from '@feedboard/feedboard.core';
 
 export class SideBarProvider implements vscode.WebviewViewProvider {
     public view?: vscode.WebviewView;
 
     private readonly _tokenHelper: TokenHelper;
+    private _token: AzureToken;
     private _azureClient: AzureClient | undefined;
     private _webview: vscode.Webview | undefined;
 
     constructor(private readonly _extensionUri: vscode.Uri) {
+        this._token = new AzureToken();
         this._tokenHelper = new TokenHelper();
-        this._tokenHelper.getAzureToken().then((token) => {
-            if (token !== null) {
-                Constants.azureToken = token;
-                this._azureClient = new AzureClient(token);
 
-                if (this._webview !== undefined) {
-                    this._webview.postMessage({
-                        command: EMainSideBarCommands.setIsLoggedInAzure,
-                        payload: true,
-                    });
-                }
+        this._tokenHelper.getAzureToken().then((token) => {
+            if (!token) {
+                return;
+            }
+
+            this._azureClient = new AzureClient(token);
+            this._token.addTokenOrUpdate(token.getActiveTokenAsResponseDto());
+
+            if (this._webview) {
+                this._webview.postMessage({
+                    command: EMainSideBarCommands.setIsLoggedInAzure,
+                    payload: this._token.isLogged(),
+                });
             }
         });
     }
@@ -95,14 +101,14 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
 
                 case EMainSideBarCommands.openConnection:
                     Constants.openConnections.push(payload);
+
                     vscode.commands.executeCommand('feedboard.main-view', payload);
-                    console.log(Constants.openConnections);
                     break;
 
                 case EMainSideBarCommands.getIsLoggedInAzure:
                     await webview.postMessage({
                         command: EMainSideBarCommands.setIsLoggedInAzure,
-                        payload: Constants.isLoggedInAzure,
+                        payload: this._token.isLogged(),
                     });
                     break;
 
@@ -147,32 +153,27 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                     break;
 
                 case EMainSideBarCommands.singInWithAzure:
-                    const result = await vscode.commands.executeCommand<AzureTokenResponse>(
+                    const result = await vscode.commands.executeCommand<TAzureTokenResponseDto>(
                         'feedboard.singInWithAzure'
                     );
 
-                    console.log('result of sude bar provider by singInWithAzure command', result);
-
-                    Constants.azureToken = this._tokenHelper.createAzureToken(
-                        result.accessToken,
-                        result.accessTokenExpiredAt
-                    );
-
-                    if (Constants.azureToken !== null) {
-                        console.log('azureToken is not null');
-                        this._azureClient = new AzureClient(Constants.azureToken);
-
-                        Constants.isLoggedInAzure = true;
+                    try {
+                        this._token.addTokenOrUpdate(result);
+                        this._azureClient = new AzureClient(this._token);
+                        await this._tokenHelper.createAzureToken(result);
 
                         await webview.postMessage({
                             command: EMainSideBarCommands.setIsLoggedInAzure,
-                            payload: Constants.isLoggedInAzure,
+                            payload: this._token.isLogged(),
                         });
+                    } catch (error) {
+                        // TODO implemtnt catch
                     }
                     break;
 
                 case EMainSideBarCommands.addConnection:
                     console.log('EMainSideBarCommands.addConnection', payload);
+
                     Constants.addConnection(payload);
 
                     // await webview.postMessage({

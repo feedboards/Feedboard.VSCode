@@ -1,21 +1,23 @@
-import { AzureToken } from '../oauth';
+import { AzureToken, TAzureTokenResponseDto } from '@feedboard/feedboard.core';
 import { StoreHelper } from './storeHelper';
 
 export class TokenHelper {
-    private readonly storeHelper: StoreHelper = StoreHelper.getInstance();
+    private static readonly _storeHelper: StoreHelper = StoreHelper.getInstance();
+    private static readonly _azureToken: AzureToken = new AzureToken();
 
-    public createAzureToken(accessToken: string, expiredAt: string): AzureToken {
-        return new AzureToken(accessToken, expiredAt);
+    public async createAzureToken(token: TAzureTokenResponseDto): Promise<AzureToken> {
+        await TokenHelper._storeHelper.storeValueAsync('azureToken', JSON.stringify(token));
+
+        return TokenHelper._azureToken.addTokenOrUpdate(token);
     }
 
     public async getAzureToken(): Promise<AzureToken | null> {
-        const accessToken = await this.storeHelper.getValueAsync('azureAccessToken');
-        const expiredAt = await this.storeHelper.getValueAsync('azureAccessTokenExpiredAt');
+        const json = await TokenHelper._storeHelper.getValueAsync('azureToken');
 
-        if (accessToken !== undefined && expiredAt !== undefined) {
-            return new AzureToken(accessToken, expiredAt);
-        } else {
-            return null;
+        if (json) {
+            return new AzureToken(JSON.parse(json));
         }
+
+        return null;
     }
 }

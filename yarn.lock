@@ -260,20 +260,17 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@feedboard/feedboard.core@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@feedboard/feedboard.core/-/feedboard.core-0.0.6.tgz#8d27bd99577c8836ef742cbc8ae7d37a9e8b5898"
-  integrity sha512-ADpTt/SguM9n+05iV2XraH5StlB4qxiW3Wx/IuVAYBOfmqzIq9baNRRiTqvn8jj3o5kKfptA4uoFLT+62E7RnQ==
+"@feedboard/feedboard.core@^0.0.15":
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/@feedboard/feedboard.core/-/feedboard.core-0.0.15.tgz#e97d3dcf5d76cf8667c9cb2bd109abcb4dad7ebf"
+  integrity sha512-rufKyMw/s6Q9lgo3EFk4QOdppk/5TBwgbbty3nHQaxDzfB93GSmSLsdfzFGn1eqO/QRZoK4Er3Z9HEN4cvqBOA==
   dependencies:
     "@azure/arm-eventhub" "^5.1.0"
     "@azure/arm-resources" "^5.2.0"
     "@azure/arm-subscriptions" "^5.1.0"
     "@azure/event-hubs" "^5.12.0"
     "@azure/identity" "^4.2.1"
-    axios "^1.7.2"
-    os-browserify "^0.3.0"
-    path-browserify "^1.0.1"
-    util "^0.12.5"
+    axios "^1.7.4"
 
 "@humanwhocodes/config-array@^0.5.0":
   version "0.5.0"
@@ -610,6 +607,15 @@ axios@^1.7.2:
   version "1.7.2"
   resolved "https://registry.npmjs.org/axios/-/axios-1.7.2.tgz"
   integrity sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
+axios@^1.7.4:
+  version "1.7.4"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.4.tgz#4c8ded1b43683c8dd362973c393f3ede24052aa2"
+  integrity sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
@@ -1895,11 +1901,6 @@ optionator@^0.9.1:
     type-check "^0.4.0"
     word-wrap "^1.2.5"
 
-os-browserify@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/os-browserify/-/os-browserify-0.3.0.tgz#854373c7f5c2315914fc9bfc6bd8238fdda1ec27"
-  integrity sha512-gjcpUc3clBf9+210TRaDWbf+rZZZEshZ+DlXMRCeAjp0xhTrnQsKHypIy1J3d5hKdUzj69t708EHtU8P6bUn0A==
-
 parent-module@^1.0.0:
   version "1.0.1"
   resolved "https://registry.npmjs.org/parent-module/-/parent-module-1.0.1.tgz"
@@ -1928,11 +1929,6 @@ parse5@^7.0.0:
   integrity sha512-Czj1WaSVpaoj0wbhMzLmWD69anp2WH7FXMB9n1Sy8/ZFF9jolSQVMu1Ij5WIyGmcBmhk7EOndpO4mIpihVqAXw==
   dependencies:
     entities "^4.4.0"
-
-path-browserify@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/path-browserify/-/path-browserify-1.0.1.tgz#d98454a9c3753d5790860f16f68867b9e46be1fd"
-  integrity sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==
 
 path-is-absolute@^1.0.0:
   version "1.0.1"

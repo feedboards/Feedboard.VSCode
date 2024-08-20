@@ -1,55 +1,53 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, ExtensionContext, commands } from 'vscode';
 import { getUri } from '../utilities/getUri';
 import { getNonce } from '../utilities/getNonce';
-import { AzureClient, AzureTokenResponse, EventHubClient, TokenHelper } from '../core';
-import { Constants } from '../constants';
+import { TokenHelper } from '../core';
 import {
     isString,
     isTMainPanelGetConsumerGroups,
     isTMainPanelGetEventHubs,
     isTMainPanelStartMonitoring,
     isTMainPanelStartMonitoringByConnectionString,
-    TConnection,
     TMainPanelPayload,
 } from '../../common/types';
 import { EMainPanelCommands } from '../../common/commands';
+import { AzureClient, AzureEventHub, AzureToken, TAzureTokenResponseDto, TConnection } from '@feedboard/feedboard.core';
 
 export class MainPanel {
-    private readonly _panel: WebviewPanel;
     private _disposables: Disposable[] = [];
 
     private readonly _tokenHelper: TokenHelper;
-    private _eventHubClient: EventHubClient | undefined;
+    private _token: AzureToken;
+    private _azureEventHub: AzureEventHub;
     private _azureClient: AzureClient | undefined;
     private _webview: Webview | undefined;
 
     private static _openPanels: { [id: string]: MainPanel } = {};
+    // private static _openConnection: MainPanel[] | undefined;
 
-    private static _openConnection: MainPanel[] | undefined;
-    private readonly _connection: TConnection;
-
-    private constructor(panel: WebviewPanel, extensionUri: Uri, connection: TConnection) {
-        this._panel = panel;
-        this._connection = connection;
+    private constructor(private _panel: WebviewPanel, private _extensionUri: Uri, private _connection: TConnection) {
+        this._token = new AzureToken();
         this._tokenHelper = new TokenHelper();
-        this._tokenHelper.getAzureToken().then((token) => {
-            if (token !== null) {
-                Constants.azureToken = token;
-                this._azureClient = new AzureClient(token);
+        this._azureEventHub = new AzureEventHub();
 
-                if (this._webview !== undefined) {
-                    this._webview.postMessage({
-                        command: EMainPanelCommands.setIsLoggedInAzure,
-                        payload: true,
-                    });
-                }
+        this._tokenHelper.getAzureToken().then((token) => {
+            if (!token) {
+                return;
+            }
+
+            this._azureClient = new AzureClient(token);
+            this._token.addTokenOrUpdate(token.getActiveTokenAsResponseDto());
+
+            if (this._webview) {
+                this._webview.postMessage({
+                    command: EMainPanelCommands.setIsLoggedInAzure,
+                    payload: this._token.isLogged(),
+                });
             }
         });
 
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-
-        this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri);
-
+        this._panel.webview.html = this._getWebviewContent(this._panel.webview);
         this._setWebviewMessageListener(this._panel.webview);
     }
 
@@ -73,13 +71,14 @@ export class MainPanel {
 
         while (this._disposables.length) {
             const disposable = this._disposables.pop();
+
             if (disposable) {
                 disposable.dispose();
             }
         }
     }
 
-    private _getWebviewContent(webview: Webview, extensionUri: Uri) {
+    private _getWebviewContent(webview: Webview) {
         const nonce = getNonce();
 
         return /*html*/ `
@@ -88,7 +87,7 @@ export class MainPanel {
             <head>
                 <meta charset="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <link rel="stylesheet" type="text/css" href="${getUri(webview, extensionUri, [
+                <link rel="stylesheet" type="text/css" href="${getUri(webview, this._extensionUri, [
                     'webview-ui',
                     'build',
                     'assets',
@@ -98,13 +97,18 @@ export class MainPanel {
             </head>
             <body class="main-panel__body">
                 <div id="root" class="main-panel__root"></div>
-                <script type="module" nonce="${nonce}" src="${getUri(webview, extensionUri, [
+                <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
             'webview-ui',
             'build',
             'assets',
             'mainPanel.js',
         ])}"></script>
-                        
+                <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
+            'webview-ui',
+            'build',
+            'assets',
+            'index.js',
+        ])}"></script>
             </body>
         </html>
         `;
@@ -120,73 +124,57 @@ export class MainPanel {
                 switch (message.command) {
                     case EMainPanelCommands.startMonitoring:
                         if (
-                            Constants.azureToken !== null &&
-                            isTMainPanelStartMonitoring(payload) &&
-                            !Constants.isMonitoring
+                            !this._token.isLogged() ||
+                            !isTMainPanelStartMonitoring(payload) ||
+                            this._azureEventHub.isMonitoring()
                         ) {
-                            const rules = await this._azureClient?.getAuthorizationRules(
-                                payload?.subscriptionId,
-                                payload?.resourceGroupName,
-                                payload?.namespaceName
-                            );
+                            return;
+                        }
 
-                            if (rules !== undefined) {
-                                const defaultRule = rules.find((x) => x.name === 'RootManageSharedAccessKey');
-
-                                if (defaultRule !== undefined && defaultRule.name !== undefined) {
-                                    const key = await this._azureClient?.getKeys(
-                                        payload.subscriptionId,
-                                        payload.resourceGroupName,
-                                        payload.namespaceName,
-                                        defaultRule.name
-                                    );
-
-                                    if (key?.primaryConnectionString !== undefined) {
-                                        this._eventHubClient = new EventHubClient(
-                                            payload.consumerGroupName,
-                                            payload.eventHubName,
-                                            key?.primaryConnectionString
-                                        );
-
-                                        this._eventHubClient.startMonitoring(async (events, _) => {
-                                            const result: any[] = [];
-
-                                            events.forEach((x) => {
-                                                if (
-                                                    x.body !== undefined ||
-                                                    x.body !== null ||
-                                                    (Array.isArray(x.body) && x.body.length > 0)
-                                                ) {
-                                                    result.push(...x.body);
-                                                }
-                                            });
-
-                                            if (result.length > 0) {
-                                                await webview.postMessage({
-                                                    command: EMainPanelCommands.setMessages,
-                                                    payload: result,
-                                                });
-                                            }
-                                        });
+                        this._azureEventHub.startMonitoringByOAuth(
+                            {
+                                subscriptionId: payload.subscriptionId,
+                                resourceGroupName: payload.resourceGroupName,
+                                namespaceName: payload.namespaceName,
+                                consumerGroupName: payload.consumerGroupName,
+                                eventHubName: payload.eventHubName,
+                            },
+                            this._token,
+                            async (events, _) => {
+                                const result: any[] = [];
+                                events.forEach((x) => {
+                                    if (
+                                        x.body !== undefined ||
+                                        x.body !== null ||
+                                        (Array.isArray(x.body) && x.body.length > 0)
+                                    ) {
+                                        result.push(...x.body);
                                     }
+                                });
+                                if (result.length > 0) {
+                                    await webview.postMessage({
+                                        command: EMainPanelCommands.setMessages,
+                                        payload: result,
+                                    });
                                 }
                             }
-                        }
+                        );
                         break;
 
                     case EMainPanelCommands.startMonitoringByConnectionString:
                         window.showInformationMessage('start monitoring');
 
-                        if (isTMainPanelStartMonitoringByConnectionString(payload)) {
-                            this._eventHubClient = new EventHubClient(
-                                payload.consumerGroupName,
-                                payload.eventHubName,
-                                payload.connectionString
-                            );
+                        if (!isTMainPanelStartMonitoringByConnectionString(payload)) {
+                            return;
+                        }
 
-                            console.log('EventHubClient', payload);
-
-                            this._eventHubClient.startMonitoring(async (events, _) => {
+                        this._azureEventHub.startMonitoringByConnectionString(
+                            {
+                                consumerGroupName: payload.consumerGroupName,
+                                connectionString: payload.connectionString,
+                                eventHubName: payload.eventHubName,
+                            },
+                            async (events, _) => {
                                 const result: any[] = [];
 
                                 events.forEach((x) => {
@@ -199,6 +187,7 @@ export class MainPanel {
                                     }
                                 });
 
+                                // TODO delete
                                 console.log('result', result);
 
                                 if (result.length > 0) {
@@ -207,13 +196,13 @@ export class MainPanel {
                                         payload: result,
                                     });
                                 }
-                            });
-                        }
+                            }
+                        );
                         break;
 
                     case EMainPanelCommands.stopMonitoring:
-                        if (Constants.isMonitoring && this._eventHubClient !== undefined) {
-                            await this._eventHubClient.stopMonitoring();
+                        if (this._azureEventHub.isMonitoring() && this._azureEventHub !== undefined) {
+                            await this._azureEventHub.stopMonitoring();
                         }
                         break;
 
@@ -260,27 +249,26 @@ export class MainPanel {
                     case EMainPanelCommands.getIsLoggedInAzure:
                         await webview.postMessage({
                             command: EMainPanelCommands.setIsLoggedInAzure,
-                            payload: Constants.isLoggedInAzure,
+                            payload: this._token.isLogged(),
                         });
                         break;
 
                     case EMainPanelCommands.singInWithAzure:
-                        const result = await commands.executeCommand<AzureTokenResponse>('feedboard.singInWithAzure');
-
-                        Constants.azureToken = this._tokenHelper.createAzureToken(
-                            result.accessToken,
-                            result.accessTokenExpiredAt
+                        const result = await commands.executeCommand<TAzureTokenResponseDto>(
+                            'feedboard.singInWithAzure'
                         );
 
-                        if (Constants.azureToken !== null) {
-                            this._azureClient = new AzureClient(Constants.azureToken);
-
-                            Constants.isLoggedInAzure = true;
+                        try {
+                            this._token.addTokenOrUpdate(result);
+                            this._azureClient = new AzureClient(this._token);
+                            await this._tokenHelper.createAzureToken(result);
 
                             await webview.postMessage({
                                 command: EMainPanelCommands.setIsLoggedInAzure,
-                                payload: Constants.isLoggedInAzure,
+                                payload: this._token.isLogged(),
                             });
+                        } catch (error) {
+                            // TODO implemtnt catch
                         }
                         break;
 

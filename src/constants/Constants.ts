@@ -1,20 +1,6 @@
-import { TokenCredential } from '@azure/identity';
-import { ELoginType, TConnection } from '../../common/types';
+import { TConnection, ELoginType } from '@feedboard/feedboard.core';
 
 export class Constants {
-    public static azureAccessToken: string = '';
-    public static azureIdToken: string = '';
-    public static azureRefreshToken: string = '';
-    public static azureAccessTokenExpiredAt: string = '';
-
-    public static isLoggedInAzure: boolean = false;
-    public static azureToken: TokenCredential | null = null;
-
-    public static githubAccessToken: string = '';
-    public static githubUserId: string = '';
-
-    public static isMonitoring: boolean = false;
-
     public static connections: TConnection[] = [
         {
             id: 'asd',
