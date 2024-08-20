@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 import * as http from 'http';
 import * as url from 'url';
-import * as html from '../../htmls';
-import { StoreHelper } from '../index';
+import * as html from '../htmls';
 import { Feedboard, TAzureTokenResponseDto } from '@feedboard/feedboard.core';
+import { StoreHelper } from '../helpers';
 
 export const authenticateAzure = async (context: StoreHelper): Promise<TAzureTokenResponseDto> => {
     const response = await Feedboard.getAzureLoginURI();

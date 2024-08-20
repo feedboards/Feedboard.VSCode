@@ -15,8 +15,8 @@ export const useLayout = () => {
 };
 
 export const LayoutProvider: FC<IContextProviderProps> = ({ children }) => {
-    const [layoutType, setLayoutType] = useState<ELayoutTypes>(ELayoutTypes.default);
-    const [hasHeader, setHasHeader] = useState<boolean>(layoutType === ELayoutTypes.default);
+    const [layoutType, setLayoutType] = useState<ELayoutTypes>(ELayoutTypes.connectionList);
+    const [hasHeader, setHasHeader] = useState<boolean>(layoutType === ELayoutTypes.connectionList);
 
     const changeLayoutType = (type: ELayoutTypes) => {
         setLayoutType(type);

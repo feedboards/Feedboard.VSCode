@@ -1,7 +1,6 @@
 import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, ExtensionContext, commands } from 'vscode';
 import { getUri } from '../utilities/getUri';
 import { getNonce } from '../utilities/getNonce';
-import { TokenHelper } from '../core';
 import {
     isString,
     isTMainPanelGetConsumerGroups,
@@ -12,6 +11,7 @@ import {
 } from '../../common/types';
 import { EMainPanelCommands } from '../../common/commands';
 import { AzureClient, AzureEventHub, AzureToken, TAzureTokenResponseDto, TConnection } from '@feedboard/feedboard.core';
+import { TokenHelper } from '../helpers';
 
 export class MainPanel {
     private _disposables: Disposable[] = [];

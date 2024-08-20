@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLayout, ELayoutTypes } from '..';
 import { EditAndAddNewConnection, ConnectionList, Header } from './components';
-import { TConnection } from '../../../../../common/types';
+import { TConnection } from '@feedboard/feedboard.core';
 
 export const Layout = () => {
     const { layoutType, hasHeader } = useLayout();

@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 import * as http from 'http';
 import * as url from 'url';
-import * as html from '../../htmls';
-import { StoreHelper } from '..';
+import * as html from '../htmls';
 import { Feedboard, TGithubTokenResponseDto } from '@feedboard/feedboard.core';
+import { StoreHelper } from '../helpers';
 
 export const authenticateGitHub = async (context: StoreHelper): Promise<TGithubTokenResponseDto> => {
     const response = await Feedboard.getGitHubLoginURI();

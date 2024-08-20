@@ -1,5 +1,6 @@
 import '../../scss/mainPanel.scss';
-import { Layout, GlobalProvider, LayoutProvider, render } from '.';
+import { Layout, GlobalProvider, LayoutProvider } from '.';
+import { render } from '../../utilities';
 
 render(
     <GlobalProvider>

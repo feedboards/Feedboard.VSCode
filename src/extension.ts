@@ -1,21 +1,29 @@
 import * as vscode from 'vscode';
 import { SideBarProvider } from './providers';
 import { MainPanel } from './panels';
-import { StoreHelper, AzureTokenResponse, GithubTokenResponse, authenticateGitHub, authenticateAzure } from './core';
+import { authenticateGitHub, authenticateAzure } from './oauth';
 import { Constants } from './constants';
-import { ContextManager } from './core/managers/contextManager';
-import { TConnection } from '../common/types';
+import { ContextManager } from './managers';
+import {
+    Feedboard,
+    TConnection,
+    TGithubTokenResponseDto,
+    GithubToken,
+    AzureToken,
+    TAzureTokenResponseDto,
+} from '@feedboard/feedboard.core';
+import { StoreHelper } from './helpers';
 
 export async function activate(context: vscode.ExtensionContext) {
     StoreHelper.initialize(context);
+    Feedboard.init('');
 
     const storeHelper = StoreHelper.getInstance();
+    const githubToken = new GithubToken();
+    const azureToken = new AzureToken();
 
     ContextManager.initialize(context);
     ContextManager.getInstance().setContext(context);
-
-    await configData(storeHelper);
-
     Constants.init();
 
     context.subscriptions.push(
@@ -26,27 +34,30 @@ export async function activate(context: vscode.ExtensionContext) {
         MainPanel.render(context.extensionUri, context, connection);
     });
 
-    // commands
-    registerCommand('singInWithGitHub', async () => {
-        const result: GithubTokenResponse = await authenticateGitHub(storeHelper);
+    registerCommand('singInWithGitHub', async (): Promise<TGithubTokenResponseDto> => {
+        const result: TGithubTokenResponseDto = await authenticateGitHub(storeHelper);
 
-        Constants.githubAccessToken = result.accessToken;
-        Constants.githubUserId = result.userId;
+        if (!result) {
+            // TODO show error
+
+            throw new Error("couldn't authorize into Github account");
+        }
+
+        githubToken.addTokenOrUpdate(result);
+
+        return result;
     });
 
-    registerCommand('singInWithAzure', async () => {
-        const result: AzureTokenResponse = await authenticateAzure(storeHelper);
+    registerCommand('singInWithAzure', async (): Promise<TAzureTokenResponseDto> => {
+        const result: TAzureTokenResponseDto = await authenticateAzure(storeHelper);
 
-        if (result.accessToken !== undefined &&
-            result.accessTokenExpiredAt !== undefined &&
-            result.idToken !== undefined &&
-            result.refreshToken !== undefined
-        ) {
-            Constants.azureAccessToken = result.accessToken;
-            Constants.azureAccessTokenExpiredAt = result.accessTokenExpiredAt;
-            Constants.azureIdToken = result.idToken;
-            Constants.azureRefreshToken = result.refreshToken;
+        if (!result) {
+            // TODO show error
+
+            throw new Error("couldn't authorize into Azure account");
         }
+
+        azureToken.addTokenOrUpdate(result);
 
         return result;
     });
@@ -55,19 +66,3 @@ export async function activate(context: vscode.ExtensionContext) {
         context.subscriptions.push(vscode.commands.registerCommand(`feedboard.${command}`, callback));
     }
 }
-
-const configData = async (storeHelper: StoreHelper) => {
-    const keysToVariables: Object = {
-        azureAccessToken: 'azureAccessToken',
-        azureIdToken: 'azureIdToken',
-        azureRefreshToken: 'azureRefreshToken',
-        azureAccessTokenExpiredAt: 'azureAccessTokenExpiredAt',
-    };
-
-    for (const [key, variableName] of Object.entries(keysToVariables)) {
-        const value = await storeHelper.getValueAsync(key);
-        if (value !== undefined) {
-            exports[variableName] = value;
-        }
-    }
-};

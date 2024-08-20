@@ -6,7 +6,11 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { addLoading, handleDropdownChange, vscode } from '../../../../utilities';
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
 import { EMainPanelCommands } from '../../../../../../common/commands';
-import { ELoginType, isConnectionString, isOAuthType } from '../../../../../../common/types';
+import {
+    ELoginType,
+    isTConnectionSettingsAzureConnectionString,
+    isTConnectionSettingsAzureOAuth,
+} from '@feedboard/feedboard.core';
 
 export const Header = () => {
     const [consumerGroupName, setConsumerGroupName] = useState<string>();
@@ -36,7 +40,10 @@ export const Header = () => {
     };
 
     const onConnect = () => {
-        if (connection?.settings.loginType === ELoginType.azureOAuth && isOAuthType(connection.settings)) {
+        if (
+            connection?.settings.loginType === ELoginType.azureOAuth &&
+            isTConnectionSettingsAzureOAuth(connection.settings)
+        ) {
             vscode.postMessage({
                 command: EMainPanelCommands.startMonitoring,
                 payload: {
@@ -49,7 +56,7 @@ export const Header = () => {
             });
         } else if (
             connection?.settings.loginType === ELoginType.connectionString &&
-            isConnectionString(connection.settings)
+            isTConnectionSettingsAzureConnectionString(connection.settings)
         ) {
             vscode.postMessage({
                 command: EMainPanelCommands.startMonitoringByConnectionString,
@@ -98,7 +105,7 @@ export const Header = () => {
 
                 {layoutType === ELayoutTypes.withAzureOAuth && (
                     <>
-                        {isOAuthType(connection?.settings) &&
+                        {isTConnectionSettingsAzureOAuth(connection?.settings) &&
                             connection?.settings.subscription.subscriptionId !== undefined &&
                             connection?.settings.resourceGroup.name !== undefined &&
                             connection?.settings.namespace.name !== undefined && (
@@ -112,7 +119,10 @@ export const Header = () => {
                                                 handleDropdownChange<Eventhub>(
                                                     x,
                                                     (x: undefined | Eventhub) => {
-                                                        if (x !== undefined && isOAuthType(connection?.settings)) {
+                                                        if (
+                                                            x !== undefined &&
+                                                            isTConnectionSettingsAzureOAuth(connection?.settings)
+                                                        ) {
                                                             setSelectedEventHub(x);
 
                                                             vscode.postMessage({
@@ -161,7 +171,7 @@ export const Header = () => {
                                 </>
                             )}
 
-                        {isOAuthType(connection?.settings) &&
+                        {isTConnectionSettingsAzureOAuth(connection?.settings) &&
                             connection?.settings.subscription.subscriptionId !== undefined &&
                             connection?.settings.resourceGroup.name !== undefined &&
                             connection?.settings.namespace.name !== undefined &&

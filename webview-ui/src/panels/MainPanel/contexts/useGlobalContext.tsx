@@ -1,9 +1,9 @@
 import { createContext, FC, useContext, useEffect, useState } from 'react';
 import { IGlobalContext, IContextProviderProps } from '..';
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
-import { ELoginType, TConnection, isOAuthType } from '../../../../../common/types';
 import { EMainPanelCommands } from '../../../../../common/commands';
 import { vscode } from '../../../utilities';
+import { ELoginType, isTConnectionSettingsAzureOAuth, TConnection } from '@feedboard/feedboard.core';
 
 const GlobalContext = createContext<IGlobalContext | undefined>(undefined);
 
@@ -49,7 +49,7 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
     useEffect(() => {
         console.log('useEffect(connection)');
 
-        if (connection !== undefined && isOAuthType(connection.settings)) {
+        if (connection !== undefined && isTConnectionSettingsAzureOAuth(connection.settings)) {
             vscode.postMessage({
                 command: EMainPanelCommands.getEventHubs,
                 payload: {

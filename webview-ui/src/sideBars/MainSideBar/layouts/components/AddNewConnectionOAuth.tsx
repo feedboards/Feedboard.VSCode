@@ -6,7 +6,7 @@ import { EHNamespace } from '@azure/arm-eventhub';
 import { IAddNewConnectionOAuth, useGlobal } from '../..';
 import classNames from 'classnames';
 import { EMainSideBarCommands } from '../../../../../../common/commands';
-import { isOAuthType } from '../../../../../../common/types';
+import { isTConnectionSettingsAzureOAuth } from '@feedboard/feedboard.core';
 
 export const AddNewConnectionOAuth = ({
     subscriptionsError,
@@ -92,15 +92,19 @@ export const AddNewConnectionOAuth = ({
     };
 
     const subscriptionDropdownValue =
-        connection !== undefined && isOAuthType(connection.settings)
+        connection !== undefined && isTConnectionSettingsAzureOAuth(connection.settings)
             ? connection.settings.subscription.subscriptionId
             : '';
 
     const resourceGroupDropdownValue =
-        connection !== undefined && isOAuthType(connection.settings) ? connection.settings.resourceGroup.name : '';
+        connection !== undefined && isTConnectionSettingsAzureOAuth(connection.settings)
+            ? connection.settings.resourceGroup.name
+            : '';
 
     const namespacesDropdownValue =
-        connection !== undefined && isOAuthType(connection.settings) ? connection.settings.namespace.name : '';
+        connection !== undefined && isTConnectionSettingsAzureOAuth(connection.settings)
+            ? connection.settings.namespace.name
+            : '';
 
     return (
         <>

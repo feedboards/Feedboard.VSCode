@@ -6,8 +6,13 @@ import { AddNewConnectionOAuth } from './AddNewConnectionOAuth';
 import { VSCodeInput } from '../../../../components';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
-import { ELoginType, isConnectionString, isOAuthType, TConnection } from '../../../../../../common/types';
 import { EMainSideBarCommands } from '../../../../../../common/commands';
+import {
+    ELoginType,
+    isTConnectionSettingsAzureConnectionString,
+    isTConnectionSettingsAzureOAuth,
+    TConnection,
+} from '@feedboard/feedboard.core';
 
 type TLoginType = {
     type: ELoginType;
@@ -44,7 +49,9 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
     );
 
     const [connectionStringInputValue, setConnectionStringInputValue] = useState<undefined | string>(
-        connection !== undefined && isConnectionString(connection.settings) ? connection.settings.connectionString : ''
+        connection !== undefined && isTConnectionSettingsAzureConnectionString(connection.settings)
+            ? connection.settings.connectionString
+            : ''
     );
 
     const { changeLayoutType } = useLayout();
@@ -145,31 +152,31 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
                     loginType: selectedLoginType !== undefined ? selectedLoginType.type : connection.settings.loginType,
                     subscription: {
                         displayName:
-                            selectedSubscription === undefined && isOAuthType(connection.settings)
+                            selectedSubscription === undefined && isTConnectionSettingsAzureOAuth(connection.settings)
                                 ? connection.settings.subscription.displayName
                                 : selectedSubscription?.displayName,
                         subscriptionId:
-                            selectedSubscription === undefined && isOAuthType(connection.settings)
+                            selectedSubscription === undefined && isTConnectionSettingsAzureOAuth(connection.settings)
                                 ? connection.settings.subscription.subscriptionId
                                 : selectedSubscription?.subscriptionId,
                     },
                     resourceGroup: {
                         name:
-                            selectedResourceGroup === undefined && isOAuthType(connection.settings)
+                            selectedResourceGroup === undefined && isTConnectionSettingsAzureOAuth(connection.settings)
                                 ? connection.settings.resourceGroup.name
                                 : selectedResourceGroup?.name,
                         id:
-                            selectedResourceGroup === undefined && isOAuthType(connection.settings)
+                            selectedResourceGroup === undefined && isTConnectionSettingsAzureOAuth(connection.settings)
                                 ? connection.settings.resourceGroup.id
                                 : selectedResourceGroup?.id,
                     },
                     namespace: {
                         name:
-                            selectedNamespace === undefined && isOAuthType(connection.settings)
+                            selectedNamespace === undefined && isTConnectionSettingsAzureOAuth(connection.settings)
                                 ? connection.settings.namespace.name
                                 : selectedNamespace?.name,
                         id:
-                            selectedNamespace === undefined && isOAuthType(connection.settings)
+                            selectedNamespace === undefined && isTConnectionSettingsAzureOAuth(connection.settings)
                                 ? connection.settings.namespace.id
                                 : selectedNamespace?.id,
                     },

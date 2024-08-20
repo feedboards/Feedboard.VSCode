@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import { getNonce, getUri } from '../utilities';
-import { TokenHelper } from '../core';
 import { Constants } from '../constants';
 import { EMainSideBarCommands } from '../../common/commands';
 import { isTMainPanelGetNamespaces, isTMainPanelGetResourceGroups } from '../../common/types';
 import { AzureClient, AzureToken, TAzureTokenResponseDto } from '@feedboard/feedboard.core';
+import { TokenHelper } from '../helpers';
 
 export class SideBarProvider implements vscode.WebviewViewProvider {
     public view?: vscode.WebviewView;

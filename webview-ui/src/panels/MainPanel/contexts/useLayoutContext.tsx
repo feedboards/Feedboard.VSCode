@@ -1,6 +1,6 @@
 import { createContext, FC, useContext, useEffect, useState } from 'react';
 import { IContextProviderProps, ILayoutContext, ELayoutTypes, useGlobal } from '..';
-import { ELoginType } from '../../../../../common/types';
+import { ELoginType } from '@feedboard/feedboard.core';
 
 const LayoutContext = createContext<ILayoutContext | undefined>(undefined);
 
