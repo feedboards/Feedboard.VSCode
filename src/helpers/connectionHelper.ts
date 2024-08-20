@@ -1,5 +1,6 @@
 import { ELoginType, TConnection } from '@feedboard/feedboard.core';
 import { StoreHelper } from './storeHelper';
+import { EStoreKeywords } from '../types';
 
 // test data
 const connection: TConnection[] = [
@@ -41,7 +42,7 @@ export class ConnectionHelper {
     public static async init(): Promise<void> {
         this._storeHelper = StoreHelper.instance;
 
-        const json: string | undefined = await this._storeHelper.getValueAsync('connections');
+        const json: string | undefined = await this._storeHelper.getValueAsync(EStoreKeywords.connections);
 
         if (!json) {
             return;
@@ -87,6 +88,6 @@ export class ConnectionHelper {
             return;
         }
 
-        await this._storeHelper.storeValueAsync('connections', JSON.stringify(this._connections));
+        await this._storeHelper.storeValueAsync(EStoreKeywords.connections, JSON.stringify(this._connections));
     }
 }

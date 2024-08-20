@@ -4,6 +4,7 @@ import * as url from 'url';
 import * as html from '../htmls';
 import { Feedboard, TAzureTokenResponseDto } from '@feedboard/feedboard.core';
 import { StoreHelper } from '../helpers';
+import { EStoreKeywords } from '../types';
 
 export const authenticateAzure = async (context: StoreHelper): Promise<TAzureTokenResponseDto> => {
     const response = await Feedboard.getAzureLoginURI();
@@ -25,10 +26,7 @@ export const authenticateAzure = async (context: StoreHelper): Promise<TAzureTok
                     try {
                         const response = await Feedboard.getAzureToken(code, state);
 
-                        await context.storeValueAsync('azureAccessToken', response.data.accessToken);
-                        await context.storeValueAsync('azureIdToken', response.data.idToken);
-                        await context.storeValueAsync('azureRefreshToken', response.data.refreshToken);
-                        await context.storeValueAsync('azureaccessTokenExpiredAt', response.data.accessTokenExpiredAt);
+                        await context.storeValueAsync(EStoreKeywords.azureToken, JSON.stringify(response.data));
 
                         // TODO make redirect to our web site
                         // res.writeHead(302, { 'Location': 'http://example.com/success' });  // Update the URL as needed
@@ -52,12 +50,9 @@ export const authenticateAzure = async (context: StoreHelper): Promise<TAzureTok
                     server.close(async () => {
                         console.log('server stopped');
 
-                        resolve({
-                            accessToken: (await context.getValueAsync('azureAccessToken')) as string,
-                            accessTokenExpiredAt: (await context.getValueAsync('azureaccessTokenExpiredAt')) as string,
-                            refreshToken: (await context.getValueAsync('azureRefreshToken')) as string,
-                            idToken: (await context.getValueAsync('azureIdToken')) as string,
-                        });
+                        const json: string | undefined = await context.getValueAsync(EStoreKeywords.azureToken);
+
+                        resolve(json ? JSON.parse(json) : json);
                     });
                 }
             }

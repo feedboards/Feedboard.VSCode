@@ -1,18 +1,19 @@
 import { AzureToken, TAzureTokenResponseDto } from '@feedboard/feedboard.core';
 import { StoreHelper } from './storeHelper';
+import { EStoreKeywords } from '../types';
 
 export class TokenHelper {
     private static readonly _storeHelper: StoreHelper = StoreHelper.instance;
     private static readonly _azureToken: AzureToken = new AzureToken();
 
     public async createAzureToken(token: TAzureTokenResponseDto): Promise<AzureToken> {
-        await TokenHelper._storeHelper.storeValueAsync('azureToken', JSON.stringify(token));
+        await TokenHelper._storeHelper.storeValueAsync(EStoreKeywords.azureToken, JSON.stringify(token));
 
         return TokenHelper._azureToken.addTokenOrUpdate(token);
     }
 
     public async getAzureToken(): Promise<AzureToken | null> {
-        const json: string | undefined = await TokenHelper._storeHelper.getValueAsync('azureToken');
+        const json: string | undefined = await TokenHelper._storeHelper.getValueAsync(EStoreKeywords.azureToken);
 
         if (json) {
             return new AzureToken(JSON.parse(json));

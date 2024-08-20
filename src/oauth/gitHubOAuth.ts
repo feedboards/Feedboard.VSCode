@@ -4,6 +4,7 @@ import * as url from 'url';
 import * as html from '../htmls';
 import { Feedboard, TGithubTokenResponseDto } from '@feedboard/feedboard.core';
 import { StoreHelper } from '../helpers';
+import { EStoreKeywords } from '../types';
 
 export const authenticateGitHub = async (context: StoreHelper): Promise<TGithubTokenResponseDto> => {
     const response = await Feedboard.getGitHubLoginURI();
@@ -24,8 +25,7 @@ export const authenticateGitHub = async (context: StoreHelper): Promise<TGithubT
                     try {
                         const response = await Feedboard.getGitHubAccessToken(code);
 
-                        await context.storeValueAsync('githubAccessToken', response.data.accessToken);
-                        await context.storeValueAsync('githubUserId', response.data.userId);
+                        await context.storeValueAsync(EStoreKeywords.githubToken, JSON.stringify(response.data));
 
                         res.end(html.successHTML);
 
@@ -45,10 +45,9 @@ export const authenticateGitHub = async (context: StoreHelper): Promise<TGithubT
                     server.close(async () => {
                         console.log('server stoping');
 
-                        resolve({
-                            accessToken: (await context.getValueAsync('githubAccessToken')) as string,
-                            userId: (await context.getValueAsync('githubUserId')) as string,
-                        });
+                        const json: string | undefined = await context.getValueAsync(EStoreKeywords.githubToken);
+
+                        resolve(json ? JSON.parse(json) : json);
                     });
                 }
             }

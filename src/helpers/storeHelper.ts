@@ -1,4 +1,5 @@
 import { ExtensionContext } from 'vscode';
+import { EStoreKeywords } from '../types';
 
 /*
  * use this helper if you want to get any secrets
@@ -28,11 +29,11 @@ export class StoreHelper {
         return StoreHelper._instance;
     }
 
-    public getValueAsync(key: string): Thenable<string | undefined> {
+    public getValueAsync(key: EStoreKeywords): Thenable<string | undefined> {
         return this._context.secrets.get(key);
     }
 
-    public async storeValueAsync(key: string, value: string): Promise<boolean> {
+    public async storeValueAsync(key: EStoreKeywords, value: string): Promise<boolean> {
         try {
             await this._context.secrets.store(key, value);
 
