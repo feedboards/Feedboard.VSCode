@@ -10,3 +10,11 @@ build-ssr
 *.local
 *.lock
 /.idea
+
+# yarnrc/npmrc
+
+yarn-error.log
+
+.yarnrc.yml
+.yarnrc
+.npmrc
