@@ -54,31 +54,29 @@ export const Panel = () => {
                     ))}
                 </VSCodeDataGrid>
             </div>
-            <div className="main-panel__wrapper-colunm">
-                <div className="main-panel__wrapper_json">
-                    <div className="main-panel__wrapper_json-header">
-                        <VSCodeButton
-                            className="main-panel__wrapper_json-header_button"
-                            appearance={activeButtons[0] ? 'primary' : 'secondary'}
-                            onClick={() => changeDisplayJson(true)}>
-                            Json
-                        </VSCodeButton>
-                        <VSCodeButton
-                            className="main-panel__wrapper_json-header_button"
-                            appearance={activeButtons[1] ? 'primary' : 'secondary'}
-                            onClick={() => changeDisplayJson(false)}>
-                            Raw
-                        </VSCodeButton>
-                    </div>
-                    {displayJson ? (
-                        <JsonView
-                            value={selectedMessage !== undefined ? selectedMessage : startObject}
-                            style={vscodeTheme}
-                        />
-                    ) : (
-                        <textarea ref={textareaRef} className="main-panel__wrapper_json-body_area" readOnly />
-                    )}
+            <div className="main-panel__wrapper-colunm main-panel__wrapper_json">
+                <div className="main-panel__wrapper_json-header">
+                    <VSCodeButton
+                        className="main-panel__wrapper_json-header_button"
+                        appearance={activeButtons[0] ? 'primary' : 'secondary'}
+                        onClick={() => changeDisplayJson(true)}>
+                        Json
+                    </VSCodeButton>
+                    <VSCodeButton
+                        className="main-panel__wrapper_json-header_button"
+                        appearance={activeButtons[1] ? 'primary' : 'secondary'}
+                        onClick={() => changeDisplayJson(false)}>
+                        Raw
+                    </VSCodeButton>
                 </div>
+                {displayJson ? (
+                    <JsonView
+                        value={selectedMessage !== undefined ? selectedMessage : startObject}
+                        style={vscodeTheme}
+                    />
+                ) : (
+                    <textarea ref={textareaRef} className="main-panel__wrapper_json-body_area" readOnly />
+                )}
             </div>
         </>
     );
