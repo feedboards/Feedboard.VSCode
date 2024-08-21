@@ -166,8 +166,6 @@ export class MainPanel {
                         break;
 
                     case EMainPanelCommands.startMonitoringByConnectionString:
-                        window.showInformationMessage('start monitoring');
-
                         if (!isTMainPanelStartMonitoringByConnectionString(payload)) {
                             return;
                         }

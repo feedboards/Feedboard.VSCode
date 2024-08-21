@@ -12,7 +12,7 @@ export const Layout = () => {
                 className={classNames('main-panel__wrapper', {
                     ['main-panel__wrapper-connectionString']: layoutType === ELayoutTypes.withConnectionString,
                 })}>
-                <Panel half />
+                <Panel />
             </div>
         </main>
     );

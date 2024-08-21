@@ -2,7 +2,7 @@ import { VSCodeButton, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-t
 import { useGlobal, useLayout } from '../../contexts';
 import { ELayoutTypes } from '../../enums';
 import { VSCodeInput } from '../../../../components';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { addLoading, handleDropdownChange, vscode } from '../../../../utilities';
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
 import { EMainPanelCommands } from '../../../../../../common/commands';
@@ -11,6 +11,7 @@ import {
     isTConnectionSettingsAzureConnectionString,
     isTConnectionSettingsAzureOAuth,
 } from '@feedboard/feedboard.core';
+import classNames from 'classnames';
 
 export const Header = () => {
     const [consumerGroupName, setConsumerGroupName] = useState<string>();
@@ -44,6 +45,7 @@ export const Header = () => {
             connection?.settings.loginType === ELoginType.azureOAuth &&
             isTConnectionSettingsAzureOAuth(connection.settings)
         ) {
+            // TODO add here validation
             vscode.postMessage({
                 command: EMainPanelCommands.startMonitoring,
                 payload: {
@@ -58,6 +60,7 @@ export const Header = () => {
             connection?.settings.loginType === ELoginType.connectionString &&
             isTConnectionSettingsAzureConnectionString(connection.settings)
         ) {
+            // TODO add here validation
             vscode.postMessage({
                 command: EMainPanelCommands.startMonitoringByConnectionString,
                 payload: {
@@ -76,14 +79,6 @@ export const Header = () => {
     const onChangeConsumerGroupConnectionString = (x: ChangeEvent<HTMLInputElement>) => {
         setConsumerGroupNameConnectionString(x.target.value);
     };
-
-    useEffect(() => {
-        console.log(layoutType);
-    }, [layoutType]);
-
-    useEffect(() => {
-        console.log('eventHubs', eventHubs);
-    }, [eventHubs]);
 
     return (
         <>
@@ -220,7 +215,12 @@ export const Header = () => {
                     </VSCodeButton>
                 )}
 
-                <VSCodeButton className="main-panel__header_button" appearance="secondary" onClick={onConnect}>
+                <VSCodeButton
+                    className={classNames('main-panel__header_button', {
+                        ['main-panel__header_button-first']: layoutType === ELayoutTypes.withConnectionString,
+                    })}
+                    appearance="secondary"
+                    onClick={onConnect}>
                     Connect
                 </VSCodeButton>
 

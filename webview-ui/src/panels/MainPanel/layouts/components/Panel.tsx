@@ -1,15 +1,14 @@
 import { VSCodeButton, VSCodeDataGrid, VSCodeDataGridCell, VSCodeDataGridRow } from '@vscode/webview-ui-toolkit/react';
-import { IPanel, useGlobal } from '../..';
 import JsonView from '@uiw/react-json-view';
 import { vscodeTheme } from '@uiw/react-json-view/vscode';
 import { useEffect, useRef, useState } from 'react';
-import classNames from 'classnames';
+import { useGlobal } from '../..';
 
 const startObject = {
     str: 'str',
 };
 
-export const Panel = ({ half = false }: IPanel) => {
+export const Panel = () => {
     const { setSelectedMessages, messages, selectedMessage } = useGlobal();
 
     const [activeButtons, setActiveButtons] = useState<boolean[]>([true, false]);
@@ -36,10 +35,7 @@ export const Panel = ({ half = false }: IPanel) => {
 
     return (
         <>
-            <div
-                className={classNames('main-panel__wrapper-colunm', {
-                    ['main-panel__wrapper-colunm-half']: half === true,
-                })}>
+            <div className="main-panel__wrapper-colunm">
                 <VSCodeDataGrid gridTemplateColumns="10% 90%">
                     <VSCodeDataGridRow rowType="header">
                         <VSCodeDataGridCell gridColumn="1">
@@ -58,10 +54,7 @@ export const Panel = ({ half = false }: IPanel) => {
                     ))}
                 </VSCodeDataGrid>
             </div>
-            <div
-                className={classNames('main-panel__wrapper-colunm', {
-                    ['main-panel__wrapper-colunm-half']: half === true,
-                })}>
+            <div className="main-panel__wrapper-colunm">
                 <div className="main-panel__wrapper_json">
                     <div className="main-panel__wrapper_json-header">
                         <VSCodeButton

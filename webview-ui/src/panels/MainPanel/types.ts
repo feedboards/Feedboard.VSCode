@@ -43,7 +43,3 @@ export interface ILayoutContext {
     changeLayoutType: (type: ELayoutTypes) => void;
     layoutType: ELayoutTypes;
 }
-
-export interface IPanel {
-    half?: boolean;
-}

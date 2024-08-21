@@ -71,7 +71,6 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
 
         switch (event.data.command) {
             case EMainPanelCommands.setConnection:
-                console.log('payload of setConnection command', payload);
                 setConnection(payload);
 
                 if (payload.settings.loginType == ELoginType.azureOAuth && isLoggedInAzure) {

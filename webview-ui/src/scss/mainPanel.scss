@@ -1,5 +1,5 @@
-@import "./variables";
-@import "./components/vscode";
+@import './variables';
+@import './components/vscode';
 
 .main-panel {
     display: block;
@@ -94,10 +94,7 @@
             flex: 0.9;
             border-top: 1px solid $border-color;
             overflow-y: auto;
-
-            &-half {
-                flex: 1 !important;
-            }
+            flex: 1 !important;
 
             &:nth-child(2),
             &:nth-child(3) {
