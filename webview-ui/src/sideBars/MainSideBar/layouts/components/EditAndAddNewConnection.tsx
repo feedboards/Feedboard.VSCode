@@ -19,6 +19,17 @@ type TLoginType = {
     name: string;
 };
 
+const loginTypes: TLoginType[] = [
+    {
+        type: ELoginType.connectionString,
+        name: 'Connection string',
+    },
+    {
+        type: ELoginType.azureOAuth,
+        name: 'Azure account',
+    },
+];
+
 export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndAddNewConnection) => {
     const [nameError, setNameError] = useState<boolean>(false);
     const [connectionStringError, setConnectionStringError] = useState<boolean>(false);
@@ -29,50 +40,24 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
 
     const [selectedLoginType, setSelectedLoginType] = useState<TLoginType | undefined>(undefined);
     const [name, setName] = useState<string | undefined>(undefined);
-    const [loginTypes, setLoginTypes] = useState<TLoginType[]>([
-        {
-            type: ELoginType.connectionString,
-            name: 'Connection string',
-        },
-        {
-            type: ELoginType.azureOAuth,
-            name: 'Azure account',
-        },
-    ]);
 
-    const [connectioTypeDropdownValue, setConnectioTypeDropdownValue] = useState<undefined | string>(
-        connection !== undefined ? connection.settings.loginType : ''
-    );
-
-    const [nameInputValue, setNameInputValue] = useState<undefined | string>(
-        connection !== undefined ? connection.name : undefined
-    );
-
-    const [connectionStringInputValue, setConnectionStringInputValue] = useState<undefined | string>(
-        connection !== undefined && isTConnectionSettingsAzureConnectionString(connection.settings)
-            ? connection.settings.connectionString
-            : ''
-    );
+    const [connectionString, setConnectionString] = useState<undefined | string>(undefined);
 
     const { changeLayoutType } = useLayout();
-    const {
-        isLoggedInAzure,
-        setConnectionString,
-        selectedSubscription,
-        selectedResourceGroup,
-        selectedNamespace,
-        connectionString,
-        addConnection,
-    } = useGlobal();
+    const { isLoggedInAzure, selectedSubscription, selectedResourceGroup, selectedNamespace, addConnection } =
+        useGlobal();
 
     useEffect(() => {
         if (connection) {
-            console.log('connection', connection);
-
+            setName(connection.name);
             setSelectedLoginType({
                 type: connection.settings.loginType,
                 name: loginTypes.find((x) => x.type === connection.settings.loginType)?.name as string,
             });
+
+            if (isTConnectionSettingsAzureConnectionString(connection.settings)) {
+                setConnectionString(connection.settings.connectionString);
+            }
         }
     }, []);
 
@@ -141,6 +126,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
             connection == undefined
         ) {
             changeLayoutType(ELayoutTypes.connectionList);
+
             return;
         }
 
@@ -232,7 +218,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
             <div className="main-side-bar__wrapper_add-new-connection_dropdown-group">
                 <label htmlFor="connectioType">Login Type</label>
                 <VSCodeDropdown
-                    defaultValue={connectioTypeDropdownValue}
+                    value={selectedLoginType?.type}
                     className={classNames('main-side-bar__wrapper_add-new-connection_dropdown', {
                         ['main-side-bar__wrapper_add-new-connection_dropdown_error']: loginTypeError,
                     })}
@@ -241,11 +227,15 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
                         handleDropdownChange<TLoginType>(x, onSetDropdown, loginTypes);
                     }}>
                     <VSCodeOption value="">Select a login type</VSCodeOption>
-                    {loginTypes?.map((x, index: number) => (
-                        <VSCodeOption key={index} value={x.type}>
-                            {x.name}
-                        </VSCodeOption>
-                    ))}
+                    {loginTypes?.map((x, index: number) => {
+                        console.log(x);
+
+                        return (
+                            <VSCodeOption key={index} value={x.type}>
+                                {x.name}
+                            </VSCodeOption>
+                        );
+                    })}
                 </VSCodeDropdown>
 
                 {loginTypeError && (
@@ -256,19 +246,16 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
             <label htmlFor="name" className="main-side-bar__lable">
                 Name
             </label>
-
             <VSCodeInput
                 className="main-side-bar__input"
                 id="name"
                 isError={nameError}
-                value={nameInputValue}
+                value={name}
                 placeholder="name"
                 onChange={onChangeName}
             />
 
             {nameError && <div className="main-side-bar__error-message">this field is required</div>}
-
-            {selectedLoginType === undefined && <></>}
 
             {selectedLoginType?.type === ELoginType.azureOAuth && (
                 <>
@@ -307,7 +294,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
                         isError={connectionStringError}
                         onChange={onChangeConnectionString}
                         placeholder="Connection string"
-                        value={connectionStringInputValue}
+                        value={connectionString}
                     />
                     {connectionStringError && (
                         <div className="main-side-bar__error-message">this field is required</div>

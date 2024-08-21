@@ -11,7 +11,7 @@
     "dependencies": {
         "@babel/plugin-transform-runtime": "^7.24.6",
         "@babel/runtime": "^7.24.6",
-        "@feedboard/feedboard.core": "^0.0.15",
+        "@feedboard/feedboard.core": "^0.0.18",
         "@types/uuid": "^10.0.0",
         "@uiw/react-json-view": "^2.0.0-alpha.24",
         "@vscode/webview-ui-toolkit": "^1.2.2",

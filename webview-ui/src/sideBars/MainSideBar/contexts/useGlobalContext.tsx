@@ -35,7 +35,7 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
     const [isLoggedInAzure, setIsLoggedInAzure] = useState<boolean>(false);
     const [savedConnections, setSavedConnections] = useState<TConnection[] | null>(null);
 
-    const [connectionString, setConnectionString] = useState<string | undefined>(undefined);
+    // const [connectionString, setConnectionString] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         window.addEventListener('message', _handleMessage);
@@ -151,8 +151,8 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
                 setIsLoggedInAzure,
                 isLoggedInAzure,
                 savedConnections,
-                setConnectionString,
-                connectionString,
+                // setConnectionString,
+                // connectionString,
             }}>
             {children}
         </GlobalContext.Provider>

@@ -31,9 +31,6 @@ export interface IGlobalContext {
     namespaceLoading: boolean;
     selectedNamespace: EHNamespace | undefined;
 
-    setConnectionString: (value: string | undefined) => void;
-    connectionString: string | undefined;
-
     savedConnections: TConnection[] | null;
     addConnection: (connection: TConnection) => void;
     removeConnection: (connection: TConnection) => void;
