@@ -6,7 +6,7 @@
     "engines": {
         "vscode": "^1.75.0"
     },
-    "main": "./out/extension.js",
+    "main": "./out/src/extension.js",
     "activationEvents": [
         "onCommand:feedboard.main-view"
     ],
@@ -76,7 +76,7 @@
         "@azure/arm-subscriptions": "^5.1.0",
         "@azure/event-hubs": "^5.12.0",
         "@azure/identity": "^4.2.1",
-        "@feedboard/feedboard.core": "^0.0.15",
+        "@feedboard/feedboard.core": "^0.0.18",
         "@types/uuid": "^10.0.0",
         "axios": "^1.7.2",
         "polka": "^0.5.2",

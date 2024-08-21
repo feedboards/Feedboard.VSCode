@@ -3,18 +3,18 @@ import { StoreHelper } from './storeHelper';
 import { EStoreKeywords } from '../types';
 
 export class TokenHelper {
-    private static readonly _storeHelper: StoreHelper = StoreHelper.instance;
+    private readonly _storeHelper: StoreHelper = StoreHelper.instance;
     private static readonly _azureToken: AzureToken = new AzureToken();
     private static readonly _githubToken: GithubToken = new GithubToken();
 
     public async createAzureToken(token: TAzureTokenResponseDto): Promise<AzureToken> {
-        await TokenHelper._storeHelper.storeValueAsync(EStoreKeywords.azureToken, JSON.stringify(token));
+        await this._storeHelper.storeValueAsync(EStoreKeywords.azureToken, JSON.stringify(token));
 
         return TokenHelper._azureToken.addTokenOrUpdate(token);
     }
 
     public async getAzureToken(): Promise<AzureToken | null> {
-        const json: string | undefined = await TokenHelper._storeHelper.getValueAsync(EStoreKeywords.azureToken);
+        const json: string | undefined = await this._storeHelper.getValueAsync(EStoreKeywords.azureToken);
 
         if (json) {
             return new AzureToken(JSON.parse(json));
@@ -24,13 +24,13 @@ export class TokenHelper {
     }
 
     public async createGithubToken(token: TGithubTokenResponseDto): Promise<GithubToken> {
-        await TokenHelper._storeHelper.storeValueAsync(EStoreKeywords.githubToken, JSON.stringify(token));
+        await this._storeHelper.storeValueAsync(EStoreKeywords.githubToken, JSON.stringify(token));
 
         return TokenHelper._githubToken.addTokenOrUpdate(token);
     }
 
     public async getGithubToken(): Promise<GithubToken | null> {
-        const json: string | undefined = await TokenHelper._storeHelper.getValueAsync(EStoreKeywords.githubToken);
+        const json: string | undefined = await this._storeHelper.getValueAsync(EStoreKeywords.githubToken);
 
         if (json) {
             return new GithubToken(JSON.parse(json));

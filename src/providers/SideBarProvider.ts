@@ -10,6 +10,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
     public view?: vscode.WebviewView;
 
     private readonly _tokenHelper: TokenHelper;
+
     private _token: AzureToken;
     private _azureClient: AzureClient | undefined;
     private _webview: vscode.Webview | undefined;
@@ -70,18 +71,18 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
               <title>feedboard</title>
             </head>
             <body class="main-side-bar__body">
-              <div id="root" class="main-side-bar__root"></div>
-              <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
+                <div id="root" class="main-side-bar__root"></div>
+                <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
             'webview-ui',
             'build',
             'assets',
             'mainSideBar.js',
         ])}"></script>
-        <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
+                <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
             'webview-ui',
             'build',
             'assets',
-            'index.js',
+            'VSCodeInput.js',
         ])}"></script>
             </body>
           </html>

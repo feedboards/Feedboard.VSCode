@@ -260,10 +260,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@feedboard/feedboard.core@^0.0.15":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@feedboard/feedboard.core/-/feedboard.core-0.0.15.tgz#e97d3dcf5d76cf8667c9cb2bd109abcb4dad7ebf"
-  integrity sha512-rufKyMw/s6Q9lgo3EFk4QOdppk/5TBwgbbty3nHQaxDzfB93GSmSLsdfzFGn1eqO/QRZoK4Er3Z9HEN4cvqBOA==
+"@feedboard/feedboard.core@^0.0.18":
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/@feedboard/feedboard.core/-/feedboard.core-0.0.18.tgz#a13111a55f709f05031d8bd80b268526469ee01d"
+  integrity sha512-r14sCZ/HcjcjBj3qjLlHZacCYjcOWSPU/ZhFtMbiXuefKYtrkaBdGx5wz94hLPj6hCRglT7HznYAtJjOb3yw8w==
   dependencies:
     "@azure/arm-eventhub" "^5.1.0"
     "@azure/arm-resources" "^5.2.0"

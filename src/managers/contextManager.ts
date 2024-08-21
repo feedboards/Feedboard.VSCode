@@ -24,13 +24,15 @@ export class ContextManager {
         if (!ContextManager.instance) {
             throw new Error("ContextManager hasn't initialized yet.");
         }
+
         return ContextManager.instance;
     }
 
     public getContext(): ExtensionContext {
         if (!this.context) {
-            throw new Error("Context has not been set");
+            throw new Error('Context has not been set');
         }
+
         return this.context;
     }
 
@@ -39,6 +41,7 @@ export class ContextManager {
      */
     public setContext(context: ExtensionContext): ContextManager {
         this.context = context;
+
         return this;
     }
 }

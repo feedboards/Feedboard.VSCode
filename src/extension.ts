@@ -19,12 +19,15 @@ export const activate = async (context: vscode.ExtensionContext) => {
     Feedboard.init(''); // TODO add baseURL
 
     const storeHelper = StoreHelper.instance;
+
+    console.log('storeHelper', storeHelper);
+
     const githubToken = new GithubToken();
     const azureToken = new AzureToken();
 
     ContextManager.initialize(context);
     ContextManager.getInstance().setContext(context);
-    ConnectionHelper.init();
+    await ConnectionHelper.init();
 
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('feedboard-sidebar-view', new SideBarProvider(context.extensionUri))

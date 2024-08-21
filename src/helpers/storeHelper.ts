@@ -18,6 +18,7 @@ export class StoreHelper {
     public static initialize(context: ExtensionContext) {
         if (!StoreHelper._instance) {
             StoreHelper._instance = new StoreHelper(context);
+            console.log('init StoreHelper');
         }
     }
 

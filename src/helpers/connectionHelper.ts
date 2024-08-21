@@ -35,7 +35,36 @@ const connection: TConnection[] = [
 ];
 
 export class ConnectionHelper {
-    private static _connections: TConnection[] = [];
+    private static _connections: TConnection[] = [
+        {
+            id: 'asd',
+            name: 'connection string',
+            settings: {
+                loginType: ELoginType.connectionString,
+                connectionString:
+                    'Endpoint=sb://feedboard-test-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=OvF2Hq7GdWTmpU1neaIA4HtAJ3B552l30+AEhI+CxhI=',
+            },
+        },
+        {
+            id: '4b9ef858-e028-4f88-bc78-a99532a20c64',
+            name: 'OAuth',
+            settings: {
+                loginType: ELoginType.azureOAuth,
+                namespace: {
+                    id: '/subscriptions/a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9/resourceGroups/feedboard-test/providers/Microsoft.EventHub/namespaces/feedboard-test-namespace',
+                    name: 'feedboard-test-namespace',
+                },
+                resourceGroup: {
+                    id: '/subscriptions/a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9/resourceGroups/feedboard-test',
+                    name: 'feedboard-test',
+                },
+                subscription: {
+                    displayName: 'Azure subscription 1',
+                    subscriptionId: 'a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9',
+                },
+            },
+        },
+    ];
     private static _openConnections: TConnection[] = [];
     private static _storeHelper: StoreHelper;
 
@@ -52,11 +81,11 @@ export class ConnectionHelper {
     }
 
     public static get connections(): TConnection[] {
-        return this.connections;
+        return this._connections;
     }
 
     public static get openConnections(): TConnection[] {
-        return this.openConnections;
+        return this._openConnections;
     }
 
     public static addOpenConnection(connection: TConnection): void {

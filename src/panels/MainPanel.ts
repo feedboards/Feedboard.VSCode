@@ -14,9 +14,9 @@ import { AzureClient, AzureEventHub, AzureToken, TAzureTokenResponseDto, TConnec
 import { TokenHelper } from '../helpers';
 
 export class MainPanel {
-    private _disposables: Disposable[] = [];
-
     private readonly _tokenHelper: TokenHelper;
+
+    private _disposables: Disposable[] = [];
     private _token: AzureToken;
     private _azureEventHub: AzureEventHub;
     private _azureClient: AzureClient | undefined;
@@ -25,7 +25,11 @@ export class MainPanel {
     private static _openPanels: { [id: string]: MainPanel } = {};
     // private static _openConnection: MainPanel[] | undefined;
 
-    private constructor(private _panel: WebviewPanel, private _extensionUri: Uri, private _connection: TConnection) {
+    private constructor(
+        private _panel: WebviewPanel,
+        private readonly _extensionUri: Uri,
+        private _connection: TConnection
+    ) {
         this._token = new AzureToken();
         this._tokenHelper = new TokenHelper();
         this._azureEventHub = new AzureEventHub();
@@ -103,11 +107,11 @@ export class MainPanel {
             'assets',
             'mainPanel.js',
         ])}"></script>
-                <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
+        <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
             'webview-ui',
             'build',
             'assets',
-            'index.js',
+            'VSCodeInput.js',
         ])}"></script>
             </body>
         </html>
