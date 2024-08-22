@@ -34,7 +34,7 @@ export const activate = async (context: vscode.ExtensionContext) => {
     );
 
     registerCommand('main-view', (connection: TConnection) => {
-        Panel.render(context.extensionUri, context, connection);
+        Panel.render(context.extensionUri, connection);
     });
 
     registerCommand('singInWithGitHub', async (): Promise<TGithubTokenResponseDto> => {

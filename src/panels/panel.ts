@@ -55,7 +55,7 @@ export class Panel {
         this._setWebviewMessageListener(this._panel.webview);
     }
 
-    public static render(extensionUri: Uri, context: ExtensionContext, connection: TConnection) {
+    public static render(extensionUri: Uri, connection: TConnection) {
         if (Panel._openPanels[connection.id] !== undefined) {
             Panel._openPanels[connection.id]._panel.reveal(ViewColumn.One);
         } else {
