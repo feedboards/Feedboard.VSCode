@@ -1,6 +1,6 @@
 import { createContext, FC, useContext, useEffect, useState } from 'react';
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
-import { EMainPanelCommands } from '../../../../common/commands';
+import { EPanelCommands } from '../../../../common/commands';
 import { vscode } from '../../utilities';
 import { ELoginType, isTConnectionSettingsAzureOAuth, TConnection } from '@feedboard/feedboard.core';
 import { IContextProviderProps, IGlobalContext } from '../types';
@@ -40,8 +40,8 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
     useEffect(() => {
         window.addEventListener('message', _handleMessage);
 
-        vscode.postMessage({ command: EMainPanelCommands.getIsLoggedInAzure });
-        vscode.postMessage({ command: EMainPanelCommands.getConnection });
+        vscode.postMessage({ command: EPanelCommands.getIsLoggedInAzure });
+        vscode.postMessage({ command: EPanelCommands.getConnection });
 
         return () => window.removeEventListener('message', _handleMessage);
     }, []);
@@ -51,7 +51,7 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
 
         if (connection !== undefined && isTConnectionSettingsAzureOAuth(connection.settings)) {
             vscode.postMessage({
-                command: EMainPanelCommands.getEventHubs,
+                command: EPanelCommands.getEventHubs,
                 payload: {
                     subscriptionId: connection.settings.subscription.subscriptionId,
                     resourceGroupName: connection.settings.resourceGroup.name,
@@ -63,19 +63,19 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
 
     const _handleMessage = (
         event: MessageEvent<{
-            command: EMainPanelCommands;
+            command: EPanelCommands;
             payload: any;
         }>
     ) => {
         const payload = event.data.payload;
 
         switch (event.data.command) {
-            case EMainPanelCommands.setConnection:
+            case EPanelCommands.setConnection:
                 setConnection(payload);
 
                 if (payload.settings.loginType == ELoginType.azureOAuth && isLoggedInAzure) {
                     vscode.postMessage({
-                        command: EMainPanelCommands.getEventHubs,
+                        command: EPanelCommands.getEventHubs,
                         payload: {
                             subscriptionId: payload.settings.subscription.subscriptionId,
                             resourceGroupName: payload.settings.resourceGroup.name,
@@ -85,7 +85,7 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
                 }
                 break;
 
-            case EMainPanelCommands.setMessages:
+            case EPanelCommands.setMessages:
                 console.log(payload);
 
                 setMessages((prev) => {
@@ -101,23 +101,23 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
                 });
                 break;
 
-            case EMainPanelCommands.setEventHubs:
+            case EPanelCommands.setEventHubs:
                 console.log('payload of useGlobalContext', payload);
 
                 setEventHubs(payload);
                 setEventHubLoading(false);
                 break;
 
-            case EMainPanelCommands.setConsumerGroups:
+            case EPanelCommands.setConsumerGroups:
                 setConsumerGroups(payload);
                 setConsumerGroupLoading(false);
                 break;
 
-            case EMainPanelCommands.setIsLoggedInAzure:
+            case EPanelCommands.setIsLoggedInAzure:
                 setIsLoggedInAzure(payload);
 
                 if (payload == true) {
-                    vscode.postMessage({ command: EMainPanelCommands.getConnection });
+                    vscode.postMessage({ command: EPanelCommands.getConnection });
                 }
                 break;
         }

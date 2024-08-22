@@ -4,7 +4,7 @@ import { Subscription } from '@azure/arm-subscriptions';
 import { ResourceGroup } from '@azure/arm-resources';
 import { EHNamespace } from '@azure/arm-eventhub';
 import classNames from 'classnames';
-import { EMainSideBarCommands } from '../../../../common/commands';
+import { ESideBarCommands } from '../../../../common/commands';
 import { isTConnectionSettingsAzureOAuth } from '@feedboard/feedboard.core';
 import { IAddNewConnectionOAuth } from '../types';
 import { useGlobal } from '../contexts';
@@ -45,7 +45,7 @@ export const AddNewConnectionOAuth = ({
             setNamespacesError(false);
 
             vscode.postMessage({
-                command: EMainSideBarCommands.getResourceGroups,
+                command: ESideBarCommands.getResourceGroups,
                 payload: {
                     subscriptionId: x.subscriptionId,
                 },
@@ -64,7 +64,7 @@ export const AddNewConnectionOAuth = ({
             setNamespacesError(false);
 
             vscode.postMessage({
-                command: EMainSideBarCommands.getNamespaces,
+                command: ESideBarCommands.getNamespaces,
                 payload: {
                     subscriptionId: selectedSubscription?.subscriptionId,
                     resourceGroupName: x.name,
@@ -82,7 +82,7 @@ export const AddNewConnectionOAuth = ({
             setNamespacesError(false);
 
             vscode.postMessage({
-                command: EMainSideBarCommands.getEventHubs,
+                command: ESideBarCommands.getEventHubs,
                 payload: {
                     subscriptionId: selectedSubscription?.subscriptionId,
                     resourceGroupName: selectedResourceGroup?.name,

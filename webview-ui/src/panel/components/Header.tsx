@@ -4,7 +4,7 @@ import { VSCodeInput } from '../../components';
 import { ChangeEvent, useState } from 'react';
 import { addLoading, handleDropdownChange, vscode } from '../../utilities';
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
-import { EMainPanelCommands } from '../../../../common/commands';
+import { EPanelCommands } from '../../../../common/commands';
 import {
     ELoginType,
     isTConnectionSettingsAzureConnectionString,
@@ -36,7 +36,7 @@ export const Header = (): JSX.Element => {
 
     const onSingInWithAzure = () => {
         vscode.postMessage({
-            command: EMainPanelCommands.singInWithAzure,
+            command: EPanelCommands.singInWithAzure,
         });
     };
 
@@ -47,7 +47,7 @@ export const Header = (): JSX.Element => {
         ) {
             // TODO add here validation
             vscode.postMessage({
-                command: EMainPanelCommands.startMonitoring,
+                command: EPanelCommands.startMonitoring,
                 payload: {
                     eventHubName: selectedEventHub?.name,
                     consumerGroupName: consumerGroupName,
@@ -62,7 +62,7 @@ export const Header = (): JSX.Element => {
         ) {
             // TODO add here validation
             vscode.postMessage({
-                command: EMainPanelCommands.startMonitoringByConnectionString,
+                command: EPanelCommands.startMonitoringByConnectionString,
                 payload: {
                     eventHubName: eventHubNameConnectionString,
                     connectionString: connection?.settings.connectionString,
@@ -121,7 +121,7 @@ export const Header = (): JSX.Element => {
                                                             setSelectedEventHub(x);
 
                                                             vscode.postMessage({
-                                                                command: EMainPanelCommands.getConsumerGroups,
+                                                                command: EPanelCommands.getConsumerGroups,
                                                                 payload: {
                                                                     subscriptionId:
                                                                         connection?.settings.subscription

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { SideBarProvider } from './providers';
-import { MainPanel } from './panels';
+import { Panel } from './panels';
 import { authenticateGitHub, authenticateAzure } from './oauth';
 import { ContextManager } from './managers';
 import {
@@ -34,7 +34,7 @@ export const activate = async (context: vscode.ExtensionContext) => {
     );
 
     registerCommand('main-view', (connection: TConnection) => {
-        MainPanel.render(context.extensionUri, context, connection);
+        Panel.render(context.extensionUri, context, connection);
     });
 
     registerCommand('singInWithGitHub', async (): Promise<TGithubTokenResponseDto> => {

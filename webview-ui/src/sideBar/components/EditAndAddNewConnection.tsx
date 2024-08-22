@@ -12,7 +12,7 @@ import {
 import { ELayoutTypes, IEditAndAddNewConnection } from '../types';
 import { useGlobal, useLayout } from '../contexts';
 import { handleDropdownChange, vscode } from '../../utilities';
-import { EMainSideBarCommands } from '../../../../common/commands';
+import { ESideBarCommands } from '../../../../common/commands';
 import { VSCodeInput } from '../../components';
 
 type TLoginType = {
@@ -172,7 +172,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
             };
 
             vscode.postMessage({
-                command: EMainSideBarCommands.updateConnection,
+                command: ESideBarCommands.updateConnection,
                 payload: editConnection,
             });
 
@@ -205,7 +205,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
             };
 
             vscode.postMessage({
-                command: EMainSideBarCommands.addConnection,
+                command: ESideBarCommands.addConnection,
                 payload: connection,
             });
 
@@ -275,7 +275,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
                             className="main-side-bar__wrapper_add-new-connection_button"
                             onClick={() => {
                                 vscode.postMessage({
-                                    command: EMainSideBarCommands.singInWithAzure,
+                                    command: ESideBarCommands.singInWithAzure,
                                 });
                             }}>
                             Sing in with Azure

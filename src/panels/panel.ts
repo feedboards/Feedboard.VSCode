@@ -9,11 +9,11 @@ import {
     isTMainPanelStartMonitoringByConnectionString,
     TMainPanelPayload,
 } from '../../common/types';
-import { EMainPanelCommands } from '../../common/commands';
+import { EPanelCommands } from '../../common/commands';
 import { AzureClient, AzureEventHub, AzureToken, TAzureTokenResponseDto, TConnection } from '@feedboard/feedboard.core';
 import { TokenHelper } from '../helpers';
 
-export class MainPanel {
+export class Panel {
     private readonly _tokenHelper: TokenHelper;
 
     private _disposables: Disposable[] = [];
@@ -22,7 +22,7 @@ export class MainPanel {
     private _azureClient: AzureClient | undefined;
     private _webview: Webview | undefined;
 
-    private static _openPanels: { [id: string]: MainPanel } = {};
+    private static _openPanels: { [id: string]: Panel } = {};
     // private static _openConnection: MainPanel[] | undefined;
 
     private constructor(
@@ -44,7 +44,7 @@ export class MainPanel {
 
             if (this._webview) {
                 this._webview.postMessage({
-                    command: EMainPanelCommands.setIsLoggedInAzure,
+                    command: EPanelCommands.setIsLoggedInAzure,
                     payload: this._token.isLogged(),
                 });
             }
@@ -56,20 +56,20 @@ export class MainPanel {
     }
 
     public static render(extensionUri: Uri, context: ExtensionContext, connection: TConnection) {
-        if (MainPanel._openPanels[connection.id] !== undefined) {
-            MainPanel._openPanels[connection.id]._panel.reveal(ViewColumn.One);
+        if (Panel._openPanels[connection.id] !== undefined) {
+            Panel._openPanels[connection.id]._panel.reveal(ViewColumn.One);
         } else {
             const panel = window.createWebviewPanel('showHelloWorld', 'feedboard', ViewColumn.One, {
                 enableScripts: true,
                 localResourceRoots: [Uri.joinPath(extensionUri, 'out'), Uri.joinPath(extensionUri, 'webview-ui/build')],
             });
 
-            MainPanel._openPanels[connection.id] = new MainPanel(panel, extensionUri, connection);
+            Panel._openPanels[connection.id] = new Panel(panel, extensionUri, connection);
         }
     }
 
     public dispose() {
-        delete MainPanel._openPanels[this._connection.id];
+        delete Panel._openPanels[this._connection.id];
 
         this._panel.dispose();
 
@@ -119,11 +119,11 @@ export class MainPanel {
         this._webview = webview;
 
         webview.onDidReceiveMessage(
-            async (message: { command: EMainPanelCommands; payload: TMainPanelPayload }) => {
+            async (message: { command: EPanelCommands; payload: TMainPanelPayload }) => {
                 const payload = message.payload;
 
                 switch (message.command) {
-                    case EMainPanelCommands.startMonitoring:
+                    case EPanelCommands.startMonitoring:
                         if (
                             !this._token.isLogged() ||
                             !isTMainPanelStartMonitoring(payload) ||
@@ -154,7 +154,7 @@ export class MainPanel {
                                 });
                                 if (result.length > 0) {
                                     await webview.postMessage({
-                                        command: EMainPanelCommands.setMessages,
+                                        command: EPanelCommands.setMessages,
                                         payload: result,
                                     });
                                 }
@@ -162,7 +162,7 @@ export class MainPanel {
                         );
                         break;
 
-                    case EMainPanelCommands.startMonitoringByConnectionString:
+                    case EPanelCommands.startMonitoringByConnectionString:
                         if (!isTMainPanelStartMonitoringByConnectionString(payload)) {
                             return;
                         }
@@ -191,7 +191,7 @@ export class MainPanel {
 
                                 if (result.length > 0) {
                                     await webview.postMessage({
-                                        command: EMainPanelCommands.setMessages,
+                                        command: EPanelCommands.setMessages,
                                         payload: result,
                                     });
                                 }
@@ -199,20 +199,20 @@ export class MainPanel {
                         );
                         break;
 
-                    case EMainPanelCommands.stopMonitoring:
+                    case EPanelCommands.stopMonitoring:
                         if (this._azureEventHub.isMonitoring() && this._azureEventHub !== undefined) {
                             await this._azureEventHub.stopMonitoring();
                         }
                         break;
 
-                    case EMainPanelCommands.getConnection:
+                    case EPanelCommands.getConnection:
                         await webview.postMessage({
-                            command: EMainPanelCommands.setConnection,
+                            command: EPanelCommands.setConnection,
                             payload: this._connection,
                         });
                         break;
 
-                    case EMainPanelCommands.getEventHubs:
+                    case EPanelCommands.getEventHubs:
                         console.log('EMainPanelCommands.getEventHubs');
                         if (this._azureClient !== undefined && isTMainPanelGetEventHubs(payload)) {
                             const result = await this._azureClient.getEventHubsByNamespace(
@@ -224,17 +224,17 @@ export class MainPanel {
                             console.log('result of the getEventHubs command', result);
 
                             await webview.postMessage({
-                                command: EMainPanelCommands.setEventHubs,
+                                command: EPanelCommands.setEventHubs,
                                 payload: result,
                             });
                         }
                         break;
 
-                    case EMainPanelCommands.getConsumerGroups:
+                    case EPanelCommands.getConsumerGroups:
                         console.log('payload from getConsumerGroups command', payload);
                         if (this._azureClient !== undefined && isTMainPanelGetConsumerGroups(payload)) {
                             await webview.postMessage({
-                                command: EMainPanelCommands.setConsumerGroups,
+                                command: EPanelCommands.setConsumerGroups,
                                 payload: await this._azureClient.getConsumerGroups(
                                     payload.subscriptionId,
                                     payload.resourceGroupName,
@@ -245,14 +245,14 @@ export class MainPanel {
                         }
                         break;
 
-                    case EMainPanelCommands.getIsLoggedInAzure:
+                    case EPanelCommands.getIsLoggedInAzure:
                         await webview.postMessage({
-                            command: EMainPanelCommands.setIsLoggedInAzure,
+                            command: EPanelCommands.setIsLoggedInAzure,
                             payload: this._token.isLogged(),
                         });
                         break;
 
-                    case EMainPanelCommands.singInWithAzure:
+                    case EPanelCommands.singInWithAzure:
                         const result = await commands.executeCommand<TAzureTokenResponseDto>(
                             'feedboard.singInWithAzure'
                         );
@@ -263,7 +263,7 @@ export class MainPanel {
                             await this._tokenHelper.createAzureToken(result);
 
                             await webview.postMessage({
-                                command: EMainPanelCommands.setIsLoggedInAzure,
+                                command: EPanelCommands.setIsLoggedInAzure,
                                 payload: this._token.isLogged(),
                             });
                         } catch (error) {
@@ -271,7 +271,7 @@ export class MainPanel {
                         }
                         break;
 
-                    case EMainPanelCommands.showError:
+                    case EPanelCommands.showError:
                         if (isString(payload)) {
                             window.showErrorMessage(payload);
                         }

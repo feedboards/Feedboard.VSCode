@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { getNonce, getUri } from '../utilities';
-import { EMainSideBarCommands } from '../../common/commands';
+import { ESideBarCommands } from '../../common/commands';
 import { isTMainPanelGetNamespaces, isTMainPanelGetResourceGroups } from '../../common/types';
 import { AzureClient, AzureToken, TAzureTokenResponseDto } from '@feedboard/feedboard.core';
 import { TokenHelper } from '../helpers';
@@ -29,7 +29,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
 
             if (this._webview) {
                 this._webview.postMessage({
-                    command: EMainSideBarCommands.setIsLoggedInAzure,
+                    command: ESideBarCommands.setIsLoggedInAzure,
                     payload: this._token.isLogged(),
                 });
             }
@@ -87,57 +87,57 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
     }
 
     private _setWebviewMessageListener(webview: vscode.Webview) {
-        webview.onDidReceiveMessage(async (message: { command: EMainSideBarCommands; payload: any }) => {
+        webview.onDidReceiveMessage(async (message: { command: ESideBarCommands; payload: any }) => {
             this._webview = webview;
 
             const payload = message.payload;
 
             switch (message.command) {
-                case EMainSideBarCommands.openConnection:
+                case ESideBarCommands.openConnection:
                     ConnectionHelper.addOpenConnection(payload);
 
                     vscode.commands.executeCommand('feedboard.main-view', payload);
                     break;
 
-                case EMainSideBarCommands.getIsLoggedInAzure:
+                case ESideBarCommands.getIsLoggedInAzure:
                     await webview.postMessage({
-                        command: EMainSideBarCommands.setIsLoggedInAzure,
+                        command: ESideBarCommands.setIsLoggedInAzure,
                         payload: this._token.isLogged(),
                     });
                     break;
 
-                case EMainSideBarCommands.getSavedConnections:
+                case ESideBarCommands.getSavedConnections:
                     await webview.postMessage({
-                        command: EMainSideBarCommands.setSavedConnections,
+                        command: ESideBarCommands.setSavedConnections,
                         payload: ConnectionHelper.connections,
                     });
                     break;
 
-                case EMainSideBarCommands.getSubscriptions:
+                case ESideBarCommands.getSubscriptions:
                     console.log('command getSubscriptions');
                     if (this._azureClient !== undefined) {
                         await webview.postMessage({
-                            command: EMainSideBarCommands.setSubscriptions.toString(),
+                            command: ESideBarCommands.setSubscriptions.toString(),
                             payload: await this._azureClient.getSubscriptions(),
                         });
                     }
                     break;
 
-                case EMainSideBarCommands.getResourceGroups:
+                case ESideBarCommands.getResourceGroups:
                     console.log('command getResourceGroups');
                     if (this._azureClient !== undefined && isTMainPanelGetResourceGroups(payload)) {
                         await webview.postMessage({
-                            command: EMainSideBarCommands.setResourceGroups,
+                            command: ESideBarCommands.setResourceGroups,
                             payload: await this._azureClient.getResourceGroups(payload.subscriptionId),
                         });
                     }
                     break;
 
-                case EMainSideBarCommands.getNamespaces:
+                case ESideBarCommands.getNamespaces:
                     console.log('command getNamespaces');
                     if (this._azureClient !== undefined && isTMainPanelGetNamespaces(payload)) {
                         await webview.postMessage({
-                            command: EMainSideBarCommands.setNamespaces,
+                            command: ESideBarCommands.setNamespaces,
                             payload: await this._azureClient.getNamespacesByResourceGroup(
                                 payload.subscriptionId,
                                 payload.resourceGroupName
@@ -146,7 +146,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                     }
                     break;
 
-                case EMainSideBarCommands.singInWithAzure:
+                case ESideBarCommands.singInWithAzure:
                     const result = await vscode.commands.executeCommand<TAzureTokenResponseDto>(
                         'feedboard.singInWithAzure'
                     );
@@ -157,7 +157,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                         await this._tokenHelper.createAzureToken(result);
 
                         await webview.postMessage({
-                            command: EMainSideBarCommands.setIsLoggedInAzure,
+                            command: ESideBarCommands.setIsLoggedInAzure,
                             payload: this._token.isLogged(),
                         });
                     } catch (error) {
@@ -165,7 +165,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                     }
                     break;
 
-                case EMainSideBarCommands.addConnection:
+                case ESideBarCommands.addConnection:
                     console.log('EMainSideBarCommands.addConnection', payload);
 
                     ConnectionHelper.addConnection(payload);
@@ -176,11 +176,11 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                     // });
                     break;
 
-                case EMainSideBarCommands.removeConnection:
+                case ESideBarCommands.removeConnection:
                     ConnectionHelper.removeConnection(payload);
                     break;
 
-                case EMainSideBarCommands.updateConnection:
+                case ESideBarCommands.updateConnection:
                     ConnectionHelper.updateConnection(payload);
                     break;
             }

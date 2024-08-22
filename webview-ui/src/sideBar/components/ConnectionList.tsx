@@ -2,7 +2,7 @@ import { TConnection } from '@feedboard/feedboard.core';
 import { useGlobal, useLayout } from '../contexts';
 import { ELayoutTypes, IConnectionList } from '../types';
 import { vscode } from '../../utilities';
-import { EMainSideBarCommands } from '../../../../common/commands';
+import { ESideBarCommands } from '../../../../common/commands';
 import { DeleteIcon, EditIcon } from '../../icons';
 
 export const ConnectionList = ({ setConnection }: IConnectionList) => {
@@ -11,7 +11,7 @@ export const ConnectionList = ({ setConnection }: IConnectionList) => {
 
     const onOpen = (connection: TConnection) => {
         vscode.postMessage({
-            command: EMainSideBarCommands.openConnection,
+            command: ESideBarCommands.openConnection,
             payload: connection,
         });
     };

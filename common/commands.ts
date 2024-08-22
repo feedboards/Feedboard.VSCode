@@ -1,4 +1,4 @@
-export enum EMainPanelCommands {
+export enum EPanelCommands {
     startMonitoring = 'startMonitoring',
     stopMonitoring = 'stopMonitoring',
     startMonitoringByConnectionString = 'startMonitoringByConnectionString',
@@ -18,7 +18,7 @@ export enum EMainPanelCommands {
     showError = 'showError',
 }
 
-export enum EMainSideBarCommands {
+export enum ESideBarCommands {
     getSavedConnections = 'getSavedConnections',
     getIsLoggedInAzure = 'getIsLoggedInAzure',
     getSubscriptions = 'getSubscriptions',

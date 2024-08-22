@@ -3,7 +3,7 @@ import { vscode } from '../../utilities';
 import { Subscription } from '@azure/arm-subscriptions';
 import { ResourceGroup } from '@azure/arm-resources';
 import { EHNamespace } from '@azure/arm-eventhub';
-import { EMainSideBarCommands } from '../../../../common/commands';
+import { ESideBarCommands } from '../../../../common/commands';
 import { TConnection } from '@feedboard/feedboard.core';
 import { IContextProviderProps, IGlobalContext } from '../types';
 
@@ -38,52 +38,52 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
     useEffect(() => {
         window.addEventListener('message', _handleMessage);
 
-        vscode.postMessage({ command: EMainSideBarCommands.setIsLoggedInAzure });
-        vscode.postMessage({ command: EMainSideBarCommands.getSavedConnections });
+        vscode.postMessage({ command: ESideBarCommands.setIsLoggedInAzure });
+        vscode.postMessage({ command: ESideBarCommands.getSavedConnections });
 
         return () => window.removeEventListener('message', _handleMessage);
     }, []);
 
     const _handleMessage = (
         event: MessageEvent<{
-            command: EMainSideBarCommands;
+            command: ESideBarCommands;
             payload: any;
         }>
     ) => {
         const payload = event.data.payload;
 
         switch (event.data.command) {
-            case EMainSideBarCommands.setSavedConnections:
+            case ESideBarCommands.setSavedConnections:
                 setSavedConnections(payload);
                 break;
 
-            case EMainSideBarCommands.setIsLoggedInAzure:
+            case ESideBarCommands.setIsLoggedInAzure:
                 console.log('payload from command setIsLoggedInAzure', payload);
 
                 setIsLoggedInAzure(payload);
 
                 if (payload === true) {
-                    vscode.postMessage({ command: EMainSideBarCommands.getSubscriptions });
+                    vscode.postMessage({ command: ESideBarCommands.getSubscriptions });
 
                     setSubscriptionLoading(true);
                 }
                 break;
 
-            case EMainSideBarCommands.setSubscriptions:
+            case ESideBarCommands.setSubscriptions:
                 console.log('payload from command setSubscriptions', payload);
 
                 setSubscriptions(payload);
                 setSubscriptionLoading(false);
                 break;
 
-            case EMainSideBarCommands.setResourceGroups:
+            case ESideBarCommands.setResourceGroups:
                 console.log('payload from command setResourceGroups', payload);
 
                 setResourceGroups(payload);
                 setResourceGroupLoading(false);
                 break;
 
-            case EMainSideBarCommands.setNamespaces:
+            case ESideBarCommands.setNamespaces:
                 console.log('payload from command setNamespaces', payload);
 
                 setNamespaces(payload);
@@ -112,7 +112,7 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
         });
 
         vscode.postMessage({
-            command: EMainSideBarCommands.removeConnection,
+            command: ESideBarCommands.removeConnection,
             payload: connection,
         });
     };
