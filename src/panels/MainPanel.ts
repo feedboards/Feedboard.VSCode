@@ -94,8 +94,7 @@ export class MainPanel {
                 <link rel="stylesheet" type="text/css" href="${getUri(webview, this._extensionUri, [
                     'webview-ui',
                     'build',
-                    'assets',
-                    'mainPanel.css',
+                    'panel.css',
                 ])}">
                 <title>feedboard</title>
             </head>
@@ -104,13 +103,11 @@ export class MainPanel {
                 <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
             'webview-ui',
             'build',
-            'assets',
-            'mainPanel.js',
+            'panel.js',
         ])}"></script>
         <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
             'webview-ui',
             'build',
-            'assets',
             'VSCodeInput.js',
         ])}"></script>
             </body>

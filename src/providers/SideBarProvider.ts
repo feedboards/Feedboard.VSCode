@@ -65,8 +65,7 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
               <link rel="stylesheet" type="text/css" href="${getUri(webview, this._extensionUri, [
                   'webview-ui',
                   'build',
-                  'assets',
-                  'mainSideBar.css',
+                  'sideBar.css',
               ])}">
               <title>feedboard</title>
             </head>
@@ -75,13 +74,11 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                 <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
             'webview-ui',
             'build',
-            'assets',
-            'mainSideBar.js',
+            'sideBar.js',
         ])}"></script>
                 <script type="module" nonce="${nonce}" src="${getUri(webview, this._extensionUri, [
             'webview-ui',
             'build',
-            'assets',
             'VSCodeInput.js',
         ])}"></script>
             </body>

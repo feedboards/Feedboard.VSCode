@@ -8,13 +8,13 @@ export default defineConfig({
         outDir: 'build',
         rollupOptions: {
             input: {
-                mainSideBar: resolve(__dirname, 'src/sideBar/SideBar.tsx'),
+                sideBar: resolve(__dirname, 'src/sideBar/SideBar.tsx'),
                 panel: resolve(__dirname, 'src/panel/Panel.tsx'),
             },
             output: {
-                entryFileNames: `assets/[name].js`,
-                chunkFileNames: `assets/[name].js`,
-                assetFileNames: `assets/[name].[ext]`,
+                entryFileNames: `[name].js`,
+                chunkFileNames: `[name].js`,
+                assetFileNames: `[name].[ext]`,
             },
         },
     },
