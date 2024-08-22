@@ -8,7 +8,7 @@ export default defineConfig({
         outDir: 'build',
         rollupOptions: {
             input: {
-                mainSideBar: resolve(__dirname, 'src/sideBar/MainSideBar.tsx'),
+                mainSideBar: resolve(__dirname, 'src/sideBar/SideBar.tsx'),
                 panel: resolve(__dirname, 'src/panel/Panel.tsx'),
             },
             output: {

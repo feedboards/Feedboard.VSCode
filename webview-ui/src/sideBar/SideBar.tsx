@@ -1,5 +1,5 @@
 import { render } from '../utilities';
-import '../scss/mainSideBar.scss';
+import '../scss/sideBar.scss';
 import { useState } from 'react';
 import { TConnection } from '@feedboard/feedboard.core';
 import { ConnectionList, EditAndAddNewConnection, Header } from './components';
