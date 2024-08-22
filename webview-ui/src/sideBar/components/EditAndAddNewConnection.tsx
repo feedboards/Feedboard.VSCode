@@ -1,18 +1,19 @@
 import { VSCodeButton, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
-import { ELayoutTypes, IEditAndAddNewConnection, useGlobal, useLayout } from '../..';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { handleDropdownChange, vscode } from '../../../../utilities';
 import { AddNewConnectionOAuth } from './AddNewConnectionOAuth';
-import { VSCodeInput } from '../../../../components';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
-import { EMainSideBarCommands } from '../../../../../../common/commands';
 import {
     ELoginType,
     isTConnectionSettingsAzureConnectionString,
     isTConnectionSettingsAzureOAuth,
     TConnection,
 } from '@feedboard/feedboard.core';
+import { ELayoutTypes, IEditAndAddNewConnection } from '../types';
+import { useGlobal, useLayout } from '../contexts';
+import { handleDropdownChange, vscode } from '../../utilities';
+import { EMainSideBarCommands } from '../../../../common/commands';
+import { VSCodeInput } from '../../components';
 
 type TLoginType = {
     type: ELoginType;

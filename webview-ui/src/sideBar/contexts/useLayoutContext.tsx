@@ -1,6 +1,5 @@
 import { createContext, FC, useContext, useState } from 'react';
-import { IContextProviderProps, ILayoutContext } from '../types';
-import { ELayoutTypes } from '../enums';
+import { ELayoutTypes, IContextProviderProps, ILayoutContext } from '../types';
 
 const LayoutContext = createContext<ILayoutContext | undefined>(undefined);
 

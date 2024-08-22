@@ -1,5 +1,6 @@
 import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
-import { ELayoutTypes, useLayout } from '../..';
+import { useLayout } from '../contexts';
+import { ELayoutTypes } from '../types';
 
 export const Header = () => {
     const { changeLayoutType } = useLayout();

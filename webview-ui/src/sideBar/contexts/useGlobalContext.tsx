@@ -1,11 +1,11 @@
 import { createContext, FC, useContext, useEffect, useState } from 'react';
-import { IGlobalContext, IContextProviderProps } from '..';
-import { vscode } from '../../../utilities';
+import { vscode } from '../../utilities';
 import { Subscription } from '@azure/arm-subscriptions';
 import { ResourceGroup } from '@azure/arm-resources';
 import { EHNamespace } from '@azure/arm-eventhub';
-import { EMainSideBarCommands } from '../../../../../common/commands';
+import { EMainSideBarCommands } from '../../../../common/commands';
 import { TConnection } from '@feedboard/feedboard.core';
+import { IContextProviderProps, IGlobalContext } from '../types';
 
 const GlobalContext = createContext<IGlobalContext | undefined>(undefined);
 

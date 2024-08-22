@@ -1,9 +1,12 @@
+import { render } from '../utilities';
+import '../../scss/mainSideBar.scss';
 import { useState } from 'react';
-import { useLayout, ELayoutTypes } from '..';
-import { EditAndAddNewConnection, ConnectionList, Header } from './components';
 import { TConnection } from '@feedboard/feedboard.core';
+import { ConnectionList, EditAndAddNewConnection, Header } from './components';
+import { GlobalProvider, LayoutProvider, useLayout } from './contexts';
+import { ELayoutTypes } from './types';
 
-export const Layout = () => {
+const MainSideBar = (): JSX.Element => {
     const { layoutType, hasHeader } = useLayout();
     const [connection, setConnection] = useState<TConnection | undefined>(undefined);
 
@@ -19,3 +22,11 @@ export const Layout = () => {
         </main>
     );
 };
+
+render(
+    <GlobalProvider>
+        <LayoutProvider>
+            <MainSideBar />
+        </LayoutProvider>
+    </GlobalProvider>
+);
