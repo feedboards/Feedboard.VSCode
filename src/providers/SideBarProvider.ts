@@ -96,10 +96,6 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
             const payload = message.payload;
 
             switch (message.command) {
-                case EMainSideBarCommands.removeConnection:
-                    ConnectionHelper.removeConnection(payload);
-                    break;
-
                 case EMainSideBarCommands.openConnection:
                     ConnectionHelper.addOpenConnection(payload);
 
@@ -181,6 +177,10 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
                     //     command: EMainPanelCommands.setConnection,
                     //     payload: payload,
                     // });
+                    break;
+
+                case EMainSideBarCommands.removeConnection:
+                    ConnectionHelper.removeConnection(payload);
                     break;
 
                 case EMainSideBarCommands.updateConnection:

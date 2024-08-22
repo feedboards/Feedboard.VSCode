@@ -20,10 +20,6 @@ export const ConnectionList = ({ setConnection }: IConnectionList) => {
         setConnection(connection);
     };
 
-    const onDelete = (connect: TConnection) => {
-        removeConnection(connect);
-    };
-
     return (
         <div className="main-side-bar__connection-list">
             <div className="main-side-bar__connection-list_header">
@@ -33,7 +29,7 @@ export const ConnectionList = ({ setConnection }: IConnectionList) => {
                 <div className="main-side-bar__connection">
                     <div onClick={() => onOpen(x)}>{x.name}</div>
                     <EditIcon onClick={() => onEdit(x)} />
-                    <DeleteIcon className="main-side-bar__connection_icon" onClick={() => onDelete(x)} />
+                    <DeleteIcon className="main-side-bar__connection_icon" onClick={() => removeConnection(x)} />
                 </div>
             ))}
         </div>

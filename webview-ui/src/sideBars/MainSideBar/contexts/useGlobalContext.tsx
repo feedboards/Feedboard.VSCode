@@ -35,8 +35,6 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
     const [isLoggedInAzure, setIsLoggedInAzure] = useState<boolean>(false);
     const [savedConnections, setSavedConnections] = useState<TConnection[] | null>(null);
 
-    // const [connectionString, setConnectionString] = useState<string | undefined>(undefined);
-
     useEffect(() => {
         window.addEventListener('message', _handleMessage);
 
@@ -45,12 +43,6 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
 
         return () => window.removeEventListener('message', _handleMessage);
     }, []);
-
-    // useEffect(() => {
-    //     if (subscriptions !== null && resourceGroups !== null && namespaces !== null) {
-
-    //     }
-    // }, [subscriptions, resourceGroups, namespaces]);
 
     const _handleMessage = (
         event: MessageEvent<{
@@ -104,19 +96,19 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
         setSavedConnections((prev) => {
             if (prev !== null) {
                 return [...prev, connection];
-            } else {
-                return [connection];
             }
+
+            return [connection];
         });
     };
 
     const removeConnection = (connection: TConnection) => {
         setSavedConnections((prev) => {
-            if (prev == undefined) {
-                return prev;
+            if (prev === null) {
+                return null;
             }
 
-            return prev?.slice(prev?.indexOf(connection), 1);
+            return prev.filter((x) => x.id !== connection.id);
         });
 
         vscode.postMessage({
@@ -151,8 +143,6 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
                 setIsLoggedInAzure,
                 isLoggedInAzure,
                 savedConnections,
-                // setConnectionString,
-                // connectionString,
             }}>
             {children}
         </GlobalContext.Provider>
