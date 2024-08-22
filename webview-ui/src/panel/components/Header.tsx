@@ -1,19 +1,19 @@
 import { VSCodeButton, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
-import { useGlobal, useLayout } from '../../contexts';
-import { ELayoutTypes } from '../../enums';
-import { VSCodeInput } from '../../../../components';
+import { useGlobal, useLayout } from '../contexts';
+import { VSCodeInput } from '../../components';
 import { ChangeEvent, useState } from 'react';
-import { addLoading, handleDropdownChange, vscode } from '../../../../utilities';
+import { addLoading, handleDropdownChange, vscode } from '../../utilities';
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
-import { EMainPanelCommands } from '../../../../../../common/commands';
+import { EMainPanelCommands } from '../../../../common/commands';
 import {
     ELoginType,
     isTConnectionSettingsAzureConnectionString,
     isTConnectionSettingsAzureOAuth,
 } from '@feedboard/feedboard.core';
 import classNames from 'classnames';
+import { ELayoutTypes } from '../types';
 
-export const Header = () => {
+export const Header = (): JSX.Element => {
     const [consumerGroupName, setConsumerGroupName] = useState<string>();
 
     const { layoutType } = useLayout();

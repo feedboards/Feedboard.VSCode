@@ -1,13 +1,13 @@
 import { createContext, FC, useContext, useEffect, useState } from 'react';
-import { IGlobalContext, IContextProviderProps } from '..';
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
-import { EMainPanelCommands } from '../../../../../common/commands';
-import { vscode } from '../../../utilities';
+import { EMainPanelCommands } from '../../../../common/commands';
+import { vscode } from '../../utilities';
 import { ELoginType, isTConnectionSettingsAzureOAuth, TConnection } from '@feedboard/feedboard.core';
+import { IContextProviderProps, IGlobalContext } from '../types';
 
 const GlobalContext = createContext<IGlobalContext | undefined>(undefined);
 
-export const useGlobal = () => {
+export const useGlobal = (): IGlobalContext => {
     const context = useContext(GlobalContext);
 
     if (!context) {

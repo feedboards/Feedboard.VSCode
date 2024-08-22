@@ -1,8 +1,9 @@
 import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
 import { useState } from 'react';
-import { ELayoutTypes, useLayout } from '../..';
+import { useLayout } from '../contexts';
+import { ELayoutTypes } from '../types';
 
-export const ChangeLayoutButtons = () => {
+export const ChangeLayoutButtons = (): JSX.Element => {
     const [activeButtons, setActiveButtons] = useState<boolean[]>([true, false]);
 
     const { changeLayoutType } = useLayout();

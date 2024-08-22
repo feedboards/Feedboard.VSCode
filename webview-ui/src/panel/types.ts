@@ -1,7 +1,11 @@
 import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
 import { ReactNode } from 'react';
-import { ELayoutTypes } from '.';
 import { TConnection } from '@feedboard/feedboard.core';
+
+export enum ELayoutTypes {
+    withAzureOAuth = 'withAzureOAuth',
+    withConnectionString = 'withConnectionString',
+}
 
 export interface IContextProviderProps {
     children: ReactNode;

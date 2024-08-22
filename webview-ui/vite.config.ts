@@ -9,7 +9,7 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 mainSideBar: resolve(__dirname, 'src/sideBar/MainSideBar.tsx'),
-                mainPanel: resolve(__dirname, 'src/panels/MainPanel/MainPanel.tsx'),
+                panel: resolve(__dirname, 'src/panel/Panel.tsx'),
             },
             output: {
                 entryFileNames: `assets/[name].js`,

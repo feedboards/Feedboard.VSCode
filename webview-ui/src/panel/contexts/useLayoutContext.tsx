@@ -1,10 +1,11 @@
 import { createContext, FC, useContext, useEffect, useState } from 'react';
-import { IContextProviderProps, ILayoutContext, ELayoutTypes, useGlobal } from '..';
 import { ELoginType } from '@feedboard/feedboard.core';
+import { ELayoutTypes, IContextProviderProps, ILayoutContext } from '../types';
+import { useGlobal } from './useGlobalContext';
 
 const LayoutContext = createContext<ILayoutContext | undefined>(undefined);
 
-export const useLayout = () => {
+export const useLayout = (): ILayoutContext => {
     const context = useContext(LayoutContext);
 
     if (!context) {
