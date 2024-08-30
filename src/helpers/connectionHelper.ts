@@ -66,7 +66,7 @@ export class ConnectionHelper {
     }
 
     public static updateConnection(connection: TConnection) {
-        const index: number | undefined = this._connections.indexOf(connection);
+        const index: number | undefined = this._connections.findIndex((x) => x.id === connection.id);
 
         if (index !== undefined && index > -1) {
             this._connections[index] = connection;
@@ -74,10 +74,10 @@ export class ConnectionHelper {
     }
 
     public static removeConnection(connection: TConnection) {
-        const index: number | undefined = this._openConnections.indexOf(connection);
+        const index: number | undefined = this._connections.findIndex((x) => x.id === connection.id);
 
         if (index !== undefined && index > -1) {
-            this._openConnections.slice(index, 1);
+            this._connections = this._connections.filter((x) => x.id !== connection.id);
         }
     }
 
