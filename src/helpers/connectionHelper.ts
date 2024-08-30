@@ -2,51 +2,56 @@ import { ELoginType, TConnection } from '@feedboard/feedboard.core';
 import { StoreHelper } from './storeHelper';
 import { EStoreKeywords } from '../types';
 
+// TODO delete this hardcode
+const connections = [
+    // TODO fix it
+    {
+        id: 'asd',
+        name: 'connection string',
+        settings: {
+            loginType: ELoginType.connectionString,
+            connectionString:
+                'Endpoint=sb://feedboard-test-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=OvF2Hq7GdWTmpU1neaIA4HtAJ3B552l30+AEhI+CxhI=',
+        },
+    },
+    {
+        id: '4b9ef858-e028-4f88-bc78-a99532a20c64',
+        name: 'OAuth',
+        settings: {
+            loginType: ELoginType.azureOAuth,
+            namespace: {
+                id: '/subscriptions/a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9/resourceGroups/feedboard-test/providers/Microsoft.EventHub/namespaces/feedboard-test-namespace',
+                name: 'feedboard-test-namespace',
+            },
+            resourceGroup: {
+                id: '/subscriptions/a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9/resourceGroups/feedboard-test',
+                name: 'feedboard-test',
+            },
+            subscription: {
+                displayName: 'Azure subscription 1',
+                subscriptionId: 'a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9',
+            },
+        },
+    },
+];
+
 export class ConnectionHelper {
-    private static _connections: TConnection[] = [
-        // TODO fix it
-        {
-            id: 'asd',
-            name: 'connection string',
-            settings: {
-                loginType: ELoginType.connectionString,
-                connectionString:
-                    'Endpoint=sb://feedboard-test-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=OvF2Hq7GdWTmpU1neaIA4HtAJ3B552l30+AEhI+CxhI=',
-            },
-        },
-        {
-            id: '4b9ef858-e028-4f88-bc78-a99532a20c64',
-            name: 'OAuth',
-            settings: {
-                loginType: ELoginType.azureOAuth,
-                namespace: {
-                    id: '/subscriptions/a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9/resourceGroups/feedboard-test/providers/Microsoft.EventHub/namespaces/feedboard-test-namespace',
-                    name: 'feedboard-test-namespace',
-                },
-                resourceGroup: {
-                    id: '/subscriptions/a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9/resourceGroups/feedboard-test',
-                    name: 'feedboard-test',
-                },
-                subscription: {
-                    displayName: 'Azure subscription 1',
-                    subscriptionId: 'a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9',
-                },
-            },
-        },
-    ];
+    private static _connections: TConnection[] = [];
     private static _openConnections: TConnection[] = [];
     private static _storeHelper: StoreHelper;
 
     public static async init(): Promise<void> {
         this._storeHelper = StoreHelper.instance;
 
-        const json: string | undefined = await this._storeHelper.getValueAsync(EStoreKeywords.connections);
+        // const json: string | undefined = await this._storeHelper.getValueAsync(EStoreKeywords.connections);
 
-        if (!json) {
-            return;
-        }
+        // if (!json) {
+        //     return;
+        // }
 
-        this._connections = JSON.parse(json);
+        // this._connections = JSON.parse(json);
+
+        this._connections = connections;
     }
 
     public static get connections(): TConnection[] {
