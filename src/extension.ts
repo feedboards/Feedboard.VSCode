@@ -11,8 +11,7 @@ import {
     AzureToken,
     TAzureTokenResponseDto,
 } from '@feedboard/feedboard.core';
-import { StoreHelper } from './helpers';
-import { ConnectionHelper } from './helpers/connectionHelper';
+import { StoreHelper, ConnectionHelper } from './helpers';
 
 export const activate = async (context: vscode.ExtensionContext) => {
     StoreHelper.initialize(context);
@@ -41,7 +40,7 @@ export const activate = async (context: vscode.ExtensionContext) => {
         const result: TGithubTokenResponseDto = await authenticateGitHub(storeHelper);
 
         if (!result) {
-            // TODO show error
+            vscode.window.showErrorMessage("couldn't authorize into Github account");
 
             throw new Error("couldn't authorize into Github account");
         }
@@ -55,7 +54,7 @@ export const activate = async (context: vscode.ExtensionContext) => {
         const result: TAzureTokenResponseDto = await authenticateAzure(storeHelper);
 
         if (!result) {
-            // TODO show error
+            vscode.window.showErrorMessage("couldn't authorize into Azure account");
 
             throw new Error("couldn't authorize into Azure account");
         }

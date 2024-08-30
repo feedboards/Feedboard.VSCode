@@ -3,8 +3,7 @@ import { getNonce, getUri } from '../utilities';
 import { ESideBarCommands } from '../../common/commands';
 import { isTMainPanelGetNamespaces, isTMainPanelGetResourceGroups } from '../../common/types';
 import { AzureClient, AzureToken, TAzureTokenResponseDto } from '@feedboard/feedboard.core';
-import { TokenHelper } from '../helpers';
-import { ConnectionHelper } from '../helpers/connectionHelper';
+import { TokenHelper, ConnectionHelper } from '../helpers';
 
 export class SideBarProvider implements vscode.WebviewViewProvider {
     public view?: vscode.WebviewView;

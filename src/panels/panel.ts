@@ -1,6 +1,5 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, ExtensionContext, commands } from 'vscode';
-import { getUri } from '../utilities/getUri';
-import { getNonce } from '../utilities/getNonce';
+import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, commands } from 'vscode';
+import { getUri, getNonce } from '../utilities';
 import {
     isString,
     isTMainPanelGetConsumerGroups,
@@ -23,7 +22,6 @@ export class Panel {
     private _webview: Webview | undefined;
 
     private static _openPanels: { [id: string]: Panel } = {};
-    // private static _openConnection: MainPanel[] | undefined;
 
     private constructor(
         private _panel: WebviewPanel,
