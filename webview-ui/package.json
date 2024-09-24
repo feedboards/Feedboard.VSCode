@@ -9,8 +9,6 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@babel/plugin-transform-runtime": "^7.24.6",
-        "@babel/runtime": "^7.24.6",
         "@feedboard/feedboard.core": "^0.0.22",
         "@types/uuid": "^10.0.0",
         "@uiw/react-json-view": "^2.0.0-alpha.24",
