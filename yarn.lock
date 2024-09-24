@@ -272,10 +272,10 @@
     "minimatch" "^3.0.4"
     "strip-json-comments" "^3.1.1"
 
-"@feedboard/feedboard.core@^0.0.21":
-  "integrity" "sha512-2z9jg3RnxK7I1Ul88aoC1uqUwNkMsi+x4cCWhPpvFsf651zwJS715mPh5pg3rc1gp8bpi4tPrB1gx+EAsodVMA=="
-  "resolved" "https://registry.npmjs.org/@feedboard/feedboard.core/-/feedboard.core-0.0.21.tgz"
-  "version" "0.0.21"
+"@feedboard/feedboard.core@^0.0.22":
+  "integrity" "sha512-SapFzptAxB9yCEZ2ni+s7F8wCWAAIQNTlScr8VqCxZlE+KU0vCwBl9QOloEWvFYWjDBIWPsyQV8rBUQ9R/bMmA=="
+  "resolved" "https://registry.npmjs.org/@feedboard/feedboard.core/-/feedboard.core-0.0.22.tgz"
+  "version" "0.0.22"
   dependencies:
     "@azure/arm-eventhub" "^5.1.0"
     "@azure/arm-resources" "^5.2.0"

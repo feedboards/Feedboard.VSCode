@@ -3,13 +3,13 @@ import { StoreHelper } from './storeHelper';
 import { EStoreKeywords } from '../types';
 
 // TODO delete this hardcode
-const connections = [
+const connections: TConnection[] = [
     // TODO fix it
     {
         id: 'asd',
         name: 'connection string',
+        loginType: ELoginType.connectionString,
         settings: {
-            loginType: ELoginType.connectionString,
             connectionString:
                 'Endpoint=sb://feedboard-test-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=OvF2Hq7GdWTmpU1neaIA4HtAJ3B552l30+AEhI+CxhI=',
         },
@@ -17,8 +17,8 @@ const connections = [
     {
         id: '4b9ef858-e028-4f88-bc78-a99532a20c64',
         name: 'OAuth',
+        loginType: ELoginType.azureOAuth,
         settings: {
-            loginType: ELoginType.azureOAuth,
             namespace: {
                 id: '/subscriptions/a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9/resourceGroups/feedboard-test/providers/Microsoft.EventHub/namespaces/feedboard-test-namespace',
                 name: 'feedboard-test-namespace',
@@ -30,6 +30,16 @@ const connections = [
             subscription: {
                 displayName: 'Azure subscription 1',
                 subscriptionId: 'a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9',
+            },
+
+            // TODO fix
+            eventHub: {
+                id: '',
+                name: '',
+            },
+            consumerGroup: {
+                id: '',
+                name: '',
             },
         },
     },

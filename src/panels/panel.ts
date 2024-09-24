@@ -9,7 +9,13 @@ import {
     TMainPanelPayload,
 } from '../../common/types';
 import { EPanelCommands } from '../../common/commands';
-import { AzureClient, AzureEventHub, AzureToken, TAzureTokenResponseDto, TConnection } from '@feedboard/feedboard.core';
+import {
+    AzureClient,
+    AzureEventHubBroker,
+    AzureToken,
+    TAzureTokenResponseDto,
+    TConnection,
+} from '@feedboard/feedboard.core';
 import { TokenHelper } from '../helpers';
 
 export class Panel {
@@ -17,7 +23,7 @@ export class Panel {
 
     private _disposables: Disposable[] = [];
     private _token: AzureToken;
-    private _azureEventHub: AzureEventHub;
+    private _azureEventHub: AzureEventHubBroker;
     private _azureClient: AzureClient | undefined;
     private _webview: Webview | undefined;
 
@@ -30,7 +36,7 @@ export class Panel {
     ) {
         this._token = new AzureToken();
         this._tokenHelper = new TokenHelper();
-        this._azureEventHub = new AzureEventHub();
+        this._azureEventHub = new AzureEventHubBroker();
 
         this._tokenHelper.getAzureToken().then((token) => {
             if (!token) {
@@ -130,16 +136,16 @@ export class Panel {
                             return;
                         }
 
-                        this._azureEventHub.startMonitoringByOAuth(
-                            {
+                        this._azureEventHub.startMonitoringByOAuth({
+                            eventHub: {
                                 subscriptionId: payload.subscriptionId,
                                 resourceGroupName: payload.resourceGroupName,
                                 namespaceName: payload.namespaceName,
                                 consumerGroupName: payload.consumerGroupName,
                                 eventHubName: payload.eventHubName,
                             },
-                            this._token,
-                            async (events, _) => {
+                            credential: this._token,
+                            processEvents: async (events, _) => {
                                 const result: any[] = [];
                                 events.forEach((x) => {
                                     if (
@@ -156,8 +162,8 @@ export class Panel {
                                         payload: result,
                                     });
                                 }
-                            }
-                        );
+                            },
+                        });
                         break;
 
                     case EPanelCommands.startMonitoringByConnectionString:
@@ -165,13 +171,13 @@ export class Panel {
                             return;
                         }
 
-                        this._azureEventHub.startMonitoringByConnectionString(
-                            {
+                        this._azureEventHub.startMonitoringByConnectionString({
+                            eventHub: {
                                 consumerGroupName: payload.consumerGroupName,
                                 connectionString: payload.connectionString,
                                 eventHubName: payload.eventHubName,
                             },
-                            async (events, _) => {
+                            processEvents: async (events, _) => {
                                 const result: any[] = [];
 
                                 events.forEach((x) => {
@@ -193,8 +199,8 @@ export class Panel {
                                         payload: result,
                                     });
                                 }
-                            }
-                        );
+                            },
+                        });
                         break;
 
                     case EPanelCommands.stopMonitoring:

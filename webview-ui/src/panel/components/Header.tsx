@@ -41,10 +41,7 @@ export const Header = (): JSX.Element => {
     };
 
     const onConnect = () => {
-        if (
-            connection?.settings.loginType === ELoginType.azureOAuth &&
-            isTConnectionSettingsAzureOAuth(connection.settings)
-        ) {
+        if (connection?.loginType === ELoginType.azureOAuth && isTConnectionSettingsAzureOAuth(connection.settings)) {
             // TODO add here validation
             vscode.postMessage({
                 command: EPanelCommands.startMonitoring,
@@ -57,7 +54,7 @@ export const Header = (): JSX.Element => {
                 },
             });
         } else if (
-            connection?.settings.loginType === ELoginType.connectionString &&
+            connection?.loginType === ELoginType.connectionString &&
             isTConnectionSettingsAzureConnectionString(connection.settings)
         ) {
             // TODO add here validation
