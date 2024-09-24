@@ -6,7 +6,8 @@ export type TMainPanelPayload =
     | TMainPanelGetEventHubs
     | TMainPanelGetConsumerGroups
     | TMainPanelStartMonitoring
-    | TMainPanelStartMonitoringByConnectionString;
+    | TMainPanelStartMonitoringByConnectionString
+    | TMainPanelStartMonitoringMQTT;
 
 export type TMainPanelGetResourceGroups = {
     subscriptionId: string;
@@ -30,6 +31,11 @@ export type TMainPanelStartMonitoring = {
     namespaceName: string;
     eventHubName: string;
     consumerGroupName: string;
+};
+
+export type TMainPanelStartMonitoringMQTT = {
+    host: string;
+    topic: string;
 };
 
 export type TMainPanelStartMonitoringByConnectionString = {

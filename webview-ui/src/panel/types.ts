@@ -5,6 +5,7 @@ import { TConnection } from '@feedboard/feedboard.core';
 export enum ELayoutTypes {
     withAzureOAuth = 'withAzureOAuth',
     withConnectionString = 'withConnectionString',
+    withMQTT = 'withMQTT',
 }
 
 export interface IContextProviderProps {
@@ -36,6 +37,9 @@ export interface IGlobalContext {
     messages: any[] | undefined;
     messageLoading: boolean;
     selectedMessage: any | undefined;
+
+    topic: string | undefined;
+    setTopic: (value: string) => void;
 
     setIsLoggedInAzure: (value: boolean) => void;
     isLoggedInAzure: boolean;

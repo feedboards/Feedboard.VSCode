@@ -33,6 +33,8 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
     const [eventHubNameConnectionString, setEventHubNameConnectionString] = useState<string>();
     const [consumerGroupNameConnectionString, setConsumerGroupNameConnectionString] = useState<string>();
 
+    const [topic, setTopic] = useState<string | undefined>();
+
     const [connection, setConnection] = useState<TConnection>();
 
     const [isLoggedInAzure, setIsLoggedInAzure] = useState<boolean>(false);
@@ -151,6 +153,8 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
                 selectedMessage,
                 setIsLoggedInAzure,
                 isLoggedInAzure,
+                topic,
+                setTopic,
             }}>
             {children}
         </GlobalContext.Provider>

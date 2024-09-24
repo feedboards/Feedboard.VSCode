@@ -35,13 +35,19 @@ export const LayoutProvider: FC<IContextProviderProps> = ({ children }) => {
     }, [connection]);
 
     const ConvertELoginTypeTOElayoutTypes = (loginType: ELoginType): ELayoutTypes | null => {
-        if (loginType === ELoginType.connectionString) {
-            return ELayoutTypes.withConnectionString;
-        } else if (loginType === ELoginType.azureOAuth) {
-            return ELayoutTypes.withAzureOAuth;
-        }
+        switch (loginType) {
+            case ELoginType.connectionString:
+                return ELayoutTypes.withConnectionString;
 
-        return null;
+            case ELoginType.azureOAuth:
+                return ELayoutTypes.withAzureOAuth;
+
+            case ELoginType.mqtt:
+                return ELayoutTypes.withMQTT;
+
+            default:
+                return null;
+        }
     };
 
     return (
