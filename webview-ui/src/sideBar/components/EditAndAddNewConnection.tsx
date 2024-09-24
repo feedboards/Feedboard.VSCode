@@ -73,8 +73,8 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
         if (connection) {
             setName(connection.name);
             setSelectedLoginType({
-                type: connection.loginType,
-                name: loginTypes.find((x) => x.type === connection.loginType)?.name as string,
+                type: connection.settings.loginType,
+                name: loginTypes.find((x) => x.type === connection.settings.loginType)?.name as string,
             });
 
             if (isTConnectionSettingsAzureConnectionString(connection.settings)) {
@@ -182,8 +182,8 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
             const editConnection: TConnection = {
                 id: uuidv4(),
                 name,
-                loginType: selectedLoginType !== undefined ? selectedLoginType.type : connection.loginType,
                 settings: {
+                    loginType: selectedLoginType !== undefined ? selectedLoginType.type : connection.settings.loginType,
                     subscription: {
                         displayName:
                             selectedSubscription === undefined && isTConnectionSettingsAzureOAuth(connection.settings)
@@ -244,8 +244,8 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
             const connection: TConnection = {
                 id: uuidv4(),
                 name,
-                loginType: selectedLoginType?.type,
                 settings: {
+                    loginType: selectedLoginType?.type,
                     subscription: {
                         displayName: selectedSubscription?.displayName,
                         subscriptionId: selectedSubscription?.subscriptionId,

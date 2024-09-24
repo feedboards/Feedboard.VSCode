@@ -22,9 +22,9 @@ export const LayoutProvider: FC<IContextProviderProps> = ({ children }) => {
 
     useEffect(() => {
         if (connection !== undefined) {
-            console.log('connection.settings.loginType', connection.loginType);
+            console.log('connection.settings.loginType', connection.settings.loginType);
 
-            const layoutType = ConvertELoginTypeTOElayoutTypes(connection.loginType);
+            const layoutType = ConvertELoginTypeTOElayoutTypes(connection.settings.loginType);
 
             console.log('layoutType', layoutType);
 

@@ -8,8 +8,8 @@ const connections: TConnection[] = [
     {
         id: 'asd',
         name: 'connection string',
-        loginType: ELoginType.connectionString,
         settings: {
+            loginType: ELoginType.connectionString,
             connectionString:
                 'Endpoint=sb://feedboard-test-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=OvF2Hq7GdWTmpU1neaIA4HtAJ3B552l30+AEhI+CxhI=',
         },
@@ -17,8 +17,8 @@ const connections: TConnection[] = [
     {
         id: '4b9ef858-e028-4f88-bc78-a99532a20c64',
         name: 'OAuth',
-        loginType: ELoginType.azureOAuth,
         settings: {
+            loginType: ELoginType.azureOAuth,
             namespace: {
                 id: '/subscriptions/a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9/resourceGroups/feedboard-test/providers/Microsoft.EventHub/namespaces/feedboard-test-namespace',
                 name: 'feedboard-test-namespace',
@@ -46,8 +46,8 @@ const connections: TConnection[] = [
     {
         id: 'asdasss',
         name: 'MQTT',
-        loginType: ELoginType.mqtt,
         settings: {
+            loginType: ELoginType.mqtt,
             host: 'mqtt://localhost',
         },
     },
