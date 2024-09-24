@@ -43,6 +43,14 @@ const connections: TConnection[] = [
             },
         },
     },
+    {
+        id: 'asdasss',
+        name: 'MQTT',
+        loginType: ELoginType.mqtt,
+        settings: {
+            host: 'mqtt://localhost',
+        },
+    },
 ];
 
 export class ConnectionHelper {
