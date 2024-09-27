@@ -6,10 +6,18 @@ import {
     isTMainPanelGetEventHubs,
     isTMainPanelStartMonitoring,
     isTMainPanelStartMonitoringByConnectionString,
+    isTMainPanelStartMonitoringMQTT,
     TMainPanelPayload,
 } from '../../common/types';
 import { EPanelCommands } from '../../common/commands';
-import { AzureClient, AzureEventHub, AzureToken, TAzureTokenResponseDto, TConnection } from '@feedboard/feedboard.core';
+import {
+    AzureClient,
+    AzureEventHubBroker,
+    AzureToken,
+    MqttBroker,
+    TAzureTokenResponseDto,
+    TConnection,
+} from '@feedboard/feedboard.core';
 import { TokenHelper } from '../helpers';
 
 export class Panel {
@@ -17,7 +25,8 @@ export class Panel {
 
     private _disposables: Disposable[] = [];
     private _token: AzureToken;
-    private _azureEventHub: AzureEventHub;
+    private _azureEventHubBroker: AzureEventHubBroker;
+    private _mqttBroker: MqttBroker;
     private _azureClient: AzureClient | undefined;
     private _webview: Webview | undefined;
 
@@ -30,7 +39,8 @@ export class Panel {
     ) {
         this._token = new AzureToken();
         this._tokenHelper = new TokenHelper();
-        this._azureEventHub = new AzureEventHub();
+        this._azureEventHubBroker = new AzureEventHubBroker();
+        this._mqttBroker = new MqttBroker();
 
         this._tokenHelper.getAzureToken().then((token) => {
             if (!token) {
@@ -122,42 +132,55 @@ export class Panel {
 
                 switch (message.command) {
                     case EPanelCommands.startMonitoring:
-                        if (
-                            !this._token.isLogged() ||
-                            !isTMainPanelStartMonitoring(payload) ||
-                            this._azureEventHub.isMonitoring()
-                        ) {
-                            return;
-                        }
+                        if (isTMainPanelStartMonitoring(payload)) {
+                            if (!this._token.isLogged() || this._azureEventHubBroker.isMonitoring()) {
+                                return;
+                            }
 
-                        this._azureEventHub.startMonitoringByOAuth(
-                            {
-                                subscriptionId: payload.subscriptionId,
-                                resourceGroupName: payload.resourceGroupName,
-                                namespaceName: payload.namespaceName,
-                                consumerGroupName: payload.consumerGroupName,
-                                eventHubName: payload.eventHubName,
-                            },
-                            this._token,
-                            async (events, _) => {
-                                const result: any[] = [];
-                                events.forEach((x) => {
-                                    if (
-                                        x.body !== undefined ||
-                                        x.body !== null ||
-                                        (Array.isArray(x.body) && x.body.length > 0)
-                                    ) {
-                                        result.push(...x.body);
+                            this._azureEventHubBroker.startMonitoringByOAuth({
+                                eventHub: {
+                                    subscriptionId: payload.subscriptionId,
+                                    resourceGroupName: payload.resourceGroupName,
+                                    namespaceName: payload.namespaceName,
+                                    consumerGroupName: payload.consumerGroupName,
+                                    eventHubName: payload.eventHubName,
+                                },
+                                credential: this._token,
+                                processEvents: async (events, _) => {
+                                    const result: any[] = [];
+                                    events.forEach((x) => {
+                                        if (
+                                            x.body !== undefined ||
+                                            x.body !== null ||
+                                            (Array.isArray(x.body) && x.body.length > 0)
+                                        ) {
+                                            result.push(...x.body);
+                                        }
+                                    });
+                                    if (result.length > 0) {
+                                        await webview.postMessage({
+                                            command: EPanelCommands.setMessages,
+                                            payload: result,
+                                        });
                                     }
-                                });
-                                if (result.length > 0) {
+                                },
+                            });
+                        } else if (isTMainPanelStartMonitoringMQTT(payload)) {
+                            if (this._mqttBroker.isMonitoring()) {
+                                return;
+                            }
+
+                            this._mqttBroker.startMonitoring({
+                                host: payload.host,
+                                topic: payload.topic,
+                                processMessage: async (_, message) => {
                                     await webview.postMessage({
                                         command: EPanelCommands.setMessages,
-                                        payload: result,
+                                        payload: JSON.parse(message.toString()),
                                     });
-                                }
-                            }
-                        );
+                                },
+                            });
+                        }
                         break;
 
                     case EPanelCommands.startMonitoringByConnectionString:
@@ -165,13 +188,13 @@ export class Panel {
                             return;
                         }
 
-                        this._azureEventHub.startMonitoringByConnectionString(
-                            {
+                        this._azureEventHubBroker.startMonitoringByConnectionString({
+                            eventHub: {
                                 consumerGroupName: payload.consumerGroupName,
                                 connectionString: payload.connectionString,
                                 eventHubName: payload.eventHubName,
                             },
-                            async (events, _) => {
+                            processEvents: async (events, _) => {
                                 const result: any[] = [];
 
                                 events.forEach((x) => {
@@ -193,13 +216,17 @@ export class Panel {
                                         payload: result,
                                     });
                                 }
-                            }
-                        );
+                            },
+                        });
                         break;
 
                     case EPanelCommands.stopMonitoring:
-                        if (this._azureEventHub.isMonitoring() && this._azureEventHub !== undefined) {
-                            await this._azureEventHub.stopMonitoring();
+                        if (this._azureEventHubBroker.isMonitoring() && this._azureEventHubBroker !== undefined) {
+                            await this._azureEventHubBroker.stopMonitoring();
+                        }
+
+                        if (this._mqttBroker.isMonitoring()) {
+                            this._mqttBroker.stopMonitoring();
                         }
                         break;
 
@@ -212,6 +239,7 @@ export class Panel {
 
                     case EPanelCommands.getEventHubs:
                         console.log('EMainPanelCommands.getEventHubs');
+
                         if (this._azureClient !== undefined && isTMainPanelGetEventHubs(payload)) {
                             const result = await this._azureClient.getEventHubsByNamespace(
                                 payload.subscriptionId,

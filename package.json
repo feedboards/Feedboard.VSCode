@@ -60,7 +60,7 @@
     },
     "devDependencies": {
         "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
-        "@types/node": "^12.11.7",
+        "@types/node": "^22.6.1",
         "@types/polka": "^0.5.7",
         "@types/vscode": "^1.46.0",
         "@typescript-eslint/eslint-plugin": "^4.14.1",
@@ -76,7 +76,7 @@
         "@azure/arm-subscriptions": "^5.1.0",
         "@azure/event-hubs": "^5.12.0",
         "@azure/identity": "^4.2.1",
-        "@feedboard/feedboard.core": "^0.0.20",
+        "@feedboard/feedboard.core": "^0.0.25",
         "@types/uuid": "^10.0.0",
         "axios": "^1.7.4",
         "polka": "^0.5.2",

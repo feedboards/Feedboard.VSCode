@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import {
     ELoginType,
+    isTConnectionMQTT,
     isTConnectionSettingsAzureConnectionString,
     isTConnectionSettingsAzureOAuth,
     TConnection,
@@ -29,20 +30,40 @@ const loginTypes: TLoginType[] = [
         type: ELoginType.azureOAuth,
         name: 'Azure account',
     },
+    {
+        type: ELoginType.mqtt,
+        name: 'MQTT',
+    },
 ];
 
 export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndAddNewConnection) => {
+    //#region Name
     const [nameError, setNameError] = useState<boolean>(false);
-    const [connectionStringError, setConnectionStringError] = useState<boolean>(false);
+    const [name, setName] = useState<string | undefined>(undefined);
+    //#endregion
+
+    //#region Login
+    const [selectedLoginType, setSelectedLoginType] = useState<TLoginType | undefined>(undefined);
     const [loginTypeError, setLoginTypeError] = useState<boolean>(false);
+    //#endregion
+
+    //#region EventHub
+    //#region EventHub ConnetionString
+    const [connectionStringError, setConnectionStringError] = useState<boolean>(false);
+    const [connectionString, setConnectionString] = useState<undefined | string>(undefined);
+    //#endregion
+
+    //#region EventHub OAuth
     const [subscriptionsError, setSubscriptionsError] = useState<boolean>(false);
     const [resourceGroupsError, setResourceGroupsError] = useState<boolean>(false);
     const [namespacesError, setNamespacesError] = useState<boolean>(false);
+    //#endregion
+    //#endregion
 
-    const [selectedLoginType, setSelectedLoginType] = useState<TLoginType | undefined>(undefined);
-    const [name, setName] = useState<string | undefined>(undefined);
-
-    const [connectionString, setConnectionString] = useState<undefined | string>(undefined);
+    //#region MQTT
+    const [hostError, setHostError] = useState<boolean>(false);
+    const [host, setHost] = useState<string | undefined>(undefined);
+    //#endregion
 
     const { changeLayoutType } = useLayout();
     const { isLoggedInAzure, selectedSubscription, selectedResourceGroup, selectedNamespace, addConnection } =
@@ -58,6 +79,10 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
 
             if (isTConnectionSettingsAzureConnectionString(connection.settings)) {
                 setConnectionString(connection.settings.connectionString);
+            }
+
+            if (isTConnectionMQTT(connection.settings)) {
+                setHost(connection.settings.host);
             }
         }
     }, []);
@@ -89,6 +114,14 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
         setConnectionString(x.target.value);
     };
 
+    const onChangeHost = (x: ChangeEvent<HTMLInputElement>) => {
+        if (x.target.value !== undefined && x.target.value !== '') {
+            setHostError(false);
+        }
+
+        setHost(x.target.value);
+    };
+
     const validateData = () => {
         if (name === undefined || name === '') {
             setNameError(true);
@@ -98,22 +131,36 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
             setLoginTypeError(true);
         }
 
-        if (selectedLoginType !== undefined && selectedLoginType.type === ELoginType.connectionString) {
-            if (connectionString === undefined || connectionString === '') {
-                setConnectionStringError(true);
-            }
-        } else if (selectedLoginType !== undefined && selectedLoginType.type === ELoginType.azureOAuth) {
-            if (selectedSubscription === undefined) {
-                setSubscriptionsError(true);
-            }
+        if (selectedLoginType == undefined) {
+            return;
+        }
 
-            if (selectedResourceGroup === undefined) {
-                setResourceGroupsError(true);
-            }
+        switch (selectedLoginType.type) {
+            case ELoginType.connectionString:
+                if (connectionString === undefined || connectionString === '') {
+                    setConnectionStringError(true);
+                }
+                break;
 
-            if (selectedNamespace === undefined) {
-                setNamespacesError(true);
-            }
+            case ELoginType.azureOAuth:
+                if (selectedSubscription === undefined) {
+                    setSubscriptionsError(true);
+                }
+
+                if (selectedResourceGroup === undefined) {
+                    setResourceGroupsError(true);
+                }
+
+                if (selectedNamespace === undefined) {
+                    setNamespacesError(true);
+                }
+                break;
+
+            case ELoginType.mqtt:
+                if (host === undefined) {
+                    setHostError(true);
+                }
+                break;
         }
     };
 
@@ -168,6 +215,17 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
                                 : selectedNamespace?.id,
                     },
                     connectionString: connectionString,
+                    host: host,
+
+                    // TODO fix
+                    eventHub: {
+                        id: undefined,
+                        name: undefined,
+                    },
+                    consumerGroup: {
+                        id: undefined,
+                        name: undefined,
+                    },
                 },
             };
 
@@ -201,6 +259,17 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
                         id: selectedNamespace?.id,
                     },
                     connectionString: connectionString,
+                    host: host,
+
+                    // TODO fix
+                    eventHub: {
+                        id: undefined,
+                        name: undefined,
+                    },
+                    consumerGroup: {
+                        id: undefined,
+                        name: undefined,
+                    },
                 },
             };
 
@@ -211,6 +280,78 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
 
             addConnection(connection);
             changeLayoutType(ELayoutTypes.connectionList);
+        }
+    };
+
+    const renderLogin = (): JSX.Element => {
+        switch (selectedLoginType?.type) {
+            case ELoginType.azureOAuth:
+                return (
+                    <>
+                        {isLoggedInAzure ? (
+                            <AddNewConnectionOAuth
+                                subscriptionsError={subscriptionsError}
+                                resourceGroupsError={resourceGroupsError}
+                                namespacesError={namespacesError}
+                                setSubscriptionsError={setSubscriptionsError}
+                                setResourceGroupsError={setResourceGroupsError}
+                                setNamespacesError={setNamespacesError}
+                                connection={connection}
+                            />
+                        ) : (
+                            <VSCodeButton
+                                className="main-side-bar__wrapper_add-new-connection_button"
+                                onClick={() => {
+                                    vscode.postMessage({
+                                        command: ESideBarCommands.singInWithAzure,
+                                    });
+                                }}>
+                                Sing in with Azure
+                            </VSCodeButton>
+                        )}
+                    </>
+                );
+
+            case ELoginType.connectionString:
+                return (
+                    <>
+                        <label htmlFor="connectionString" className="main-side-bar__lable">
+                            Connection String
+                        </label>
+                        <VSCodeInput
+                            id="connectionString"
+                            className="main-side-bar__input"
+                            isError={connectionStringError}
+                            onChange={onChangeConnectionString}
+                            placeholder="Connection string"
+                            value={connectionString}
+                        />
+                        {connectionStringError && (
+                            <div className="main-side-bar__error-message">this field is required</div>
+                        )}
+                    </>
+                );
+
+            case ELoginType.mqtt:
+                return (
+                    <>
+                        <label htmlFor="connectionString" className="main-side-bar__lable">
+                            Host
+                        </label>
+                        <VSCodeInput
+                            id="host"
+                            className="main-side-bar__input"
+                            isError={hostError}
+                            onChange={onChangeHost}
+                            placeholder="Host"
+                            value={host}
+                        />
+                        {hostError && <div className="main-side-bar__error-message">this field is required</div>}
+                    </>
+                );
+
+            default:
+                return <></>;
         }
     };
 
@@ -229,8 +370,6 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
                     }}>
                     <VSCodeOption value="">Select a login type</VSCodeOption>
                     {loginTypes?.map((x, index: number) => {
-                        console.log(x);
-
                         return (
                             <VSCodeOption key={index} value={x.type}>
                                 {x.name}
@@ -258,50 +397,7 @@ export const EditAndAddNewConnection = ({ connection, setConnection }: IEditAndA
 
             {nameError && <div className="main-side-bar__error-message">this field is required</div>}
 
-            {selectedLoginType?.type === ELoginType.azureOAuth && (
-                <>
-                    {isLoggedInAzure ? (
-                        <AddNewConnectionOAuth
-                            subscriptionsError={subscriptionsError}
-                            resourceGroupsError={resourceGroupsError}
-                            namespacesError={namespacesError}
-                            setSubscriptionsError={setSubscriptionsError}
-                            setResourceGroupsError={setResourceGroupsError}
-                            setNamespacesError={setNamespacesError}
-                            connection={connection}
-                        />
-                    ) : (
-                        <VSCodeButton
-                            className="main-side-bar__wrapper_add-new-connection_button"
-                            onClick={() => {
-                                vscode.postMessage({
-                                    command: ESideBarCommands.singInWithAzure,
-                                });
-                            }}>
-                            Sing in with Azure
-                        </VSCodeButton>
-                    )}
-                </>
-            )}
-
-            {selectedLoginType?.type === ELoginType.connectionString && (
-                <>
-                    <label htmlFor="connectionString" className="main-side-bar__lable">
-                        Connection String
-                    </label>
-                    <VSCodeInput
-                        id="connectionString"
-                        className="main-side-bar__input"
-                        isError={connectionStringError}
-                        onChange={onChangeConnectionString}
-                        placeholder="Connection string"
-                        value={connectionString}
-                    />
-                    {connectionStringError && (
-                        <div className="main-side-bar__error-message">this field is required</div>
-                    )}
-                </>
-            )}
+            {renderLogin()}
 
             <div className="main-side-bar__wrapper_add-new-connection_button-group">
                 <VSCodeButton

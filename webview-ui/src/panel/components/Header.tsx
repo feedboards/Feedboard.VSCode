@@ -7,6 +7,7 @@ import { ConsumerGroup, Eventhub } from '@azure/arm-eventhub';
 import { EPanelCommands } from '../../../../common/commands';
 import {
     ELoginType,
+    isTConnectionMQTT,
     isTConnectionSettingsAzureConnectionString,
     isTConnectionSettingsAzureOAuth,
 } from '@feedboard/feedboard.core';
@@ -30,6 +31,8 @@ export const Header = (): JSX.Element => {
         consumerGroups,
         setConsumerGroupLoading,
         consumerGroupLoading,
+        setTopic,
+        topic,
     } = useGlobal();
 
     const onSendMessage = () => {};
@@ -69,6 +72,14 @@ export const Header = (): JSX.Element => {
                     consumerGroupName: consumerGroupNameConnectionString,
                 },
             });
+        } else if (connection?.settings.loginType === ELoginType.mqtt && isTConnectionMQTT(connection.settings)) {
+            vscode.postMessage({
+                command: EPanelCommands.startMonitoring,
+                payload: {
+                    host: connection.settings.host,
+                    topic,
+                },
+            });
         }
     };
 
@@ -80,25 +91,14 @@ export const Header = (): JSX.Element => {
         setConsumerGroupNameConnectionString(x.target.value);
     };
 
-    return (
-        <>
-            <div className="main-panel__header">
-                {layoutType === ELayoutTypes.withConnectionString && (
-                    <>
-                        <VSCodeInput
-                            onChange={onChangeEventHubConnectionString}
-                            className="main-panel__header_input"
-                            placeholder="Event Hub"
-                        />
-                        <VSCodeInput
-                            onChange={onChangeConsumerGroupConnectionString}
-                            className="main-panel__header_input"
-                            placeholder="Consumer Group"
-                        />
-                    </>
-                )}
+    const onChangeTopic = (x: ChangeEvent<HTMLInputElement>) => {
+        setTopic(x.target.value);
+    };
 
-                {layoutType === ELayoutTypes.withAzureOAuth && (
+    const render = (): JSX.Element => {
+        switch (layoutType) {
+            case ELayoutTypes.withAzureOAuth:
+                return (
                     <>
                         {isTConnectionSettingsAzureOAuth(connection?.settings) &&
                             connection?.settings.subscription.subscriptionId !== undefined &&
@@ -163,6 +163,13 @@ export const Header = (): JSX.Element => {
                                     <VSCodeButton className="main-panel__header_button" onClick={onSendMessage}>
                                         Send Message
                                     </VSCodeButton> */}
+
+                                    <VSCodeButton
+                                        className="main-panel__header_button main-panel__header_button-first"
+                                        appearance="secondary"
+                                        onClick={onSingInWithAzure}>
+                                        Sing in with Azure
+                                    </VSCodeButton>
                                 </>
                             )}
 
@@ -204,20 +211,43 @@ export const Header = (): JSX.Element => {
                                 </>
                             )}
                     </>
-                )}
+                );
 
-                {layoutType === ELayoutTypes.withAzureOAuth && (
-                    <VSCodeButton
-                        className="main-panel__header_button main-panel__header_button-first"
-                        appearance="secondary"
-                        onClick={onSingInWithAzure}>
-                        Sing in with Azure
-                    </VSCodeButton>
-                )}
+            case ELayoutTypes.withConnectionString:
+                return (
+                    <>
+                        <VSCodeInput
+                            onChange={onChangeEventHubConnectionString}
+                            className="main-panel__header_input"
+                            placeholder="Event Hub"
+                        />
+                        <VSCodeInput
+                            onChange={onChangeConsumerGroupConnectionString}
+                            className="main-panel__header_input"
+                            placeholder="Consumer Group"
+                        />
+                    </>
+                );
+
+            case ELayoutTypes.withMQTT:
+                return (
+                    <VSCodeInput onChange={onChangeTopic} className="main-panel__header_input" placeholder="Topic" />
+                );
+
+            default:
+                return <></>;
+        }
+    };
+
+    return (
+        <>
+            <div className="main-panel__header">
+                {render()}
 
                 <VSCodeButton
                     className={classNames('main-panel__header_button', {
-                        ['main-panel__header_button-first']: layoutType === ELayoutTypes.withConnectionString,
+                        ['main-panel__header_button-first']:
+                            layoutType === ELayoutTypes.withConnectionString || layoutType === ELayoutTypes.withMQTT,
                     })}
                     appearance="secondary"
                     onClick={onConnect}>

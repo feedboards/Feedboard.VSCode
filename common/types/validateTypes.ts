@@ -5,6 +5,7 @@ import {
     TMainPanelGetResourceGroups,
     TMainPanelStartMonitoring,
     TMainPanelStartMonitoringByConnectionString,
+    TMainPanelStartMonitoringMQTT,
 } from '.';
 
 export const isTMainPanelGetResourceGroups = (obj: any): obj is TMainPanelGetResourceGroups => {
@@ -31,6 +32,10 @@ export const isTMainPanelStartMonitoringByConnectionString = (
     obj: any
 ): obj is TMainPanelStartMonitoringByConnectionString => {
     return obj && typeof obj === 'object' && 'connectionString' in obj;
+};
+
+export const isTMainPanelStartMonitoringMQTT = (obj: any): obj is TMainPanelStartMonitoringMQTT => {
+    return obj && typeof obj === 'object' && 'host' in obj;
 };
 
 export const isString = (obj: any): obj is string => {

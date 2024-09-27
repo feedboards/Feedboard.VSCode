@@ -3,7 +3,7 @@ import { StoreHelper } from './storeHelper';
 import { EStoreKeywords } from '../types';
 
 // TODO delete this hardcode
-const connections = [
+const connections: TConnection[] = [
     // TODO fix it
     {
         id: 'asd',
@@ -31,6 +31,24 @@ const connections = [
                 displayName: 'Azure subscription 1',
                 subscriptionId: 'a9f2fbe2-dc78-4f70-9d5a-48aa091e38c9',
             },
+
+            // TODO fix
+            eventHub: {
+                id: '',
+                name: '',
+            },
+            consumerGroup: {
+                id: '',
+                name: '',
+            },
+        },
+    },
+    {
+        id: 'asdasss',
+        name: 'MQTT',
+        settings: {
+            loginType: ELoginType.mqtt,
+            host: 'mqtt://localhost',
         },
     },
 ];
