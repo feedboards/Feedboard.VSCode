@@ -176,7 +176,7 @@ export class Panel {
                                 processMessage: async (_, message) => {
                                     await webview.postMessage({
                                         command: EPanelCommands.setMessages,
-                                        payload: message,
+                                        payload: JSON.parse(message.toString()),
                                     });
                                 },
                             });
@@ -239,6 +239,7 @@ export class Panel {
 
                     case EPanelCommands.getEventHubs:
                         console.log('EMainPanelCommands.getEventHubs');
+
                         if (this._azureClient !== undefined && isTMainPanelGetEventHubs(payload)) {
                             const result = await this._azureClient.getEventHubsByNamespace(
                                 payload.subscriptionId,
