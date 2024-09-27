@@ -40,7 +40,7 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
     useEffect(() => {
         window.addEventListener('message', _handleMessage);
 
-        vscode.postMessage({ command: ESideBarCommands.setIsLoggedInAzure });
+        vscode.postMessage({ command: ESideBarCommands.getIsLoggedInAzure });
         vscode.postMessage({ command: ESideBarCommands.getSavedConnections });
         vscode.postMessage({ command: ESideBarCommands.getBaseAPIUrl });
 
