@@ -2,7 +2,7 @@ import { render } from '../utilities';
 import '../scss/sideBar.scss';
 import { useState } from 'react';
 import { TConnection } from '@feedboard/feedboard.core';
-import { ConnectionList, EditAndAddNewConnection, Header } from './components';
+import { ConnectionList, EditAndAddNewConnection, Header, Settings } from './components';
 import { GlobalProvider, LayoutProvider, useLayout } from './contexts';
 import { ELayoutTypes } from './types';
 
@@ -18,6 +18,7 @@ const MainSideBar = (): JSX.Element => {
                 {layoutType === ELayoutTypes.addOrEditConnection && (
                     <EditAndAddNewConnection connection={connection} setConnection={setConnection} />
                 )}
+                {layoutType === ELayoutTypes.settings && <Settings />}
             </div>
         </main>
     );

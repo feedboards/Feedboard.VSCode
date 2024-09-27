@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { getNonce, getUri } from '../utilities';
 import { ESideBarCommands } from '../../common/commands';
 import { isTMainPanelGetNamespaces, isTMainPanelGetResourceGroups } from '../../common/types';
-import { AzureClient, AzureToken, TAzureTokenResponseDto } from '@feedboard/feedboard.core';
+import { AzureClient, AzureToken, Feedboard, TAzureTokenResponseDto } from '@feedboard/feedboard.core';
 import { TokenHelper, ConnectionHelper } from '../helpers';
 
 export class SideBarProvider implements vscode.WebviewViewProvider {
@@ -92,6 +92,17 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
             const payload = message.payload;
 
             switch (message.command) {
+                case ESideBarCommands.updateBaseAPIUrl:
+                    // update baseAPIUrl in Feedboard client
+                    break;
+
+                case ESideBarCommands.getBaseAPIUrl:
+                    await webview.postMessage({
+                        command: ESideBarCommands.setBaseAPIUrl,
+                        payload: '', // get base URl from Feedboard client
+                    });
+                    break;
+
                 case ESideBarCommands.openConnection:
                     ConnectionHelper.addOpenConnection(payload);
 
