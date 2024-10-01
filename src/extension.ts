@@ -14,13 +14,10 @@ import {
 import { StoreHelper, ConnectionHelper } from './helpers';
 
 export const activate = async (context: vscode.ExtensionContext) => {
+    Feedboard.init('http://localhost/api'); // TODO add baseURL
     StoreHelper.initialize(context);
-    Feedboard.init(''); // TODO add baseURL
 
     const storeHelper = StoreHelper.instance;
-
-    console.log('storeHelper', storeHelper);
-
     const githubToken = new GithubToken();
     const azureToken = new AzureToken();
 

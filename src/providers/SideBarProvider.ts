@@ -93,13 +93,13 @@ export class SideBarProvider implements vscode.WebviewViewProvider {
 
             switch (message.command) {
                 case ESideBarCommands.updateBaseAPIUrl:
-                    // update baseAPIUrl in Feedboard client
+                    Feedboard.updateBaseUrl(payload);
                     break;
 
                 case ESideBarCommands.getBaseAPIUrl:
                     await webview.postMessage({
                         command: ESideBarCommands.setBaseAPIUrl,
-                        payload: '', // get base URl from Feedboard client
+                        payload: Feedboard.baseUrl,
                     });
                     break;
 

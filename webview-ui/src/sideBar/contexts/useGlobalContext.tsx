@@ -35,7 +35,7 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
     const [isLoggedInAzure, setIsLoggedInAzure] = useState<boolean>(false);
     const [savedConnections, setSavedConnections] = useState<TConnection[] | null>(null);
 
-    const [baseAPIUrl, setBaseAPIUrl] = useState<string | undefined>(undefined);
+    const [baseAPIUrl, setBaseAPIUrlState] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         window.addEventListener('message', _handleMessage);
@@ -57,7 +57,7 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
 
         switch (event.data.command) {
             case ESideBarCommands.setBaseAPIUrl:
-                setBaseAPIUrl(payload);
+                setBaseAPIUrlState(payload);
 
                 console.log(payload);
 
@@ -100,6 +100,15 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
                 setNamespaceLoading(false);
                 break;
         }
+    };
+
+    const setBaseAPIUrl = (url: string) => {
+        setBaseAPIUrlState(url);
+
+        vscode.postMessage({
+            command: ESideBarCommands.updateBaseAPIUrl,
+            payload: url,
+        });
     };
 
     const addConnection = (connection: TConnection) => {
