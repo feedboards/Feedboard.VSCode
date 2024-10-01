@@ -14,6 +14,14 @@ export const Header = () => {
                     Add Connection
                 </VSCodeButton>
             </div>
+            <div>
+                <VSCodeButton
+                    appearance="secondary"
+                    className="main-side-bar__header_button"
+                    onClick={() => changeLayoutType(ELayoutTypes.settings)}>
+                    Settings
+                </VSCodeButton>
+            </div>
         </div>
     );
 };

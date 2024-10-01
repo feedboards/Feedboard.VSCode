@@ -42,4 +42,8 @@ export enum ESideBarCommands {
     openConnection = 'openConnection',
 
     singInWithAzure = 'singInWithAzure',
+
+    getBaseAPIUrl = 'getBaseAPIUrl',
+    setBaseAPIUrl = 'setBaseAPIUrl',
+    updateBaseAPIUrl = 'updateBaseAPIUrl',
 }

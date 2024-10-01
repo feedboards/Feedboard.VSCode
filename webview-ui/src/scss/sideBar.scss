@@ -88,11 +88,18 @@
         padding: 0 $gap $gap $gap;
 
         &[data-has-header='true'] {
-            height: calc(100% - 65px);
+            height: calc(100% - 105px);
         }
 
         &[data-has-header='false'] {
             height: 100%;
+        }
+
+        &_settings {
+            box-sizing: border-box;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         &_add-new-connection {

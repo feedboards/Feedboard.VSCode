@@ -35,11 +35,14 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
     const [isLoggedInAzure, setIsLoggedInAzure] = useState<boolean>(false);
     const [savedConnections, setSavedConnections] = useState<TConnection[] | null>(null);
 
+    const [baseAPIUrl, setBaseAPIUrlState] = useState<string | undefined>(undefined);
+
     useEffect(() => {
         window.addEventListener('message', _handleMessage);
 
-        vscode.postMessage({ command: ESideBarCommands.setIsLoggedInAzure });
+        vscode.postMessage({ command: ESideBarCommands.getIsLoggedInAzure });
         vscode.postMessage({ command: ESideBarCommands.getSavedConnections });
+        vscode.postMessage({ command: ESideBarCommands.getBaseAPIUrl });
 
         return () => window.removeEventListener('message', _handleMessage);
     }, []);
@@ -53,6 +56,13 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
         const payload = event.data.payload;
 
         switch (event.data.command) {
+            case ESideBarCommands.setBaseAPIUrl:
+                setBaseAPIUrlState(payload);
+
+                console.log(payload);
+
+                break;
+
             case ESideBarCommands.setSavedConnections:
                 setSavedConnections(payload);
                 break;
@@ -90,6 +100,15 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
                 setNamespaceLoading(false);
                 break;
         }
+    };
+
+    const setBaseAPIUrl = (url: string) => {
+        setBaseAPIUrlState(url);
+
+        vscode.postMessage({
+            command: ESideBarCommands.updateBaseAPIUrl,
+            payload: url,
+        });
     };
 
     const addConnection = (connection: TConnection) => {
@@ -143,6 +162,8 @@ export const GlobalProvider: FC<IContextProviderProps> = ({ children }) => {
                 setIsLoggedInAzure,
                 isLoggedInAzure,
                 savedConnections,
+                baseAPIUrl,
+                setBaseAPIUrl,
             }}>
             {children}
         </GlobalContext.Provider>

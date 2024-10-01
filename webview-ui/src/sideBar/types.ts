@@ -7,6 +7,7 @@ import { TConnection } from '@feedboard/feedboard.core';
 export enum ELayoutTypes {
     connectionList = 'connectionList',
     addOrEditConnection = 'addOrEditConnection',
+    settings = 'settings',
 }
 
 export interface IContextProviderProps {
@@ -41,6 +42,9 @@ export interface IGlobalContext {
 
     setIsLoggedInAzure: (value: boolean) => void;
     isLoggedInAzure: boolean;
+
+    baseAPIUrl: string | undefined;
+    setBaseAPIUrl: (value: string) => void;
 }
 
 export interface ILayoutContext {
